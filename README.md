@@ -27,7 +27,8 @@ Biathlon VMA est une application éducative conçue pour les cours d'EPS en coll
 2. Ouvrez `index.html` avec Safari
 3. Partager → "Sur l'écran d'accueil"
 
-# ✨ configuration possible par accèss prof via le menu "Configuration des barèmes" dans le menu Réglages en haut à droite 
+# ✨ configuration possible 
+menu Réglages accès professeur via le menu "Configuration des barèmes"
 (protégé par mot de passe : ADMINPROF)
 
 
