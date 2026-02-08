@@ -27,9 +27,11 @@ Biathlon VMA est une application éducative conçue pour les cours d'EPS en coll
 2. Ouvrez `index.html` avec Safari
 3. Partager → "Sur l'écran d'accueil"
 
-# ✨ configuration possible 
-menu Réglages accès professeur via le menu "Configuration des barèmes"
+# ✨ Configuration application
+Accès professeur via le menu "Configuration des barèmes"
 (protégé par mot de passe : ADMINPROF)
+1. Réglage des points à attribuer au lancer de vortex selon les zones atteintes 
+2. Réglage des points à attribuer en fonction des écarts dans les courses 
 
 
 ---
