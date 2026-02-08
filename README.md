@@ -17,7 +17,7 @@ Biathlon VMA est une application éducative conçue pour les cours d'EPS en coll
 
 # 📱 Installation sur tablette
 
-## Android 
+## Android
 1. Transférez tous les fichiers via USB
 2. Ouvrez `index.html` avec Chrome
 3. Menu → "Ajouter à l'écran d'accueil"
