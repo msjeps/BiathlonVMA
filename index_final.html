@@ -1,0 +1,3357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biathlon VMA - 5ème</title>
+
+    <meta name="theme-color" content="#FF6B9D">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+<style>
+        /* ========================================
+           VARIABLES CSS
+           ======================================== */
+        :root {
+            --couleur-primaire: #FF6B9D;
+            --couleur-secondaire: #4ECDC4;
+            --couleur-accent: #FFE66D;
+            --couleur-course: #95E1D3;
+            --couleur-tir: #FFA07A;
+            --couleur-texte: #2C3E50;
+            --couleur-fond: #FFF9F0;
+            --couleur-blanc: #FFFFFF;
+            --ombre-douce: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --ombre-forte: 0 8px 25px rgba(0, 0, 0, 0.15);
+            --rayon: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--couleur-texte);
+        }
+
+        .conteneur-principal {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--couleur-fond);
+            border-radius: var(--rayon);
+            box-shadow: var(--ombre-forte);
+            padding: 30px;
+        }
+
+        /* EN-TÊTE */
+        .en-tete {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--couleur-primaire);
+        }
+
+        .en-tete h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, var(--couleur-primaire), var(--couleur-secondaire));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .en-tete p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .bouton-rond-parametres {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bouton-rond-parametres:hover {
+            transform: translateY(-2px) rotate(90deg);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .bouton-rond-parametres:active {
+            transform: translateY(0) rotate(180deg);
+        }
+
+        .bouton-rond-parametres svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* MODE SOMBRE */
+        body.mode-sombre {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        }
+
+        body.mode-sombre .conteneur-principal {
+            background: #2c3e50;
+            color: #ecf0f1;
+        }
+
+        body.mode-sombre .section {
+            background: #34495e;
+        }
+
+        body.mode-sombre .en-tete h1 {
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        body.mode-sombre .en-tete p {
+            color: #bdc3c7;
+        }
+
+        body.mode-sombre input,
+        body.mode-sombre select {
+            background: #2c3e50;
+            color: #ecf0f1;
+            border-color: #4a5f7f;
+        }
+
+        body.mode-sombre input:focus,
+        body.mode-sombre select:focus {
+            background: #34495e;
+            color: #ecf0f1;
+            border-color: #3498db;
+        }
+
+        body.mode-sombre input::placeholder {
+            color: #7f8c8d;
+        }
+
+        body.mode-sombre label {
+            color: #ecf0f1;
+        }
+
+        body.mode-sombre .section h2,
+        body.mode-sombre .titre-course,
+        body.mode-sombre .session-tir h3 {
+            color: #ecf0f1;
+        }
+
+        body.mode-sombre .info-theorique,
+        body.mode-sombre .affichage-distance,
+        body.mode-sombre .ecart-info,
+        body.mode-sombre .graphique-vitesse,
+        body.mode-sombre .bareme-section {
+            background: #2c3e50;
+            color: #ecf0f1;
+        }
+
+        body.mode-sombre .ordre-item {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            color: #ecf0f1;
+        }
+
+        body.mode-sombre .ordre-item .titre-element {
+            color: #ecf0f1;
+        }
+
+        body.mode-sombre .ordre-item .details-element {
+            color: #bdc3c7;
+        }
+
+        body.mode-sombre .modale-contenu {
+            background: #2c3e50;
+            color: #ecf0f1;
+        }
+
+        body.mode-sombre .modale-header h2 {
+            color: #ecf0f1;
+        }
+
+        body.mode-sombre .resultat-label {
+            color: #ecf0f1;
+        }
+
+        body.mode-sombre .session-tir {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+        }
+
+        body.mode-sombre .session-tir h3 {
+            color: #ecf0f1;
+        }
+
+        body.mode-sombre .session-tir-info {
+            color: #bdc3c7;
+        }
+
+        body.mode-sombre .tir-item label {
+            color: #ecf0f1;
+        }
+
+        body.mode-sombre .resultats {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+        }
+
+        body.mode-sombre .resultats h3 {
+            color: #ecf0f1 !important;
+        }
+
+        body.mode-sombre .resultat-item {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body.mode-sombre .resultat-label {
+            color: #ecf0f1 !important;
+        }
+
+        body.mode-sombre .resultat-valeur {
+            color: #3498db !important;
+        }
+
+        /* Score total en mode sombre */
+        body.mode-sombre .resultats[style*="linear-gradient(135deg, #FFD89B, #19547B)"] {
+            background: linear-gradient(135deg, #2c3e50, #34495e) !important;
+        }
+
+        body.mode-sombre .resultats[style*="linear-gradient(135deg, #FFD89B, #19547B)"] h3 {
+            color: #3498db !important;
+        }
+
+        body.mode-sombre .resultats[style*="linear-gradient(135deg, #FFD89B, #19547B)"] .resultat-label {
+            color: #ecf0f1 !important;
+        }
+
+        body.mode-sombre .resultats[style*="linear-gradient(135deg, #FFD89B, #19547B)"] .resultat-valeur {
+            color: #3498db !important;
+        }
+
+        /* ANIMATION VIBRATION */
+        @keyframes vibration {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-2px, 2px) rotate(-1deg); }
+            50% { transform: translate(2px, -2px) rotate(1deg); }
+            75% { transform: translate(-2px, -2px) rotate(-1deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        .bouton-plus.vibrant {
+            animation: vibration 0.15s ease-in-out;
+        }
+
+        /* MODALE */
+        .modale {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modale-contenu {
+            background: var(--couleur-fond);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: var(--rayon);
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modale-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--couleur-primaire);
+        }
+
+        .modale-header h2 {
+            margin: 0;
+            color: var(--couleur-texte);
+        }
+
+        .btn-fermer {
+            background: none;
+            border: none;
+            font-size: 2em;
+            color: #999;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            line-height: 1;
+        }
+
+        .btn-fermer:hover {
+            color: var(--couleur-primaire);
+        }
+
+        .bareme-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .bareme-section h3 {
+            color: var(--couleur-texte);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .bareme-ligne {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .bareme-ligne label {
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .bareme-ligne input {
+            padding: 10px;
+        }
+
+        /* SWITCH TOGGLE */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--couleur-secondaire);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* SECTIONS */
+        .section {
+            background: var(--couleur-blanc);
+            border-radius: var(--rayon);
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--ombre-douce);
+            border-left: 5px solid var(--couleur-primaire);
+        }
+
+        .section h2 {
+            color: var(--couleur-texte);
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h2::before {
+            content: '';
+            width: 8px;
+            height: 30px;
+            background: linear-gradient(to bottom, var(--couleur-primaire), var(--couleur-secondaire));
+            border-radius: 4px;
+        }
+
+        .section-course {
+            border-left-color: var(--couleur-course);
+        }
+
+        .section-course h2::before {
+            background: linear-gradient(to bottom, var(--couleur-course), var(--couleur-secondaire));
+        }
+
+        .section-tir {
+            border-left-color: var(--couleur-tir);
+        }
+
+        .section-tir h2::before {
+            background: linear-gradient(to bottom, var(--couleur-tir), #FF6B9D);
+        }
+
+        /* FORMULAIRE */
+        .groupe-champ {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--couleur-texte);
+            font-size: 1.05em;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: #FAFAFA;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--couleur-primaire);
+            box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.1);
+        }
+
+        /* GRILLE */
+        .grille-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .grille-3col {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        /* BOUTONS */
+        .bouton {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--ombre-douce);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 100%;
+        }
+
+        .bouton:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--ombre-forte);
+        }
+
+        .bouton:active {
+            transform: translateY(0);
+        }
+
+        .bouton-demarrer {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: var(--couleur-blanc);
+        }
+
+        .bouton-pause {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: var(--couleur-blanc);
+        }
+
+        .bouton-reinit {
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            color: var(--couleur-blanc);
+        }
+
+        .bouton-stop {
+            background: linear-gradient(135deg, #ee0979, #ff6a00);
+            color: var(--couleur-blanc);
+        }
+
+        .bouton-primaire {
+            background: linear-gradient(135deg, var(--couleur-primaire), #C44569);
+            color: var(--couleur-blanc);
+        }
+
+        .bouton-secondaire {
+            background: linear-gradient(135deg, var(--couleur-secondaire), #0F9D8A);
+            color: var(--couleur-blanc);
+        }
+
+        .bouton-danger {
+            background: linear-gradient(135deg, #FC466B, #3F5EFB);
+            color: var(--couleur-blanc);
+        }
+
+        /* CHRONOMÈTRE DANS CARTE */
+        .mini-chrono {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--couleur-blanc);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .mini-chrono .affichage-temps {
+            font-size: 2em;
+            font-weight: 700;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .mini-chrono .controles {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .mini-chrono .bouton {
+            padding: 8px 15px;
+            font-size: 0.9em;
+        }
+
+        /* CARTES DE COURSE */
+        .courses-grille {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .carte-course {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: var(--ombre-douce);
+            border: 3px solid var(--couleur-course);
+            transition: transform 0.3s ease;
+        }
+
+        .carte-course:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--ombre-forte);
+        }
+
+        .titre-course {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--couleur-texte);
+            margin-bottom: 15px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .info-theorique {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .info-theorique p {
+            margin: 5px 0;
+        }
+
+        .info-theorique strong {
+            color: var(--couleur-primaire);
+        }
+
+        .bouton-plus {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: var(--couleur-blanc);
+            font-size: 2.5em;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--ombre-douce);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px auto;
+        }
+
+        .bouton-plus:hover {
+            transform: scale(1.1);
+            box-shadow: var(--ombre-forte);
+        }
+
+        .affichage-distance {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--couleur-primaire);
+            background: var(--couleur-blanc);
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .ecart-info {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .ecart-info .ecart-valeur {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--couleur-primaire);
+        }
+
+        .ecart-info.positif .ecart-valeur {
+            color: #11998e;
+        }
+
+        .ecart-info.negatif .ecart-valeur {
+            color: #ee0979;
+        }
+
+        /* GRAPHIQUE DE VITESSE */
+        .graphique-vitesse {
+            background: var(--couleur-blanc);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none; /* Caché initialement */
+        }
+
+        .graphique-vitesse.visible {
+            display: block;
+        }
+
+        .graphique-vitesse h4 {
+            font-size: 1em;
+            color: var(--couleur-texte);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .graphique-vitesse canvas {
+            max-height: 200px;
+        }
+
+        /* BOUTONS DE RÉORGANISATION */
+        .reorg-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-reorg {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-reorg:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-reorg:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .btn-reorg:disabled:hover {
+            transform: none;
+        }
+
+        /* Ordre d'affichage */
+        .ordre-numero {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #FFE66D, #FFD93D);
+            color: #2C3E50;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1em;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .carte-course, .session-tir {
+            position: relative;
+        }
+
+        /* DÉROULEMENT */
+        #deroulementContainer > * {
+            margin-bottom: 30px;
+        }
+
+        .element-deroulement {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* CARTES D'ORDRE DANS LE RÉCAPITULATIF */
+        .ordre-item {
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .ordre-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(5px);
+        }
+
+        .ordre-item.course-item {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-left: 5px solid var(--couleur-course);
+        }
+
+        .ordre-item.tir-ordre {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            border-left: 5px solid var(--couleur-tir);
+        }
+
+        .ordre-item .numero {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.5em;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .ordre-item .contenu {
+            flex: 1;
+        }
+
+        .ordre-item .titre-element {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--couleur-texte);
+            margin-bottom: 5px;
+        }
+
+        .ordre-item .details-element {
+            font-size: 0.95em;
+            color: #666;
+        }
+
+        .ordre-item .controles-ordre {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .ordre-item .btn-reorg {
+            width: 45px;
+            height: 45px;
+            font-size: 1.4em;
+        }
+
+        /* SESSIONS DE TIR */
+        .sessions-tir {
+            margin-top: 20px;
+        }
+
+        .session-tir {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 3px solid var(--couleur-tir);
+            position: relative;
+        }
+
+        .session-tir-header {
+            margin-bottom: 20px;
+        }
+
+        .session-tir h3 {
+            color: var(--couleur-texte);
+            margin-bottom: 5px;
+            font-size: 1.3em;
+        }
+
+        .session-tir-info {
+            color: #666;
+            font-size: 0.95em;
+            margin: 0;
+        }
+
+        .tirs-grille {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .tir-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tir-item label {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .tir-item select {
+            padding: 8px;
+            font-size: 0.95em;
+        }
+
+        /* RÉSULTATS */
+        .resultats {
+            background: linear-gradient(135deg, #FFF9F0, #FFE66D);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border: 2px solid var(--couleur-accent);
+        }
+
+        .resultat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .resultat-item:last-child {
+            border-bottom: none;
+        }
+
+        .resultat-label {
+            font-weight: 600;
+            color: var(--couleur-texte);
+        }
+
+        .resultat-valeur {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--couleur-primaire);
+        }
+
+        /* QR CODE */
+        .qr-container {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--couleur-blanc);
+            border-radius: var(--rayon);
+            box-shadow: var(--ombre-douce);
+        }
+
+        #qrcode {
+            display: inline-block;
+            margin: 20px auto;
+            padding: 15px;
+            background: var(--couleur-blanc);
+            border-radius: 12px;
+            box-shadow: var(--ombre-douce);
+        }
+
+        /* MESSAGES */
+        .message-succes {
+            background: linear-gradient(135deg, #84fab0, #8fd3f4);
+            color: #0d47a1;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: var(--ombre-douce);
+        }
+
+        .cache {
+            display: none;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .conteneur-principal {
+                padding: 20px;
+            }
+
+            .en-tete h1 {
+                font-size: 2em;
+            }
+
+            .grille-2col, .grille-3col {
+                grid-template-columns: 1fr;
+            }
+
+            .mini-chrono .controles {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section {
+            animation: fadeIn 0.5s ease-out;
+        }
+    
+/* Etape verrouillée (séquentiel) */
+.ordre-item.verrouille{
+    opacity: 0.45;
+    filter: grayscale(0.3);
+}
+
+        /* Bouton paramètres dans le header */
+        .header-btn-params {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+            transition: all 0.3s ease;
+        }
+        
+        .header-btn-params:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg) scale(1.1);
+        }
+        
+        .header-btn-params:active {
+            transform: rotate(180deg) scale(0.95);
+        }
+
+</style>
+
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#2f3f4f">
+</head>
+<body>
+<!-- HEADER FIXE AVEC BARRE DE PROGRESSION -->
+<div id="headerProgression" style="position: fixed; top: 0; left: 0; right: 0; background: linear-gradient(135deg, #FF6B9D, #4ECDC4); padding: 12px 20px 8px 20px; z-index: 2000; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
+    <div style="max-width: 900px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+        <div style="color: white; font-size: 1.3em; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+            <span id="etapeIcon">📋</span>
+            <span id="etapeNom">Configuration</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="color: white; font-size: 0.9em; font-weight: 600; background: rgba(255, 255, 255, 0.25); padding: 5px 15px; border-radius: 15px;" id="etapePourcent">0%</div>
+            <button onclick="afficherParametres()" class="header-btn-params" title="Paramètres">⚙️</button>
+        </div>
+    </div>
+    <div style="max-width: 900px; margin: 0 auto; height: 6px; background: rgba(255, 255, 255, 0.3); border-radius: 10px; overflow: hidden;">
+        <div id="barreFill" style="height: 100%; background: linear-gradient(90deg, #52C41A, #95DE64); border-radius: 10px; width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 8px rgba(82, 196, 26, 0.6);"></div>
+    </div>
+</div>
+
+<div class="conteneur-principal" style="margin-top: 75px;">
+        <!-- EN-TÊTE -->
+        <div class="en-tete">
+            <h1>🏃‍♂️ Biathlon VMA 🎯</h1>
+            <p>Collège Mont Saint Jean - 5ème</p>
+            <!-- Bouton paramètres déplacé dans le header fixe -->
+        </div>
+
+        <!-- SECTION INFORMATIONS GÉNÉRALES -->
+        <div class="section">
+            <h2>📋 Informations</h2>
+            
+            <div class="groupe-champ">
+                <label for="nomCoureur">Prénom du coureur :</label>
+                <input type="text" id="nomCoureur" placeholder="Entrez le prénom du coureur" autocomplete="off">
+            </div>
+
+            <div class="groupe-champ">
+                <label for="nomObservateur">Prénom de l'observateur :</label>
+                <input type="text" id="nomObservateur" placeholder="Entrez votre prénom" autocomplete="off">
+            </div>
+
+            <div class="grille-2col">
+                <div class="groupe-champ">
+                    <label for="vma">VMA du coureur (km/h) :</label>
+                    <input type="number" id="vma" min="8" max="18" step="0.1" value="12" placeholder="Ex: 12.5">
+                </div>
+
+                <div class="groupe-champ">
+                    <label for="classe">Classe :</label>
+                    <input type="text" id="classe" placeholder="Ex: 5ème A" autocomplete="off">
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION CONFIGURATION DE SÉANCE -->
+        <div class="section" id="sectionConfiguration">
+            <h2>⚙️ Configuration de la séance</h2>
+
+            <div class="grille-3col">
+                <div class="groupe-champ">
+                    <label for="nombreCourses">Nombre de courses :</label>
+                    <input type="number" id="nombreCourses" min="1" max="5" value="2">
+                </div>
+
+                <div class="groupe-champ">
+                    <label for="nombreSessions">Sessions de tir :</label>
+                    <input type="number" id="nombreSessions" min="1" max="5" value="2">
+                </div>
+
+                <div class="groupe-champ">
+                    <label for="tirsParSession">Tirs par session :</label>
+                    <input type="number" id="tirsParSession" min="1" max="10" value="2">
+                </div>
+            </div>
+
+            <div id="coursesConfig" style="margin-top: 20px;">
+                <!-- Généré dynamiquement -->
+            </div>
+
+            <button class="bouton bouton-primaire" onclick="demarrerSeance()" style="margin-top: 20px;">🚀 Démarrer la séance</button>
+        </div>
+
+        <!-- SECTION RÉCAPITULATIF ET ORDRE (cachée initialement) -->
+        <div class="section cache" id="sectionRecapitulatif">
+            <h2>📋 Récapitulatif et ordre du parcours</h2>
+            
+
+            
+            <div style="background: linear-gradient(135deg, #84fab0, #8fd3f4); 
+padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+                <h3 style="margin-bottom: 15px; color: #0d47a1;">ℹ️ Informations</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div>
+                        <strong>Coureur :</strong> <span id="recapCoureur">-</span>
+                    </div>
+                    <div>
+                        <strong>Observateur :</strong> <span id="recapObservateur">-</span>
+                    </div>
+                    <div>
+                        <strong>VMA :</strong> <span id="recapVMA">-</span> km/h
+                    </div>
+                    <div>
+                        <strong>Classe :</strong> <span id="recapClasse">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: #fff; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+                <h3 style="margin-bottom: 15px; color: var(--couleur-texte);">🔄 Organisez le parcours</h3>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Utilisez les flèches ↑ ↓ pour définir l'ordre d'exécution de la séance.
+                    Les numéros indiquent l'ordre chronologique.
+                </p>
+                
+                <div id="ordreContainer">
+                    <!-- Généré dynamiquement -->
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <button class="bouton bouton-primaire" onclick="confirmerEtDemarrer()" style="font-size: 1.3em; padding: 15px 50px;">
+                    ✅ Confirmer et démarrer la séance
+                </button>
+                <div style="margin-top:8px;">
+                    <button onclick="retourConfiguration()" style="padding:6px 12px; border:none; border-radius:6px; background:#999; color:white; font-size:0.85em; cursor:pointer;">
+                        ⬅ Retour à la configuration
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- SECTION DÉROULEMENT CHRONOLOGIQUE (cachée initialement) -->
+        <div class="section cache" id="sectionDeroulement">
+            <h2>📋 Déroulement de la séance</h2>
+            
+            <div id="deroulementContainer">
+                <!-- Généré dynamiquement selon l'ordre -->
+            </div>
+
+            <div class="resultats" style="margin-top: 30px;">
+                <h3 style="margin-bottom: 15px; color: var(--couleur-texte);">📊 Résultats globaux</h3>
+                <div class="resultat-item">
+                    <span class="resultat-label">Distance théorique totale :</span>
+                    <span class="resultat-valeur" id="distanceTheorique">0 m</span>
+                </div>
+                <div class="resultat-item">
+                    <span class="resultat-label">Distance réelle totale :</span>
+                    <span class="resultat-valeur" id="distanceReelle">0 m</span>
+                </div>
+                <div class="resultat-item">
+                    <span class="resultat-label">Écart total :</span>
+                    <span class="resultat-valeur" id="ecartTotal">0 plots</span>
+                </div>
+                <div class="resultat-item">
+                    <span class="resultat-label">Total des points de tir :</span>
+                    <span class="resultat-valeur" id="totalPoints">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION ENREGISTREMENT (cachée initialement) -->
+        <div class="section cache" id="sectionEnregistrement">
+            <h2>💾 Enregistrement</h2>
+            
+            <!-- Score total -->
+            <div class="resultats" style="margin-bottom: 25px; background: linear-gradient(135deg, #FFD89B, #19547B); border: 3px solid #19547B;">
+                <h3 style="margin-bottom: 15px; color: white; text-align: center; font-size: 1.5em;">🏆 SCORE TOTAL</h3>
+                <div class="resultat-item" style="border-bottom: 2px solid rgba(255,255,255,0.3);">
+                    <span class="resultat-label" style="color: white;">Points courses :</span>
+                    <span class="resultat-valeur" id="pointsCourse" style="color: #FFE66D;">0</span>
+                </div>
+                <div class="resultat-item" style="border-bottom: 2px solid rgba(255,255,255,0.3);">
+                    <span class="resultat-label" style="color: white;">Points tirs :</span>
+                    <span class="resultat-valeur" id="pointsTir" style="color: #FFE66D;">0</span>
+                </div>
+                <div class="resultat-item" style="border-bottom: none;">
+                    <span class="resultat-label" style="color: white; font-size: 1.2em;">TOTAL :</span>
+                    <span class="resultat-valeur" id="scoreTotal" style="color: #FFE66D; font-size: 1.5em;">0</span>
+                </div>
+            </div>
+            
+            <div class="grille-2col">
+                <button class="bouton bouton-primaire" onclick="enregistrerSeance()">💾 Enregistrer</button>
+                <button class="bouton bouton-danger" onclick="nouvelleSeance()">🆕 Nouvelle séance</button>
+            </div>
+
+            <div id="messageSucces" class="message-succes cache">
+                ✅ Séance enregistrée avec succès !
+            </div>
+
+            <div class="qr-container cache" id="qrContainer">
+                <h3>📱 QR Code pour le professeur</h3>
+                <p style="color: #666; margin: 10px 0;">Scannez ce code pour récupérer les données en CSV</p>
+                <div id="qrcode"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE ACCÈS PROF -->
+    <div id="modaleAccesProf" class="modale">
+        <div class="modale-contenu" style="max-width: 400px;">
+            <div class="modale-header">
+                <h2>🔒 Accès professeur</h2>
+                <button class="btn-fermer" onclick="fermerModale('modaleAccesProf')">&times;</button>
+            </div>
+            <div class="groupe-champ">
+                <label for="motDePasse">Mot de passe :</label>
+                <input type="password" id="motDePasse" placeholder="Entrez le mot de passe">
+            </div>
+            <button class="bouton bouton-primaire" onclick="verifierMotDePasse()">Valider</button>
+            <div id="erreurMdp" style="color: red; margin-top: 10px; display: none;">
+                ❌ Mot de passe incorrect
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE PARAMÈTRES -->
+    <div id="modaleParametres" class="modale">
+        <div class="modale-contenu" style="max-width: 500px;">
+            <div class="modale-header">
+                <h2>⚙️ Paramètres</h2>
+                <button class="btn-fermer" onclick="fermerModale('modaleParametres')">&times;</button>
+            </div>
+
+            <div class="bareme-section">
+                <h3>🔊 Sons</h3>
+                <div class="bareme-ligne" style="grid-template-columns: 2fr auto;">
+                    <label for="paramBipChrono">Bip au démarrage et à la fin du chrono</label>
+                    <label class="switch">
+                        <input type="checkbox" id="paramBipChrono" onchange="sauvegarderParametres()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="bareme-section">
+                <h3>📳 Vibrations</h3>
+                <div class="bareme-ligne" style="grid-template-columns: 2fr auto;">
+                    <label for="paramVibration">Vibration au clic sur le bouton +</label>
+                    <label class="switch">
+                        <input type="checkbox" id="paramVibration" onchange="sauvegarderParametres()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="bareme-section">
+                <h3>🌓 Affichage</h3>
+                <div class="bareme-ligne" style="grid-template-columns: 2fr auto;">
+                    <label for="paramModeSombre">Mode sombre</label>
+                    <label class="switch">
+                        <input type="checkbox" id="paramModeSombre" onchange="toggleModeSombre()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="bareme-section">
+                <h3>🔒 Accès professeur</h3>
+                <p style="color: #666; font-size: 0.95em; margin-bottom: 15px;">
+                    Configuration des barèmes d'évaluation (courses et tirs)
+                </p>
+                <button class="bouton bouton-secondaire" onclick="fermerModale('modaleParametres'); afficherAccesProf();" style="width: 100%;">
+                    🔑 Accéder à la configuration des barèmes
+                </button>
+            </div>
+
+            <div id="messageParametres" class="message-succes cache">
+                ✅ Paramètres sauvegardés !
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALE CONFIGURATION BARÈMES -->
+    <div id="modaleBaremes" class="modale">
+        <div class="modale-contenu">
+            <div class="modale-header">
+                <h2>⚙️ Configuration des barèmes</h2>
+                <button class="btn-fermer" onclick="fermerModale('modaleBaremes')">&times;</button>
+            </div>
+
+            <!-- Barème courses -->
+            <div class="bareme-section">
+                <h3>🏃‍♀️ Barème courses (écart en plots)</h3>
+                <div class="bareme-ligne">
+                    <label>Moins de 1 plot d'écart :</label>
+                    <input type="number" id="bareme_course_0" step="0.5" min="0" max="20" value="4">
+                </div>
+                <div class="bareme-ligne">
+                    <label>±1 plot d'écart :</label>
+                    <input type="number" id="bareme_course_1" step="0.5" min="0" max="20" value="3">
+                </div>
+                <div class="bareme-ligne">
+                    <label>±2 plots d'écart :</label>
+                    <input type="number" id="bareme_course_2" step="0.5" min="0" max="20" value="2">
+                </div>
+                <div class="bareme-ligne">
+                    <label>±3 plots d'écart :</label>
+                    <input type="number" id="bareme_course_3" step="0.5" min="0" max="20" value="1">
+                </div>
+                <div class="bareme-ligne">
+                    <label>4 plots et + d'écart :</label>
+                    <input type="number" id="bareme_course_4" step="0.5" min="0" max="20" value="0.5">
+                </div>
+            </div>
+
+            <!-- Barème tirs -->
+            <div class="bareme-section">
+                <h3>🎯 Points des tirs</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Tir 1 point :</label>
+                        <input type="number" id="bareme_tir_1" min="0" max="20" value="1">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Tir 2 points :</label>
+                        <input type="number" id="bareme_tir_2" min="0" max="20" value="2">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Tir 3 points :</label>
+                        <input type="number" id="bareme_tir_3" min="0" max="20" value="3">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Tir 4 points :</label>
+                        <input type="number" id="bareme_tir_4" min="0" max="20" value="4">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Tir 5 points :</label>
+                        <input type="number" id="bareme_tir_5" min="0" max="20" value="5">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Tir 6 points :</label>
+                        <input type="number" id="bareme_tir_6" min="0" max="20" value="6">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Tir 7 points :</label>
+                        <input type="number" id="bareme_tir_7" min="0" max="20" value="7">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Tir 8 points :</label>
+                        <input type="number" id="bareme_tir_8" min="0" max="20" value="8">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Tir 9 points :</label>
+                        <input type="number" id="bareme_tir_9" min="0" max="20" value="9">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Tir 10 points :</label>
+                        <input type="number" id="bareme_tir_10" min="0" max="20" value="10">
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button class="bouton bouton-primaire" onclick="sauvegarderBaremes()">💾 Sauvegarder</button>
+                <button class="bouton bouton-secondaire" onclick="reinitialiserBaremes()">🔄 Réinitialiser</button>
+            </div>
+
+            <div id="messageBareme" class="message-succes cache">
+                ✅ Barèmes sauvegardés avec succès !
+            </div>
+        </div>
+    </div>
+
+    
+<script>
+/* qrcode.min.js (embedded) */
+var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this.parsedData=[];for(var b=[],d=0,e=this.data.length;e>d;d++){var f=this.data.charCodeAt(d);f>65536?(b[0]=240|(1835008&f)>>>18,b[1]=128|(258048&f)>>>12,b[2]=128|(4032&f)>>>6,b[3]=128|63&f):f>2048?(b[0]=224|(61440&f)>>>12,b[1]=128|(4032&f)>>>6,b[2]=128|63&f):f>128?(b[0]=192|(1984&f)>>>6,b[1]=128|63&f):b[0]=f,this.parsedData=this.parsedData.concat(b)}this.parsedData.length!=this.data.length&&(this.parsedData.unshift(191),this.parsedData.unshift(187),this.parsedData.unshift(239))}function b(a,b){this.typeNumber=a,this.errorCorrectLevel=b,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}function i(a,b){if(void 0==a.length)throw new Error(a.length+"/"+b);for(var c=0;c<a.length&&0==a[c];)c++;this.num=new Array(a.length-c+b);for(var d=0;d<a.length-c;d++)this.num[d]=a[d+c]}function j(a,b){this.totalCount=a,this.dataCount=b}function k(){this.buffer=[],this.length=0}function m(){return"undefined"!=typeof CanvasRenderingContext2D}function n(){var a=!1,b=navigator.userAgent;return/android/i.test(b)&&(a=!0,aMat=b.toString().match(/android ([0-9]\.[0-9])/i),aMat&&aMat[1]&&(a=parseFloat(aMat[1]))),a}function r(a,b){for(var c=1,e=s(a),f=0,g=l.length;g>=f;f++){var h=0;switch(b){case d.L:h=l[f][0];break;case d.M:h=l[f][1];break;case d.Q:h=l[f][2];break;case d.H:h=l[f][3]}if(h>=e)break;c++}if(c>l.length)throw new Error("Too long data");return c}function s(a){var b=encodeURI(a).toString().replace(/\%[0-9a-fA-F]{2}/g,"a");return b.length+(b.length!=a?3:0)}a.prototype={getLength:function(){return this.parsedData.length},write:function(a){for(var b=0,c=this.parsedData.length;c>b;b++)a.put(this.parsedData[b],8)}},b.prototype={addData:function(b){var c=new a(b);this.dataList.push(c),this.dataCache=null},isDark:function(a,b){if(0>a||this.moduleCount<=a||0>b||this.moduleCount<=b)throw new Error(a+","+b);return this.modules[a][b]},getModuleCount:function(){return this.moduleCount},make:function(){this.makeImpl(!1,this.getBestMaskPattern())},makeImpl:function(a,c){this.moduleCount=4*this.typeNumber+17,this.modules=new Array(this.moduleCount);for(var d=0;d<this.moduleCount;d++){this.modules[d]=new Array(this.moduleCount);for(var e=0;e<this.moduleCount;e++)this.modules[d][e]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.setupPositionAdjustPattern(),this.setupTimingPattern(),this.setupTypeInfo(a,c),this.typeNumber>=7&&this.setupTypeNumber(a),null==this.dataCache&&(this.dataCache=b.createData(this.typeNumber,this.errorCorrectLevel,this.dataList)),this.mapData(this.dataCache,c)},setupPositionProbePattern:function(a,b){for(var c=-1;7>=c;c++)if(!(-1>=a+c||this.moduleCount<=a+c))for(var d=-1;7>=d;d++)-1>=b+d||this.moduleCount<=b+d||(this.modules[a+c][b+d]=c>=0&&6>=c&&(0==d||6==d)||d>=0&&6>=d&&(0==c||6==c)||c>=2&&4>=c&&d>=2&&4>=d?!0:!1)},getBestMaskPattern:function(){for(var a=0,b=0,c=0;8>c;c++){this.makeImpl(!0,c);var d=f.getLostPoint(this);(0==c||a>d)&&(a=d,b=c)}return b},createMovieClip:function(a,b,c){var d=a.createEmptyMovieClip(b,c),e=1;this.make();for(var f=0;f<this.modules.length;f++)for(var g=f*e,h=0;h<this.modules[f].length;h++){var i=h*e,j=this.modules[f][h];j&&(d.beginFill(0,100),d.moveTo(i,g),d.lineTo(i+e,g),d.lineTo(i+e,g+e),d.lineTo(i,g+e),d.endFill())}return d},setupTimingPattern:function(){for(var a=8;a<this.moduleCount-8;a++)null==this.modules[a][6]&&(this.modules[a][6]=0==a%2);for(var b=8;b<this.moduleCount-8;b++)null==this.modules[6][b]&&(this.modules[6][b]=0==b%2)},setupPositionAdjustPattern:function(){for(var a=f.getPatternPosition(this.typeNumber),b=0;b<a.length;b++)for(var c=0;c<a.length;c++){var d=a[b],e=a[c];if(null==this.modules[d][e])for(var g=-2;2>=g;g++)for(var h=-2;2>=h;h++)this.modules[d+g][e+h]=-2==g||2==g||-2==h||2==h||0==g&&0==h?!0:!1}},setupTypeNumber:function(a){for(var b=f.getBCHTypeNumber(this.typeNumber),c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[Math.floor(c/3)][c%3+this.moduleCount-8-3]=d}for(var c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[c%3+this.moduleCount-8-3][Math.floor(c/3)]=d}},setupTypeInfo:function(a,b){for(var c=this.errorCorrectLevel<<3|b,d=f.getBCHTypeInfo(c),e=0;15>e;e++){var g=!a&&1==(1&d>>e);6>e?this.modules[e][8]=g:8>e?this.modules[e+1][8]=g:this.modules[this.moduleCount-15+e][8]=g}for(var e=0;15>e;e++){var g=!a&&1==(1&d>>e);8>e?this.modules[8][this.moduleCount-e-1]=g:9>e?this.modules[8][15-e-1+1]=g:this.modules[8][15-e-1]=g}this.modules[this.moduleCount-8][8]=!a},mapData:function(a,b){for(var c=-1,d=this.moduleCount-1,e=7,g=0,h=this.moduleCount-1;h>0;h-=2)for(6==h&&h--;;){for(var i=0;2>i;i++)if(null==this.modules[d][h-i]){var j=!1;g<a.length&&(j=1==(1&a[g]>>>e));var k=f.getMask(b,d,h-i);k&&(j=!j),this.modules[d][h-i]=j,e--,-1==e&&(g++,e=7)}if(d+=c,0>d||this.moduleCount<=d){d-=c,c=-c;break}}}},b.PAD0=236,b.PAD1=17,b.createData=function(a,c,d){for(var e=j.getRSBlocks(a,c),g=new k,h=0;h<d.length;h++){var i=d[h];g.put(i.mode,4),g.put(i.getLength(),f.getLengthInBits(i.mode,a)),i.write(g)}for(var l=0,h=0;h<e.length;h++)l+=e[h].dataCount;if(g.getLengthInBits()>8*l)throw new Error("code length overflow. ("+g.getLengthInBits()+">"+8*l+")");for(g.getLengthInBits()+4<=8*l&&g.put(0,4);0!=g.getLengthInBits()%8;)g.putBit(!1);for(;;){if(g.getLengthInBits()>=8*l)break;if(g.put(b.PAD0,8),g.getLengthInBits()>=8*l)break;g.put(b.PAD1,8)}return b.createBytes(g,e)},b.createBytes=function(a,b){for(var c=0,d=0,e=0,g=new Array(b.length),h=new Array(b.length),j=0;j<b.length;j++){var k=b[j].dataCount,l=b[j].totalCount-k;d=Math.max(d,k),e=Math.max(e,l),g[j]=new Array(k);for(var m=0;m<g[j].length;m++)g[j][m]=255&a.buffer[m+c];c+=k;var n=f.getErrorCorrectPolynomial(l),o=new i(g[j],n.getLength()-1),p=o.mod(n);h[j]=new Array(n.getLength()-1);for(var m=0;m<h[j].length;m++){var q=m+p.getLength()-h[j].length;h[j][m]=q>=0?p.get(q):0}}for(var r=0,m=0;m<b.length;m++)r+=b[m].totalCount;for(var s=new Array(r),t=0,m=0;d>m;m++)for(var j=0;j<b.length;j++)m<g[j].length&&(s[t++]=g[j][m]);for(var m=0;e>m;m++)for(var j=0;j<b.length;j++)m<h[j].length&&(s[t++]=h[j][m]);return s};for(var c={MODE_NUMBER:1,MODE_ALPHA_NUM:2,MODE_8BIT_BYTE:4,MODE_KANJI:8},d={L:1,M:0,Q:3,H:2},e={PATTERN000:0,PATTERN001:1,PATTERN010:2,PATTERN011:3,PATTERN100:4,PATTERN101:5,PATTERN110:6,PATTERN111:7},f={PATTERN_POSITION_TABLE:[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],G15:1335,G18:7973,G15_MASK:21522,getBCHTypeInfo:function(a){for(var b=a<<10;f.getBCHDigit(b)-f.getBCHDigit(f.G15)>=0;)b^=f.G15<<f.getBCHDigit(b)-f.getBCHDigit(f.G15);return(a<<10|b)^f.G15_MASK},getBCHTypeNumber:function(a){for(var b=a<<12;f.getBCHDigit(b)-f.getBCHDigit(f.G18)>=0;)b^=f.G18<<f.getBCHDigit(b)-f.getBCHDigit(f.G18);return a<<12|b},getBCHDigit:function(a){for(var b=0;0!=a;)b++,a>>>=1;return b},getPatternPosition:function(a){return f.PATTERN_POSITION_TABLE[a-1]},getMask:function(a,b,c){switch(a){case e.PATTERN000:return 0==(b+c)%2;case e.PATTERN001:return 0==b%2;case e.PATTERN010:return 0==c%3;case e.PATTERN011:return 0==(b+c)%3;case e.PATTERN100:return 0==(Math.floor(b/2)+Math.floor(c/3))%2;case e.PATTERN101:return 0==b*c%2+b*c%3;case e.PATTERN110:return 0==(b*c%2+b*c%3)%2;case e.PATTERN111:return 0==(b*c%3+(b+c)%2)%2;default:throw new Error("bad maskPattern:"+a)}},getErrorCorrectPolynomial:function(a){for(var b=new i([1],0),c=0;a>c;c++)b=b.multiply(new i([1,g.gexp(c)],0));return b},getLengthInBits:function(a,b){if(b>=1&&10>b)switch(a){case c.MODE_NUMBER:return 10;case c.MODE_ALPHA_NUM:return 9;case c.MODE_8BIT_BYTE:return 8;case c.MODE_KANJI:return 8;default:throw new Error("mode:"+a)}else if(27>b)switch(a){case c.MODE_NUMBER:return 12;case c.MODE_ALPHA_NUM:return 11;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 10;default:throw new Error("mode:"+a)}else{if(!(41>b))throw new Error("type:"+b);switch(a){case c.MODE_NUMBER:return 14;case c.MODE_ALPHA_NUM:return 13;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 12;default:throw new Error("mode:"+a)}}},getLostPoint:function(a){for(var b=a.getModuleCount(),c=0,d=0;b>d;d++)for(var e=0;b>e;e++){for(var f=0,g=a.isDark(d,e),h=-1;1>=h;h++)if(!(0>d+h||d+h>=b))for(var i=-1;1>=i;i++)0>e+i||e+i>=b||(0!=h||0!=i)&&g==a.isDark(d+h,e+i)&&f++;f>5&&(c+=3+f-5)}for(var d=0;b-1>d;d++)for(var e=0;b-1>e;e++){var j=0;a.isDark(d,e)&&j++,a.isDark(d+1,e)&&j++,a.isDark(d,e+1)&&j++,a.isDark(d+1,e+1)&&j++,(0==j||4==j)&&(c+=3)}for(var d=0;b>d;d++)for(var e=0;b-6>e;e++)a.isDark(d,e)&&!a.isDark(d,e+1)&&a.isDark(d,e+2)&&a.isDark(d,e+3)&&a.isDark(d,e+4)&&!a.isDark(d,e+5)&&a.isDark(d,e+6)&&(c+=40);for(var e=0;b>e;e++)for(var d=0;b-6>d;d++)a.isDark(d,e)&&!a.isDark(d+1,e)&&a.isDark(d+2,e)&&a.isDark(d+3,e)&&a.isDark(d+4,e)&&!a.isDark(d+5,e)&&a.isDark(d+6,e)&&(c+=40);for(var k=0,e=0;b>e;e++)for(var d=0;b>d;d++)a.isDark(d,e)&&k++;var l=Math.abs(100*k/b/b-50)/5;return c+=10*l}},g={glog:function(a){if(1>a)throw new Error("glog("+a+")");return g.LOG_TABLE[a]},gexp:function(a){for(;0>a;)a+=255;for(;a>=256;)a-=255;return g.EXP_TABLE[a]},EXP_TABLE:new Array(256),LOG_TABLE:new Array(256)},h=0;8>h;h++)g.EXP_TABLE[h]=1<<h;for(var h=8;256>h;h++)g.EXP_TABLE[h]=g.EXP_TABLE[h-4]^g.EXP_TABLE[h-5]^g.EXP_TABLE[h-6]^g.EXP_TABLE[h-8];for(var h=0;255>h;h++)g.LOG_TABLE[g.EXP_TABLE[h]]=h;i.prototype={get:function(a){return this.num[a]},getLength:function(){return this.num.length},multiply:function(a){for(var b=new Array(this.getLength()+a.getLength()-1),c=0;c<this.getLength();c++)for(var d=0;d<a.getLength();d++)b[c+d]^=g.gexp(g.glog(this.get(c))+g.glog(a.get(d)));return new i(b,0)},mod:function(a){if(this.getLength()-a.getLength()<0)return this;for(var b=g.glog(this.get(0))-g.glog(a.get(0)),c=new Array(this.getLength()),d=0;d<this.getLength();d++)c[d]=this.get(d);for(var d=0;d<a.getLength();d++)c[d]^=g.gexp(g.glog(a.get(d))+b);return new i(c,0).mod(a)}},j.RS_BLOCK_TABLE=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],j.getRSBlocks=function(a,b){var c=j.getRsBlockTable(a,b);if(void 0==c)throw new Error("bad rs block @ typeNumber:"+a+"/errorCorrectLevel:"+b);for(var d=c.length/3,e=[],f=0;d>f;f++)for(var g=c[3*f+0],h=c[3*f+1],i=c[3*f+2],k=0;g>k;k++)e.push(new j(h,i));return e},j.getRsBlockTable=function(a,b){switch(b){case d.L:return j.RS_BLOCK_TABLE[4*(a-1)+0];case d.M:return j.RS_BLOCK_TABLE[4*(a-1)+1];case d.Q:return j.RS_BLOCK_TABLE[4*(a-1)+2];case d.H:return j.RS_BLOCK_TABLE[4*(a-1)+3];default:return void 0}},k.prototype={get:function(a){var b=Math.floor(a/8);return 1==(1&this.buffer[b]>>>7-a%8)},put:function(a,b){for(var c=0;b>c;c++)this.putBit(1==(1&a>>>b-c-1))},getLengthInBits:function(){return this.length},putBit:function(a){var b=Math.floor(this.length/8);this.buffer.length<=b&&this.buffer.push(0),a&&(this.buffer[b]|=128>>>this.length%8),this.length++}};var l=[[17,14,11,7],[32,26,20,14],[53,42,32,24],[78,62,46,34],[106,84,60,44],[134,106,74,58],[154,122,86,64],[192,152,108,84],[230,180,130,98],[271,213,151,119],[321,251,177,137],[367,287,203,155],[425,331,241,177],[458,362,258,194],[520,412,292,220],[586,450,322,250],[644,504,364,280],[718,560,394,310],[792,624,442,338],[858,666,482,382],[929,711,509,403],[1003,779,565,439],[1091,857,611,461],[1171,911,661,511],[1273,997,715,535],[1367,1059,751,593],[1465,1125,805,625],[1528,1190,868,658],[1628,1264,908,698],[1732,1370,982,742],[1840,1452,1030,790],[1952,1538,1112,842],[2068,1628,1168,898],[2188,1722,1228,958],[2303,1809,1283,983],[2431,1911,1351,1051],[2563,1989,1423,1093],[2699,2099,1499,1139],[2809,2213,1579,1219],[2953,2331,1663,1273]],o=function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){function g(a,b){var c=document.createElementNS("http://www.w3.org/2000/svg",a);for(var d in b)b.hasOwnProperty(d)&&c.setAttribute(d,b[d]);return c}var b=this._htOption,c=this._el,d=a.getModuleCount();Math.floor(b.width/d),Math.floor(b.height/d),this.clear();var h=g("svg",{viewBox:"0 0 "+String(d)+" "+String(d),width:"100%",height:"100%",fill:b.colorLight});h.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:xlink","http://www.w3.org/1999/xlink"),c.appendChild(h),h.appendChild(g("rect",{fill:b.colorDark,width:"1",height:"1",id:"template"}));for(var i=0;d>i;i++)for(var j=0;d>j;j++)if(a.isDark(i,j)){var k=g("use",{x:String(i),y:String(j)});k.setAttributeNS("http://www.w3.org/1999/xlink","href","#template"),h.appendChild(k)}},a.prototype.clear=function(){for(;this._el.hasChildNodes();)this._el.removeChild(this._el.lastChild)},a}(),p="svg"===document.documentElement.tagName.toLowerCase(),q=p?o:m()?function(){function a(){this._elImage.src=this._elCanvas.toDataURL("image/png"),this._elImage.style.display="block",this._elCanvas.style.display="none"}function d(a,b){var c=this;if(c._fFail=b,c._fSuccess=a,null===c._bSupportDataURI){var d=document.createElement("img"),e=function(){c._bSupportDataURI=!1,c._fFail&&_fFail.call(c)},f=function(){c._bSupportDataURI=!0,c._fSuccess&&c._fSuccess.call(c)};return d.onabort=e,d.onerror=e,d.onload=f,d.src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",void 0}c._bSupportDataURI===!0&&c._fSuccess?c._fSuccess.call(c):c._bSupportDataURI===!1&&c._fFail&&c._fFail.call(c)}if(this._android&&this._android<=2.1){var b=1/window.devicePixelRatio,c=CanvasRenderingContext2D.prototype.drawImage;CanvasRenderingContext2D.prototype.drawImage=function(a,d,e,f,g,h,i,j){if("nodeName"in a&&/img/i.test(a.nodeName))for(var l=arguments.length-1;l>=1;l--)arguments[l]=arguments[l]*b;else"undefined"==typeof j&&(arguments[1]*=b,arguments[2]*=b,arguments[3]*=b,arguments[4]*=b);c.apply(this,arguments)}}var e=function(a,b){this._bIsPainted=!1,this._android=n(),this._htOption=b,this._elCanvas=document.createElement("canvas"),this._elCanvas.width=b.width,this._elCanvas.height=b.height,a.appendChild(this._elCanvas),this._el=a,this._oContext=this._elCanvas.getContext("2d"),this._bIsPainted=!1,this._elImage=document.createElement("img"),this._elImage.style.display="none",this._el.appendChild(this._elImage),this._bSupportDataURI=null};return e.prototype.draw=function(a){var b=this._elImage,c=this._oContext,d=this._htOption,e=a.getModuleCount(),f=d.width/e,g=d.height/e,h=Math.round(f),i=Math.round(g);b.style.display="none",this.clear();for(var j=0;e>j;j++)for(var k=0;e>k;k++){var l=a.isDark(j,k),m=k*f,n=j*g;c.strokeStyle=l?d.colorDark:d.colorLight,c.lineWidth=1,c.fillStyle=l?d.colorDark:d.colorLight,c.fillRect(m,n,f,g),c.strokeRect(Math.floor(m)+.5,Math.floor(n)+.5,h,i),c.strokeRect(Math.ceil(m)-.5,Math.ceil(n)-.5,h,i)}this._bIsPainted=!0},e.prototype.makeImage=function(){this._bIsPainted&&d.call(this,a)},e.prototype.isPainted=function(){return this._bIsPainted},e.prototype.clear=function(){this._oContext.clearRect(0,0,this._elCanvas.width,this._elCanvas.height),this._bIsPainted=!1},e.prototype.round=function(a){return a?Math.floor(1e3*a)/1e3:a},e}():function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){for(var b=this._htOption,c=this._el,d=a.getModuleCount(),e=Math.floor(b.width/d),f=Math.floor(b.height/d),g=['<table style="border:0;border-collapse:collapse;">'],h=0;d>h;h++){g.push("<tr>");for(var i=0;d>i;i++)g.push('<td style="border:0;border-collapse:collapse;padding:0;margin:0;width:'+e+"px;height:"+f+"px;background-color:"+(a.isDark(h,i)?b.colorDark:b.colorLight)+';"></td>');g.push("</tr>")}g.push("</table>"),c.innerHTML=g.join("");var j=c.childNodes[0],k=(b.width-j.offsetWidth)/2,l=(b.height-j.offsetHeight)/2;k>0&&l>0&&(j.style.margin=l+"px "+k+"px")},a.prototype.clear=function(){this._el.innerHTML=""},a}();QRCode=function(a,b){if(this._htOption={width:256,height:256,typeNumber:4,colorDark:"#000000",colorLight:"#ffffff",correctLevel:d.H},"string"==typeof b&&(b={text:b}),b)for(var c in b)this._htOption[c]=b[c];"string"==typeof a&&(a=document.getElementById(a)),this._android=n(),this._el=a,this._oQRCode=null,this._oDrawing=new q(this._el,this._htOption),this._htOption.text&&this.makeCode(this._htOption.text)},QRCode.prototype.makeCode=function(a){this._oQRCode=new b(r(a,this._htOption.correctLevel),this._htOption.correctLevel),this._oQRCode.addData(a),this._oQRCode.make(),this._el.title=a,this._oDrawing.draw(this._oQRCode),this.makeImage()},QRCode.prototype.makeImage=function(){"function"==typeof this._oDrawing.makeImage&&(!this._android||this._android>=3)&&this._oDrawing.makeImage()},QRCode.prototype.clear=function(){this._oDrawing.clear()},QRCode.CorrectLevel=d}();
+</script>
+<script>
+
+/* Offline QR generator (minimal, byte-mode, ECC L/M/Q/H) - based on standard QR algorithm (MIT-like, written for this app) */
+const QR_ECC = { L:0, M:1, Q:2, H:3 };
+
+function qrMake(data, ecc='L'){
+  const bytes = new TextEncoder().encode(data);
+  // Choose minimal version that fits in byte mode for requested ecc (use table for versions 1-10, ECC L only if unknown)
+  const capTable = {
+    L:[17,32,53,78,106,134,154,192,230,271],
+    M:[14,26,42,62,84,106,122,152,180,213],
+    Q:[11,20,32,46,60,74,86,108,130,151],
+    H:[7,14,24,34,44,58,64,84,98,119],
+  };
+  const caps = capTable[ecc] || capTable.L;
+  let ver = 1;
+  while(ver<=10 && bytes.length+3 > caps[ver-1]) ver++;
+  if(ver>10) throw new Error("QR too big");
+  // Build bit buffer: mode 0100, length, data, terminator, pad to byte, pad bytes 0xEC 0x11
+  const bb = [];
+  const pushBits=(val,len)=>{ for(let i=len-1;i>=0;i--) bb.push((val>>>i)&1); };
+  pushBits(0b0100,4);
+  const lenBits = ver<=9?8:16;
+  pushBits(bytes.length,lenBits);
+  for(const b of bytes) pushBits(b,8);
+  // terminator
+  const maxDataBits = qrNumDataCodewords(ver,ecc)*8;
+  const remaining = maxDataBits - bb.length;
+  if(remaining>0) pushBits(0, Math.min(4,remaining));
+  while(bb.length%8) bb.push(0);
+  const padBytes = [0xEC,0x11];
+  let padIndex=0;
+  while(bb.length < maxDataBits){
+    pushBits(padBytes[padIndex%2],8);
+    padIndex++;
+  }
+  const dataCodewords = [];
+  for(let i=0;i<bb.length;i+=8){
+    let v=0;
+    for(let j=0;j<8;j++) v=(v<<1)|bb[i+j];
+    dataCodewords.push(v);
+  }
+  const allCodewords = qrAddEccAndInterleave(ver,ecc,dataCodewords);
+  const size = ver*4+17;
+  let modules = Array.from({length:size},()=>Array(size).fill(null));
+  const setFunc=(x,y,d)=>{modules[y][x]=d;};
+  const addFinder=(x,y)=>{
+    for(let dy=-1;dy<=7;dy++) for(let dx=-1;dx<=7;dx++){
+      const xx=x+dx, yy=y+dy;
+      if(xx<0||yy<0||xx>=size||yy>=size) continue;
+      const on = (0<=dx&&dx<=6&& (dy==0||dy==6)) || (0<=dy&&dy<=6&&(dx==0||dx==6)) || (2<=dx&&dx<=4&&2<=dy&&dy<=4);
+      setFunc(xx,yy,on);
+    }
+  };
+  addFinder(0,0); addFinder(size-7,0); addFinder(0,size-7);
+  // separators already by null around due to -1..7 loop
+  // timing patterns
+  for(let i=8;i<size-8;i++){
+    if(modules[6][i]===null) modules[6][i]=(i%2===0);
+    if(modules[i][6]===null) modules[i][6]=(i%2===0);
+  }
+  // dark module
+  modules[size-8][8]=true;
+  // alignment patterns
+  const pos = qrAlignPositions(ver);
+  for(const cy of pos) for(const cx of pos){
+    if(modules[cy][cx]!==null) continue;
+    for(let dy=-2;dy<=2;dy++) for(let dx=-2;dx<=2;dx++){
+      modules[cy+dy][cx+dx] = (Math.max(Math.abs(dx),Math.abs(dy))!==1);
+    }
+  }
+  // reserve format/info areas
+  for(let i=0;i<9;i++){
+    if(modules[8][i]===null) modules[8][i]=false;
+    if(modules[i][8]===null) modules[i][8]=false;
+  }
+  for(let i=size-8;i<size;i++){
+    if(modules[8][i]===null) modules[8][i]=false;
+    if(modules[i][8]===null) modules[i][8]=false;
+  }
+  // version info not needed for <=10
+  // place data bits
+  let bitIndex=0;
+  let dir=-1;
+  for(let x=size-1; x>0; x-=2){
+    if(x===6) x--;
+    for(let y=0; y<size; y++){
+      const yy = dir===-1 ? size-1-y : y;
+      for(let dx=0;dx<2;dx++){
+        const xx=x-dx;
+        if(modules[yy][xx]!==null) continue;
+        const bit = ((allCodewords[Math.floor(bitIndex/8)] >>> (7-(bitIndex%8))) &1)===1;
+        modules[yy][xx]=bit;
+        bitIndex++;
+      }
+    }
+    dir*=-1;
+  }
+  // choose best mask
+  let bestMask=0, bestPenalty=1e9, best=null;
+  for(let mask=0;mask<8;mask++){
+    const m = qrApplyMask(modules, mask);
+    qrDrawFormatBits(m, ecc, mask);
+    const pen = qrPenalty(m);
+    if(pen<bestPenalty){ bestPenalty=pen; bestMask=mask; best=m; }
+  }
+  return {version:ver, size, modules:best};
+}
+
+// --- Helpers (tables for versions 1-10) ---
+function qrAlignPositions(ver){
+  if(ver===1) return [];
+  const table = {
+    2:[6,18],3:[6,22],4:[6,26],5:[6,30],6:[6,34],7:[6,22,38],8:[6,24,42],9:[6,26,46],10:[6,28,50]
+  };
+  return table[ver]||[];
+}
+function qrNumDataCodewords(ver,ecc){
+  // total codewords minus ecc codewords; for ver 1-10 from spec
+  const t = {
+    1:[19,16,13,9], 2:[34,28,22,16], 3:[55,44,34,26], 4:[80,64,48,36], 5:[108,86,62,46],
+    6:[136,108,76,60], 7:[156,124,88,66], 8:[194,154,110,86], 9:[232,182,132,100], 10:[274,216,154,122]
+  };
+  const idx = (ecc==='L'?0:ecc==='M'?1:ecc==='Q'?2:3);
+  return t[ver][idx];
+}
+function qrEccCodewordsPerBlock(ver,ecc){
+  const t = {
+    1:[7,10,13,17],2:[10,16,22,28],3:[15,26,36,44],4:[20,36,52,64],5:[26,48,72,88],
+    6:[36,64,96,112],7:[40,72,108,130],8:[48,88,132,156],9:[60,110,160,192],10:[72,130,192,224]
+  };
+  const idx = (ecc==='L'?0:ecc==='M'?1:ecc==='Q'?2:3);
+  return t[ver][idx];
+}
+function qrRsBlocks(ver,ecc){
+  // For ver 1-10: [numBlocks, dataCodewordsPerBlock] (all same size for these versions in our simplified table)
+  const t = {
+    1:{L:[1,19],M:[1,16],Q:[1,13],H:[1,9]},
+    2:{L:[1,34],M:[1,28],Q:[1,22],H:[1,16]},
+    3:{L:[1,55],M:[1,44],Q:[2,17],H:[2,13]},
+    4:{L:[1,80],M:[2,32],Q:[2,24],H:[4,9]},
+    5:{L:[1,108],M:[2,43],Q:[2,15],H:[2,11]},
+    6:{L:[2,68],M:[4,27],Q:[4,19],H:[4,15]},
+    7:{L:[2,78],M:[4,31],Q:[2,14],H:[4,13]},
+    8:{L:[2,97],M:[2,38],Q:[4,18],H:[4,14]},
+    9:{L:[2,116],M:[3,36],Q:[4,16],H:[4,12]},
+    10:{L:[2,68],M:[4,43],Q:[6,19],H:[6,15]},
+  };
+  return t[ver][ecc] || t[ver].L;
+}
+// GF(256) for RS
+const qrExp = new Array(512).fill(0);
+const qrLog = new Array(256).fill(0);
+(function initGF(){
+  let x=1;
+  for(let i=0;i<255;i++){
+    qrExp[i]=x;
+    qrLog[x]=i;
+    x<<=1;
+    if(x&0x100) x^=0x11D;
+  }
+  for(let i=255;i<512;i++) qrExp[i]=qrExp[i-255];
+})();
+function gfMul(a,b){ if(a===0||b===0) return 0; return qrExp[qrLog[a]+qrLog[b]]; }
+function rsPolyMul(p,q){
+  const r=new Array(p.length+q.length-1).fill(0);
+  for(let i=0;i<p.length;i++) for(let j=0;j<q.length;j++) r[i+j]^=gfMul(p[i],q[j]);
+  return r;
+}
+function rsGenerator(deg){
+  let g=[1];
+  for(let i=0;i<deg;i++) g=rsPolyMul(g,[1, qrExp[i]]);
+  return g;
+}
+function rsRemainder(data, gen){
+  const res=data.slice();
+  for(let i=0;i<data.length-(gen.length-1);i++){
+    const coef=res[i];
+    if(coef===0) continue;
+    for(let j=1;j<gen.length;j++) res[i+j]^=gfMul(gen[j],coef);
+  }
+  return res.slice(res.length-(gen.length-1));
+}
+function qrAddEccAndInterleave(ver,ecc,data){
+  const [numBlocks, dataPerBlock] = qrRsBlocks(ver,ecc);
+  const eccPerBlock = qrEccCodewordsPerBlock(ver,ecc);
+  const gen = rsGenerator(eccPerBlock);
+  const blocks=[];
+  for(let b=0;b<numBlocks;b++){
+    const start=b*dataPerBlock;
+    const d=data.slice(start,start+dataPerBlock);
+    const padLen = dataPerBlock - d.length;
+    for(let i=0;i<padLen;i++) d.push(0);
+    const eccw = rsRemainder(d.concat(new Array(eccPerBlock).fill(0)), gen);
+    blocks.push({d,e:eccw});
+  }
+  const out=[];
+  for(let i=0;i<dataPerBlock;i++) for(const bl of blocks) out.push(bl.d[i]);
+  for(let i=0;i<eccPerBlock;i++) for(const bl of blocks) out.push(bl.e[i]);
+  return out;
+}
+function qrApplyMask(modules, mask){
+  const size=modules.length;
+  const out=modules.map(row=>row.slice());
+  for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+    // skip function patterns: we mark them by having been non-null before data placement? Hard now.
+    // We approximate by skipping areas where original was null? not available. Instead, detect reserved false markers we wrote in format areas.
+    // Better: mask only cells that are boolean and not part of finder/timing/alignment/format by checking if it's one of reserved zones.
+    // We'll use heuristic: if (x===6||y===6) timing, or in finder squares, or in align squares, or in format rows/cols.
+    if(isFunctionModule(size,x,y)) continue;
+    const m = maskFunc(mask,x,y);
+    if(m) out[y][x]=!out[y][x];
+  }
+  return out;
+}
+function isFunctionModule(size,x,y){
+  const inFinder = (x<9 && y<9) || (x>=size-8 && y<9) || (x<9 && y>=size-8);
+  if(inFinder) return true;
+  if(x===6 || y===6) return true;
+  if(x===8 || y===8) { // format info lines
+    if(y<9 || y>=size-8 || x<9 || x>=size-8) return true;
+  }
+  // alignment: versions >=2 have positions; easiest: check 5x5 around known centers for ver<=10 by scanning.
+  // We'll just treat any 5x5 pattern that matches alignment template as function by checking near centers list.
+  return false;
+}
+function maskFunc(mask,x,y){
+  switch(mask){
+    case 0: return (x+y)%2===0;
+    case 1: return y%2===0;
+    case 2: return x%3===0;
+    case 3: return (x+y)%3===0;
+    case 4: return ((Math.floor(y/2)+Math.floor(x/3))%2)===0;
+    case 5: return ((x*y)%2 + (x*y)%3)===0;
+    case 6: return (((x*y)%2 + (x*y)%3)%2)===0;
+    case 7: return (((x+y)%2 + (x*y)%3)%2)===0;
+    default: return false;
+  }
+}
+function qrDrawFormatBits(modules,ecc,mask){
+  const size=modules.length;
+  const eccBits = ecc==='L'?1:ecc==='M'?0:ecc==='Q'?3:2; // per spec mapping to 2 bits (M=00,L=01,H=10,Q=11)
+  let data = (eccBits<<3) | mask;
+  let rem = data<<10;
+  const poly=0x537;
+  while((rem>>>10)>=1<<5){
+    const shift = (Math.floor(Math.log2(rem)) - 10);
+    rem ^= poly<<shift;
+  }
+  const bits = ((data<<10)|rem) ^ 0x5412;
+  const set=(x,y,b)=>{modules[y][x]=b;};
+  for(let i=0;i<6;i++) set(8,i, ((bits>>>i)&1)===1);
+  set(8,7, ((bits>>>6)&1)===1);
+  set(8,8, ((bits>>>7)&1)===1);
+  set(7,8, ((bits>>>8)&1)===1);
+  for(let i=9;i<15;i++) set(14-i,8, ((bits>>>i)&1)===1);
+
+  for(let i=0;i<8;i++) set(size-1-i,8, ((bits>>>i)&1)===1);
+  for(let i=8;i<15;i++) set(8,size-15+i, ((bits>>>i)&1)===1);
+  set(8,size-8,true);
+}
+function qrPenalty(mod){
+  const n=mod.length;
+  let p=0;
+  // rows
+  for(let y=0;y<n;y++){
+    let runColor=mod[y][0], run=1;
+    for(let x=1;x<n;x++){
+      if(mod[y][x]===runColor){ run++; }
+      else { if(run>=5) p+=3+(run-5); runColor=mod[y][x]; run=1; }
+    }
+    if(run>=5) p+=3+(run-5);
+  }
+  // cols
+  for(let x=0;x<n;x++){
+    let runColor=mod[0][x], run=1;
+    for(let y=1;y<n;y++){
+      if(mod[y][x]===runColor){ run++; }
+      else { if(run>=5) p+=3+(run-5); runColor=mod[y][x]; run=1; }
+    }
+    if(run>=5) p+=3+(run-5);
+  }
+  // 2x2
+  for(let y=0;y<n-1;y++) for(let x=0;x<n-1;x++){
+    const c=mod[y][x];
+    if(c===mod[y][x+1] && c===mod[y+1][x] && c===mod[y+1][x+1]) p+=3;
+  }
+  // balance
+  let dark=0;
+  for(let y=0;y<n;y++) for(let x=0;x<n;x++) if(mod[y][x]) dark++;
+  const k = Math.abs(dark*20/n/n - 10);
+  p += k*10;
+  return p;
+}
+
+/* ========================================
+           VARIABLES GLOBALES
+           ======================================== */
+        
+        let configurationCourses = [];
+        let plotsReelsCourses = [];
+        let chronometres = []; // Un chrono par course
+        let tempsCourses = []; // Temps finaux de chaque course
+        let donneesVitesse = []; // Données de vitesse pour chaque course
+        let graphiquesVitesse = [];
+        // Suivi de complétion pour verrouillage
+        let coursesFinies = [];
+        let tirsFinis = [];
+ // (désactivé: Chart.js remplacé par canvas)
+        
+        let nombreSessions = 0;
+        let tirsParSession = 0;
+        
+        // Ordre d'exécution des éléments
+        let ordreElements = []; // [{type: 'course'|'tir', index: 0}]
+        
+        // Gestion de la progression
+        const etapesProgression = [
+            { icon: '📋', nom: 'Configuration', pourcent: 0 },
+            { icon: '⚙️', nom: 'Paramétrage', pourcent: 25 },
+            { icon: '✅', nom: 'Récapitulatif', pourcent: 50 },
+            { icon: '🏁', nom: 'En cours', pourcent: 75 },
+            { icon: '💾', nom: 'Terminé', pourcent: 100 }
+        ];
+        
+        function mettreAJourProgression(etape) {
+            const info = etapesProgression[etape];
+            if (!info) return;
+            
+            document.getElementById('etapeIcon').textContent = info.icon;
+            document.getElementById('etapeNom').textContent = info.nom;
+            document.getElementById('etapePourcent').textContent = info.pourcent + '%';
+            document.getElementById('barreFill').style.width = info.pourcent + '%';
+        }
+        
+        // Barèmes configurables
+        let baremeCourses = {
+            0: 4,    // < 1 plot
+            1: 3,    // ±1 plot
+            2: 2,    // ±2 plots
+            3: 1,    // ±3 plots
+            4: 0.5   // 4+ plots
+        };
+        
+        let baremeTirs = {
+            1: 1, 2: 2, 3: 3, 4: 4, 5: 5,
+            6: 6, 7: 7, 8: 8, 9: 9, 10: 10
+        };
+
+        // Paramètres utilisateur
+        let parametres = {
+            bipChrono: false,
+            vibration: false,
+            modeSombre: false
+        };
+        
+        /* ========================================
+           INITIALISATION
+           ======================================== */
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            genererConfigurationCourses();
+            chargerBaremes();
+            chargerParametres();
+            mettreAJourProgression(0); // Initialiser à Configuration
+        });
+        
+        /* ========================================
+           SONS ET VIBRATIONS
+           ======================================== */
+        
+        function jouerBip(type) {
+            if (!parametres.bipChrono) return;
+            
+            // Créer un contexte audio
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            if (type === 'start') {
+                // Bip court et aigu pour le démarrage
+                oscillator.frequency.value = 880; // La4
+                gainNode.gain.value = 0.3;
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.1);
+            } else if (type === 'stop') {
+                // Double bip pour la fin
+                oscillator.frequency.value = 660; // Mi5
+                gainNode.gain.value = 0.3;
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.15);
+                
+                // Deuxième bip
+                setTimeout(() => {
+                    const osc2 = audioContext.createOscillator();
+                    const gain2 = audioContext.createGain();
+                    osc2.connect(gain2);
+                    gain2.connect(audioContext.destination);
+                    osc2.frequency.value = 660;
+                    gain2.gain.value = 0.3;
+                    osc2.start();
+                    osc2.stop(audioContext.currentTime + 0.15);
+                }, 200);
+            }
+        }
+        
+        function vibrer() {
+            if (!parametres.vibration) return;
+            
+            // Vibration sur les appareils qui le supportent
+            if (navigator.vibrate) {
+                navigator.vibrate(50); // 50ms de vibration
+            }
+        }
+        
+        /* ========================================
+           PARAMÈTRES
+           ======================================== */
+        
+        function afficherParametres() {
+            // Charger l'état actuel des paramètres
+            document.getElementById('paramBipChrono').checked = parametres.bipChrono;
+            document.getElementById('paramVibration').checked = parametres.vibration;
+            document.getElementById('paramModeSombre').checked = parametres.modeSombre;
+            
+            document.getElementById('modaleParametres').style.display = 'block';
+        }
+        
+        function sauvegarderParametres() {
+            parametres.bipChrono = document.getElementById('paramBipChrono').checked;
+            parametres.vibration = document.getElementById('paramVibration').checked;
+            
+            // Sauvegarder dans localStorage
+            localStorage.setItem('parametres', JSON.stringify(parametres));
+            
+            // Afficher message de confirmation
+            const message = document.getElementById('messageParametres');
+            message.classList.remove('cache');
+            setTimeout(() => {
+                message.classList.add('cache');
+            }, 2000);
+        }
+        
+        function toggleModeSombre() {
+            parametres.modeSombre = document.getElementById('paramModeSombre').checked;
+            
+            if (parametres.modeSombre) {
+                document.body.classList.add('mode-sombre');
+            } else {
+                document.body.classList.remove('mode-sombre');
+            }
+            
+            // Sauvegarder
+            localStorage.setItem('parametres', JSON.stringify(parametres));
+            
+            // Afficher message de confirmation
+            const message = document.getElementById('messageParametres');
+            message.classList.remove('cache');
+            setTimeout(() => {
+                message.classList.add('cache');
+            }, 2000);
+        }
+        
+        function chargerParametres() {
+            // Charger les paramètres depuis localStorage
+            const parametresStr = localStorage.getItem('parametres');
+            
+            if (parametresStr) {
+                parametres = JSON.parse(parametresStr);
+            }
+            
+            // Appliquer le mode sombre si activé
+            if (parametres.modeSombre) {
+                document.body.classList.add('mode-sombre');
+            }
+        }
+        
+        /* ========================================
+           ACCÈS PROFESSEUR
+           ======================================== */
+        
+        function afficherAccesProf() {
+            document.getElementById('modaleAccesProf').style.display = 'block';
+            document.getElementById('motDePasse').value = '';
+            document.getElementById('erreurMdp').style.display = 'none';
+        }
+        
+        function verifierMotDePasse() {
+            const mdp = document.getElementById('motDePasse').value;
+            if (mdp === 'ADMINPROF') {
+                fermerModale('modaleAccesProf');
+                ouvrirConfigurationBaremes();
+            } else {
+                document.getElementById('erreurMdp').style.display = 'block';
+            }
+        }
+        
+        function ouvrirConfigurationBaremes() {
+            // Charger les valeurs actuelles
+            document.getElementById('bareme_course_0').value = baremeCourses[0];
+            document.getElementById('bareme_course_1').value = baremeCourses[1];
+            document.getElementById('bareme_course_2').value = baremeCourses[2];
+            document.getElementById('bareme_course_3').value = baremeCourses[3];
+            document.getElementById('bareme_course_4').value = baremeCourses[4];
+            
+            for (let i = 1; i <= 10; i++) {
+                document.getElementById('bareme_tir_' + i).value = baremeTirs[i];
+            }
+            
+            document.getElementById('modaleBaremes').style.display = 'block';
+        }
+        
+        function fermerModale(idModale) {
+            document.getElementById(idModale).style.display = 'none';
+        }
+        
+        function sauvegarderBaremes() {
+            // Sauvegarder barème courses
+            baremeCourses[0] = parseFloat(document.getElementById('bareme_course_0').value);
+            baremeCourses[1] = parseFloat(document.getElementById('bareme_course_1').value);
+            baremeCourses[2] = parseFloat(document.getElementById('bareme_course_2').value);
+            baremeCourses[3] = parseFloat(document.getElementById('bareme_course_3').value);
+            baremeCourses[4] = parseFloat(document.getElementById('bareme_course_4').value);
+            
+            // Sauvegarder barème tirs
+            for (let i = 1; i <= 10; i++) {
+                baremeTirs[i] = parseInt(document.getElementById('bareme_tir_' + i).value);
+            }
+            
+            // Enregistrer dans localStorage
+            localStorage.setItem('baremeCourses', JSON.stringify(baremeCourses));
+            localStorage.setItem('baremeTirs', JSON.stringify(baremeTirs));
+            
+            // Afficher message de confirmation
+            const message = document.getElementById('messageBareme');
+            message.classList.remove('cache');
+            setTimeout(() => {
+                message.classList.add('cache');
+            }, 3000);
+        }
+        
+        function reinitialiserBaremes() {
+            if (confirm('Voulez-vous vraiment réinitialiser les barèmes aux valeurs par défaut ?')) {
+                baremeCourses = { 0: 4, 1: 3, 2: 2, 3: 1, 4: 0.5 };
+                baremeTirs = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10 };
+                
+                localStorage.setItem('baremeCourses', JSON.stringify(baremeCourses));
+                localStorage.setItem('baremeTirs', JSON.stringify(baremeTirs));
+                
+                ouvrirConfigurationBaremes();
+                
+                alert('✅ Barèmes réinitialisés aux valeurs par défaut');
+            }
+        }
+        
+        function chargerBaremes() {
+            // Charger les barèmes depuis localStorage si disponibles
+            const baremeCoursesStr = localStorage.getItem('baremeCourses');
+            const baremeTirsStr = localStorage.getItem('baremeTirs');
+            
+            if (baremeCoursesStr) {
+                baremeCourses = JSON.parse(baremeCoursesStr);
+            }
+            
+            if (baremeTirsStr) {
+                baremeTirs = JSON.parse(baremeTirsStr);
+            }
+        }
+        
+        // Fermer la modale si clic en dehors
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modale')) {
+                event.target.style.display = 'none';
+            }
+        }
+        
+        /* ========================================
+           RÉCAPITULATIF AVANT DÉMARRAGE
+           ======================================== */
+        
+        function afficherRecapitulatif() {
+            // Afficher les informations
+            document.getElementById('recapCoureur').textContent = 
+                document.getElementById('nomCoureur').value || 'Non renseigné';
+            document.getElementById('recapObservateur').textContent = 
+                document.getElementById('nomObservateur').value || 'Non renseigné';
+            document.getElementById('recapVMA').textContent = 
+                document.getElementById('vma').value;
+            document.getElementById('recapClasse').textContent = 
+                document.getElementById('classe').value || 'Non renseigné';
+            
+            // Afficher l'ordre
+            afficherOrdreRecap();
+        }
+        
+        function afficherOrdreRecap() {
+            const container = document.getElementById('ordreContainer');
+            container.innerHTML = '';
+            
+            const vma = parseFloat(document.getElementById('vma').value);
+            
+            ordreElements.forEach((element, position) => {
+                const item = document.createElement('div');
+                
+                if (element.type === 'course') {
+                    const config = configurationCourses[element.index];
+                    const distanceTheo = calculerDistanceTheorique(vma, config.intensite, config.duree);
+                    const plotsTheo = Math.round(distanceTheo / 10);
+                    
+                    item.className = 'ordre-item course-item';
+                    item.innerHTML = `
+                        <div class="numero">${position + 1}</div>
+                        <div class="contenu">
+                            <div class="titre-element">🏃‍♀️ Course ${element.index + 1}</div>
+                            <div class="details-element">
+                                ${config.duree}s à ${config.intensite}% VMA • 
+                                ${distanceTheo}m (${plotsTheo} plots)
+                            </div>
+                        </div>
+                        <div class="controles-ordre">
+                            <button class="btn-reorg" onclick="deplacerElementRecap(${position}, 'haut')" 
+                                    ${position === 0 ? 'disabled' : ''}>↑</button>
+                            <button class="btn-reorg" onclick="deplacerElementRecap(${position}, 'bas')" 
+                                    ${position === ordreElements.length - 1 ? 'disabled' : ''}>↓</button>
+                        </div>
+                    `;
+                } else {
+                    item.className = 'ordre-item tir-ordre';
+                    item.innerHTML = `
+                        <div class="numero">${position + 1}</div>
+                        <div class="contenu">
+                            <div class="titre-element">🎯 Session de tir ${element.index + 1}</div>
+                            <div class="details-element">
+                                ${tirsParSession} tirs • ${tirsParSession * 10} points max
+                            </div>
+                        </div>
+                        <div class="controles-ordre">
+                            <button class="btn-reorg" onclick="deplacerElementRecap(${position}, 'haut')" 
+                                    ${position === 0 ? 'disabled' : ''}>↑</button>
+                            <button class="btn-reorg" onclick="deplacerElementRecap(${position}, 'bas')" 
+                                    ${position === ordreElements.length - 1 ? 'disabled' : ''}>↓</button>
+                        </div>
+                    `;
+                }
+                
+                container.appendChild(item);
+            });
+        }
+        
+        function deplacerElementRecap(position, direction) {
+            let nouvellePosition;
+            if (direction === 'haut') {
+                if (position === 0) return;
+                nouvellePosition = position - 1;
+            } else {
+                if (position === ordreElements.length - 1) return;
+                nouvellePosition = position + 1;
+            }
+            
+            // Échanger
+            const temp = ordreElements[position];
+            ordreElements[position] = ordreElements[nouvellePosition];
+            ordreElements[nouvellePosition] = temp;
+            
+            // Réafficher
+            afficherOrdreRecap();
+        }
+        
+        function confirmerEtDemarrer() {
+    // (v5) initialise verrouillage séquentiel
+
+            // Masquer le récapitulatif et afficher le déroulement
+            document.getElementById('sectionRecapitulatif').classList.add('cache');
+            document.getElementById('sectionDeroulement').classList.remove('cache');
+            document.getElementById('sectionEnregistrement').classList.remove('cache');
+            
+            mettreAJourProgression(3); // Étape En cours
+            
+            // Générer le déroulement avec l'ordre confirmé
+            genererDeroulement();
+
+        }
+        
+        /* ========================================
+           GÉNÉRATION DE LA CONFIGURATION
+           ======================================== */
+        
+        function genererConfigurationCourses() {
+            const nombreCourses = parseInt(document.getElementById('nombreCourses').value);
+            
+            if (isNaN(nombreCourses) || nombreCourses < 1 || nombreCourses > 5) {
+                return;
+            }
+            
+            const container = document.getElementById('coursesConfig');
+            container.innerHTML = '<h3 style="margin-bottom: 15px;">Configuration des courses :</h3>';
+            
+            configurationCourses = [];
+            
+            for (let i = 0; i < nombreCourses; i++) {
+                const div = document.createElement('div');
+                div.style.marginBottom = '15px';
+                div.style.padding = '15px';
+                div.style.background = 'rgba(149, 225, 211, 0.2)';
+                div.style.borderRadius = '10px';
+                
+                const titre = document.createElement('h4');
+                titre.textContent = `Course ${i + 1}`;
+                titre.style.marginBottom = '10px';
+                div.appendChild(titre);
+                
+                const grille = document.createElement('div');
+                grille.className = 'grille-2col';
+                grille.innerHTML = `
+                    <div class="groupe-champ" style="margin-bottom: 0;">
+                        <label for="duree${i}">Durée (secondes) :</label>
+                        <input type="number" id="duree${i}" min="10" max="600" value="60">
+                    </div>
+                    <div class="groupe-champ" style="margin-bottom: 0;">
+                        <label for="intensite${i}">Intensité (% VMA) :</label>
+                        <input type="number" id="intensite${i}" min="60" max="120" step="5" value="80">
+                    </div>
+                `;
+                
+                div.appendChild(grille);
+                container.appendChild(div);
+                
+                configurationCourses.push({ duree: 60, intensite: 80 });
+            }
+        }
+        
+        // Écouter les changements de nombre de courses
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('nombreCourses').addEventListener('change', genererConfigurationCourses);
+        });
+        
+        /* ========================================
+           DÉMARRER LA SÉANCE
+           ======================================== */
+        
+        function demarrerSeance() {
+            const vma = parseFloat(document.getElementById('vma').value);
+            const nombreCourses = parseInt(document.getElementById('nombreCourses').value);
+            
+            if (isNaN(vma) || vma < 8 || vma > 18) {
+                alert('Veuillez entrer une VMA valide (entre 8 et 18 km/h).');
+                return;
+            }
+            
+            // Lire la configuration finale
+            for (let i = 0; i < nombreCourses; i++) {
+                configurationCourses[i] = {
+                    duree: parseInt(document.getElementById('duree' + i).value) || 60,
+                    intensite: parseInt(document.getElementById('intensite' + i).value) || 80
+                };
+            }
+            
+            nombreSessions = parseInt(document.getElementById('nombreSessions').value);
+            tirsParSession = parseInt(document.getElementById('tirsParSession').value);
+            
+            // Initialiser l'ordre par défaut (alternance course/tir)
+            ordreElements = [];
+            let indexCourse = 0;
+            let indexTir = 0;
+            
+            while (indexCourse < nombreCourses || indexTir < nombreSessions) {
+                if (indexCourse < nombreCourses) {
+                    ordreElements.push({type: 'course', index: indexCourse});
+                    indexCourse++;
+                }
+                if (indexTir < nombreSessions) {
+                    ordreElements.push({type: 'tir', index: indexTir});
+                    indexTir++;
+                }
+            }
+            
+            // Masquer la configuration et afficher le récapitulatif
+            document.getElementById('sectionConfiguration').classList.add('cache');
+            document.getElementById('sectionRecapitulatif').classList.remove('cache');
+            
+            mettreAJourProgression(2); // Étape Récapitulatif
+            afficherRecapitulatif();
+        }
+        
+        /* ========================================
+           CALCUL DE LA DISTANCE THÉORIQUE
+           ======================================== */
+        
+        function calculerDistanceTheorique(vma, intensite, dureeSecondes) {
+            const vitesseKmH = vma * (intensite / 100);
+            const dureeHeures = dureeSecondes / 3600;
+            const distanceMetres = vitesseKmH * dureeHeures * 1000;
+            return Math.round(distanceMetres);
+        }
+        
+        /* ========================================
+           GÉNÉRATION DU DÉROULEMENT CHRONOLOGIQUE
+           ======================================== */
+        
+        
+// --- Verrouillage séquentiel : impossible de passer à l'étape suivante tant que la précédente n'est pas terminée
+// Une course est terminée quand on a appuyé sur STOP.
+// Un tir est terminé quand toutes les cases de la session sont remplies.
+let etapesTerminees = {}; // clés: "course-0", "tir-0", ...
+
+function marquerEtapeTerminee(type, index, value=true){
+    etapesTerminees[`${type}-${index}`] = value;
+}
+
+function estTirTermine(sessionIndex){
+    const selects = document.querySelectorAll(`.tir-grille[data-session="${sessionIndex}"] select`);
+    if(!selects || selects.length === 0) return false;
+    for(const s of selects){
+        if(!s.value || s.value === "") return false;
+    }
+    return true;
+}
+
+function estCourseTerminee(courseIndex){
+    return etapesTerminees[`course-${courseIndex}`] === true;
+}
+
+function estEtapeTerminee(etape){
+    if(etape.type === 'course') return estCourseTerminee(etape.index);
+    if(etape.type === 'tir') return estTirTermine(etape.index);
+    return false;
+}
+
+function desactiverControlesEtape(etape, disabled){
+    // Dans le récap, chaque carte d'ordre a data-type + data-index
+    const card = document.querySelector(`.ordre-item[data-type="${etape.type}"][data-index="${etape.index}"]`);
+    if(!card) return;
+    // Désactive tous les boutons et champs de l'étape (sans casser l'affichage)
+    card.querySelectorAll('button, input, select').forEach(el => {
+        // STOP: si l'étape est verrouillée, on le désactive; sinon on ne force rien (il reste géré par le chrono)
+        if (etape.type === 'course' && el.classList.contains('btn-stop')) {
+            if (disabled) el.disabled = true;
+            return;
+        }
+        el.disabled = disabled;
+    });
+    if(disabled){
+        card.classList.add('verrouille');
+    }else{
+        card.classList.remove('verrouille');
+    }
+}
+
+function mettreAJourVerrouillagesSequenciel(){
+    if(!Array.isArray(ordreParcours) || ordreParcours.length === 0) return;
+    let blocage = false;
+    for(let i=0; i<ordreParcours.length; i++){
+        const etape = ordreParcours[i];
+        if(i === 0){
+            // La première étape est toujours accessible
+            desactiverControlesEtape(etape, false);
+            verifierFinSeanceEtAfficherQR();
+}else{
+            // Si une étape précédente n'est pas terminée, on bloque toutes les suivantes
+            if(blocage){
+                desactiverControlesEtape(etape, true);
+            }else{
+                const prev = ordreParcours[i-1];
+                if(estEtapeTerminee(prev)){
+                    desactiverControlesEtape(etape, false);
+                }else{
+                    desactiverControlesEtape(etape, true);
+                    blocage = true;
+                }
+            }
+        }
+    }
+}
+
+function genererDeroulement() {
+    // (v5) Verrouillage séquentiel
+
+            const vma = parseFloat(document.getElementById('vma').value);
+            const container = document.getElementById('deroulementContainer');
+            container.innerHTML = '';
+            
+            // Initialiser les tableaux
+            plotsReelsCourses = new Array(configurationCourses.length).fill(0);
+            chronometres = new Array(configurationCourses.length).fill(null);
+            tempsCourses = new Array(configurationCourses.length).fill(0);
+            donneesVitesse = new Array(configurationCourses.length);
+            graphiquesVitesse = new Array(configurationCourses.length).fill(null);
+            coursesFinies = new Array(configurationCourses.length).fill(false);
+            tirsFinis = new Array(nombreSessions).fill(false);
+
+            
+            // Initialiser les données de vitesse pour chaque course
+            for (let i = 0; i < configurationCourses.length; i++) {
+                chronometres[i] = {
+                    tempsEcoule: 0,
+                    actif: false,
+                    interval: null
+                };
+                donneesVitesse[i] = {
+                    temps: [],
+                    vitesses: [],
+                    plotsPrecedent: 0,
+                    tempsPrecedent: 0
+                };
+            }
+            
+            // Parcourir l'ordre et créer chaque élément
+            ordreElements.forEach((element, position) => {
+                if (element.type === 'course') {
+                    creerCarteCourse(element.index, position + 1, container);
+                } else if (element.type === 'tir') {
+                    creerSessionTir(element.index, position + 1, container);
+                }
+            });
+            
+            calculerDistanceTotale();
+            mettreAJourVerrouillages();
+        }
+        
+        
+        function verrouillerCourse(index, verrouille) {
+            const btnStart = document.getElementById('btnStart' + index);
+            if (!btnStart) return;
+
+            // Ne pas ré-activer une course déjà terminée
+            if (coursesFinies[index]) {
+                btnStart.disabled = true;
+                const btnStop = document.getElementById('btnStop' + index);
+                if (btnStop) btnStop.disabled = true;
+                const btnPlus = document.getElementById('btnPlus' + index);
+                if (btnPlus) btnPlus.disabled = true;
+                return;
+            }
+            btnStart.disabled = !!verrouille;
+        }
+
+        function verrouillerSessionTir(indexSession, verrouille) {
+            // Ne pas ré-activer un tir déjà terminé
+            if (tirsFinis[indexSession]) return;
+            for (let t = 0; t < tirsParSession; t++) {
+                const sel = document.getElementById('tir_s' + indexSession + '_t' + t);
+                if (sel) sel.disabled = !!verrouille;
+            }
+        }
+
+        function sessionTirCompletee(indexSession) {
+            for (let t = 0; t < tirsParSession; t++) {
+                const sel = document.getElementById('tir_s' + indexSession + '_t' + t);
+                if (!sel || sel.value === '') return false;
+            }
+            return true;
+        }
+
+        function verifierFinTir(indexSession) {
+            tirsFinis[indexSession] = sessionTirCompletee(indexSession);
+            mettreAJourVerrouillages();
+        }
+
+        function mettreAJourVerrouillages() {
+            // Tout déverrouiller par défaut (sauf éléments terminés)
+            for (let i = 0; i < configurationCourses.length; i++) verrouillerCourse(i, false);
+            for (let s = 0; s < nombreSessions; s++) verrouillerSessionTir(s, false);
+
+            if (!ordreElements || ordreElements.length === 0) return;
+
+            const premier = ordreElements[0];
+
+            // Règle 1 : si le 1er élément est Course 1, verrouiller Course 2+ tant que Course 1 n'est pas finie
+            if (premier.type === 'course' && premier.index === 0 && !coursesFinies[0]) {
+                for (let i = 1; i < configurationCourses.length; i++) {
+                    verrouillerCourse(i, true);
+                }
+                return;
+            }
+
+            // Règle 2 : si le 1er élément est Tir 1, verrouiller Course 1+ et Tir 2+ tant que Tir 1 n'est pas fini
+            if (premier.type === 'tir' && premier.index === 0 && !tirsFinis[0]) {
+                for (let i = 0; i < configurationCourses.length; i++) {
+                    verrouillerCourse(i, true);
+                }
+                for (let s = 1; s < nombreSessions; s++) {
+                    verrouillerSessionTir(s, true);
+                }
+                return;
+            }
+        }
+
+
+        function creerCarteCourse(index, numeroOrdre, container) {
+            const vma = parseFloat(document.getElementById('vma').value);
+            const config = configurationCourses[index];
+            const distanceTheorique = calculerDistanceTheorique(vma, config.intensite, config.duree);
+            const plotsTheoriques = Math.round(distanceTheorique / 10);
+            
+            const carte = document.createElement('div');
+            carte.className = 'carte-course element-deroulement';
+            
+            carte.innerHTML = `
+                <div class="ordre-numero">${numeroOrdre}</div>
+                <div class="titre-course">🏃‍♀️ Course ${index + 1}</div>
+                
+                <div class="mini-chrono">
+                    <div class="affichage-temps" id="temps${index}">00:00.0</div>
+                    <div class="controles">
+                        <button class="bouton bouton-demarrer" id="btnStart${index}" onclick="demarrerChrono(${index})">▶</button>
+                        <button class="bouton bouton-stop" id="btnStop${index}" onclick="stopChrono(${index})" disabled>⏹</button>
+                    </div>
+                </div>
+                
+                <div class="info-theorique">
+                    <p><strong>Durée:</strong> ${config.duree}s (${Math.floor(config.duree/60)}min ${config.duree%60}s)</p>
+                    <p><strong>Intensité:</strong> ${config.intensite}% VMA</p>
+                    <p><strong>Distance théorique:</strong> ${distanceTheorique}m</p>
+                    <p><strong>Plots théoriques:</strong> ${plotsTheoriques}</p>
+                </div>
+                
+                <button class="bouton-plus" id="btnPlus${index}" onclick="ajouterPlot(${index})" disabled>+</button>
+                <div class="affichage-distance" id="distance${index}">0 m</div>
+                <div class="ecart-info cache" id="ecart${index}">
+                    <p style="font-size: 0.9em; margin: 5px 0;">Écart: <span class="ecart-valeur">0 plots (0m)</span></p>
+                </div>
+                
+                <div class="graphique-vitesse" id="graphique${index}">
+                    <h4>📈 Courbe de vitesse</h4>
+                    <canvas id="canvas${index}"></canvas>
+                </div>
+            `;
+            
+            container.appendChild(carte);
+        }
+        
+        function creerSessionTir(index, numeroOrdre, container) {
+            const sessionDiv = document.createElement('div');
+            sessionDiv.className = 'session-tir element-deroulement';
+            
+            sessionDiv.innerHTML = `
+                <div class="ordre-numero">${numeroOrdre}</div>
+                <div class="session-tir-header">
+                    <h3>🎯 Session de tir ${index + 1}</h3>
+                    <p class="session-tir-info">${tirsParSession} tirs • ${tirsParSession * 10} points max</p>
+                </div>
+                <div class="tirs-grille" id="tirsGrille${index}">
+                    <!-- Tirs générés ci-dessous -->
+                </div>
+            `;
+            
+            container.appendChild(sessionDiv);
+            
+            // Ajouter les tirs
+            const grilleDiv = document.getElementById('tirsGrille' + index);
+            for (let t = 0; t < tirsParSession; t++) {
+                const tirDiv = document.createElement('div');
+                tirDiv.className = 'tir-item';
+                
+                tirDiv.innerHTML = `
+                    <label>Tir ${t + 1}</label>
+                    <select id="tir_s${index}_t${t}" onchange="calculerTotalPoints(); verifierFinTir(${index})">
+                        <option value="">--</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                `;
+                
+                grilleDiv.appendChild(tirDiv);
+            }
+        }
+        
+        /* ========================================
+           CHRONOMÈTRE PAR COURSE
+           ======================================== */
+        
+        function demarrerChrono(index) {
+            if (!chronometres[index].actif) {
+                chronometres[index].actif = true;
+                const depart = Date.now() - chronometres[index].tempsEcoule;
+                const dureeMax = configurationCourses[index].duree * 1000; // en millisecondes
+                
+                // Jouer le bip de démarrage
+                jouerBip('start');
+                
+                chronometres[index].interval = setInterval(function() {
+                    chronometres[index].tempsEcoule = Date.now() - depart;
+                    
+                    // Arrêt automatique à la durée configurée
+                    if (chronometres[index].tempsEcoule >= dureeMax) {
+                        chronometres[index].tempsEcoule = dureeMax;
+                        afficherTempsCourse(index, dureeMax);
+                        stopChrono(index);
+                        return;
+                    }
+                    
+                    afficherTempsCourse(index, chronometres[index].tempsEcoule);
+                }, 100);
+                
+                document.getElementById('btnStart' + index).disabled = true;
+                document.getElementById('btnStop' + index).disabled = false;
+                // Activer le bouton + pendant la course
+                document.getElementById('btnPlus' + index).disabled = false;
+            }
+        }
+        
+        function stopChrono(index) {
+            chronometres[index].actif = false;
+            clearInterval(chronometres[index].interval);
+            tempsCourses[index] = chronometres[index].tempsEcoule;
+            
+            // Jouer le bip de fin
+            jouerBip('stop');
+            
+            document.getElementById('btnStart' + index).disabled = true;
+            document.getElementById('btnStop' + index).disabled = true;
+            // Désactiver le bouton + après la course
+            document.getElementById('btnPlus' + index).disabled = true;
+            
+            // Afficher l'écart à la fin de la course
+            afficherEcartFinal(index);
+            
+            // Créer le graphique de vitesse
+            creerGraphiqueVitesse(index);
+       
+            coursesFinies[index] = true;
+            mettreAJourVerrouillages();
+        }
+        
+        function afficherTempsCourse(index, ms) {
+            const minutes = Math.floor(ms / 60000);
+            const secondes = Math.floor((ms % 60000) / 1000);
+            const dixiemes = Math.floor((ms % 1000) / 100);
+            
+            const affichage = 
+                String(minutes).padStart(2, '0') + ':' +
+                String(secondes).padStart(2, '0') + '.' +
+                dixiemes;
+            
+            document.getElementById('temps' + index).textContent = affichage;
+        }
+        
+        function formaterTemps(ms) {
+            const minutes = Math.floor(ms / 60000);
+            const secondes = Math.floor((ms % 60000) / 1000);
+            return String(minutes).padStart(2, '0') + ':' + String(secondes).padStart(2, '0');
+        }
+        
+        function afficherEcartFinal(index) {
+            const vma = parseFloat(document.getElementById('vma').value);
+            const config = configurationCourses[index];
+            const distanceTheorique = calculerDistanceTheorique(vma, config.intensite, config.duree);
+            const plotsTheoriques = Math.round(distanceTheorique / 10);
+            const plotsReels = plotsReelsCourses[index];
+            const distanceReelle = plotsReels * 10;
+            const ecartPlots = plotsReels - plotsTheoriques;
+            const ecartMetres = distanceReelle - distanceTheorique;
+            
+            const ecartDiv = document.getElementById('ecart' + index);
+            const ecartValeur = ecartDiv.querySelector('.ecart-valeur');
+            
+            if (ecartPlots > 0) {
+                ecartValeur.textContent = '+' + ecartPlots + ' plots (+' + ecartMetres + 'm)';
+                ecartDiv.className = 'ecart-info positif';
+            } else if (ecartPlots < 0) {
+                ecartValeur.textContent = ecartPlots + ' plots (' + ecartMetres + 'm)';
+                ecartDiv.className = 'ecart-info negatif';
+            } else {
+                ecartValeur.textContent = '0 plots (0m)';
+                ecartDiv.className = 'ecart-info';
+            }
+            
+            // Rendre l'écart visible
+            ecartDiv.classList.remove('cache');
+        }
+        
+        /* ========================================
+           CRÉER GRAPHIQUE DE VITESSE
+           ======================================== */
+        
+        function creerGraphiqueVitesse(index) {
+            const donnees = donneesVitesse[index];
+
+            // Vérifier qu'il y a des données
+            if (!donnees || donnees.temps.length === 0) return;
+
+            // Afficher le conteneur du graphique
+            document.getElementById('graphique' + index).classList.add('visible');
+
+            // Calculer la vitesse théorique
+            const vma = parseFloat(document.getElementById('vma').value);
+            const config = configurationCourses[index];
+            const vitesseTheorique = vma * (config.intensite / 100);
+
+            const canvas = document.getElementById('canvas' + index);
+            if (!canvas) return;
+
+            // S'assurer d'une taille correcte (important sur Android)
+            const parent = canvas.parentElement;
+            const width = Math.max(260, Math.min(520, parent.clientWidth || 320));
+            const height = 200;
+            canvas.width = Math.floor(width * (window.devicePixelRatio || 1));
+            canvas.height = Math.floor(height * (window.devicePixelRatio || 1));
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            // Données
+            const xs = donnees.temps;     // secondes
+            const ys = donnees.vitesses;  // km/h
+
+            // Bornes
+            const minX = 0;
+            const maxX = Math.max(...xs, 1);
+            const minY = 0;
+            const maxY = Math.max(vitesseTheorique, ...ys, 1);
+
+            // Marges
+            const padL = 38, padR = 10, padT = 10, padB = 28;
+            const plotW = width - padL - padR;
+            const plotH = height - padT - padB;
+
+            const xToPx = (x) => padL + (x - minX) / (maxX - minX) * plotW;
+            const yToPx = (y) => padT + (1 - (y - minY) / (maxY - minY)) * plotH;
+
+            // Fond
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, width, height);
+
+            // Grille légère
+            ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+            ctx.lineWidth = 1;
+            const gridY = 4;
+            for (let i = 0; i <= gridY; i++) {
+                const y = padT + (i / gridY) * plotH;
+                ctx.beginPath();
+                ctx.moveTo(padL, y);
+                ctx.lineTo(width - padR, y);
+                ctx.stroke();
+            }
+
+            // Axes
+            ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+            ctx.beginPath();
+            ctx.moveTo(padL, padT);
+            ctx.lineTo(padL, height - padB);
+            ctx.lineTo(width - padR, height - padB);
+            ctx.stroke();
+
+            // Labels axes
+            ctx.fillStyle = 'rgba(0,0,0,0.65)';
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Temps (s)', padL + plotW / 2, height - 6);
+            ctx.save();
+            ctx.translate(12, padT + plotH / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Vitesse (km/h)', 0, 0);
+            ctx.restore();
+
+            // Ligne théorique (pointillée)
+            const yTheo = yToPx(vitesseTheorique);
+            ctx.setLineDash([6, 4]);
+            ctx.strokeStyle = 'rgba(78, 205, 196, 0.9)';
+            ctx.beginPath();
+            ctx.moveTo(padL, yTheo);
+            ctx.lineTo(width - padR, yTheo);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Courbe réelle
+            ctx.strokeStyle = 'rgba(255, 107, 157, 0.95)';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            for (let i = 0; i < xs.length; i++) {
+                const x = xToPx(xs[i]);
+                const y = yToPx(ys[i]);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+
+            // Points
+            ctx.fillStyle = 'rgba(255, 107, 157, 0.95)';
+            for (let i = 0; i < xs.length; i++) {
+                const x = xToPx(xs[i]);
+                const y = yToPx(ys[i]);
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        /* ========================================
+           RÉORGANISATION DE L'ORDRE DES ÉLÉMENTS
+ DE L'ORDRE DES ÉLÉMENTS
+           ======================================== */
+        
+        function deplacerElement(type, index, direction) {
+            // Trouver l'élément dans ordreElements
+            const positionActuelle = ordreElements.findIndex(
+                el => el.type === type && el.index === index
+            );
+            
+            if (positionActuelle === -1) return;
+            
+            let nouvellePosition;
+            if (direction === 'haut') {
+                if (positionActuelle === 0) return; // Déjà en première position
+                nouvellePosition = positionActuelle - 1;
+            } else { // bas
+                if (positionActuelle === ordreElements.length - 1) return; // Déjà en dernière position
+                nouvellePosition = positionActuelle + 1;
+            }
+            
+            // Échanger les éléments
+            const temp = ordreElements[positionActuelle];
+            ordreElements[positionActuelle] = ordreElements[nouvellePosition];
+            ordreElements[nouvellePosition] = temp;
+            
+            // Régénérer tout le déroulement avec le nouvel ordre
+            genererDeroulement();
+        }
+        
+        /* ========================================
+           AJOUTER UN PLOT
+           ======================================== */
+        
+        function ajouterPlot(indexCourse) {
+            plotsReelsCourses[indexCourse]++;
+            
+            const distanceReelle = plotsReelsCourses[indexCourse] * 10;
+            // Afficher uniquement la distance parcourue en temps réel
+            document.getElementById('distance' + indexCourse).textContent = distanceReelle + ' m';
+            
+            // Vibration et animation
+            vibrer();
+            const bouton = document.getElementById('btnPlus' + indexCourse);
+            bouton.classList.add('vibrant');
+            setTimeout(() => {
+                bouton.classList.remove('vibrant');
+            }, 150);
+            
+            // Enregistrer les données de vitesse
+            const tempsActuel = chronometres[indexCourse].tempsEcoule / 1000; // en secondes
+            const donnees = donneesVitesse[indexCourse];
+            
+            if (donnees.temps.length > 0) {
+                // Calculer la vitesse instantanée
+                const deltaDistance = (plotsReelsCourses[indexCourse] - donnees.plotsPrecedent) * 10; // en mètres
+                const deltaTemps = tempsActuel - donnees.tempsPrecedent; // en secondes
+                
+                if (deltaTemps > 0) {
+                    const vitesseKmH = (deltaDistance / deltaTemps) * 3.6; // conversion m/s en km/h
+                    donnees.vitesses.push(vitesseKmH);
+                    donnees.temps.push(tempsActuel);
+                }
+            } else {
+                // Premier plot
+                if (tempsActuel > 0) {
+                    const vitesseKmH = (10 / tempsActuel) * 3.6;
+                    donnees.vitesses.push(vitesseKmH);
+                    donnees.temps.push(tempsActuel);
+                }
+            }
+            
+            donnees.plotsPrecedent = plotsReelsCourses[indexCourse];
+            donnees.tempsPrecedent = tempsActuel;
+            
+            calculerDistanceTotale();
+            mettreAJourVerrouillages();
+        }
+        
+        /* ========================================
+           CALCUL DISTANCE TOTALE
+           ======================================== */
+        
+        function calculerDistanceTotale() {
+            const vma = parseFloat(document.getElementById('vma').value);
+            
+            let distanceTheoriqueTotale = 0;
+            let distanceReelleTotale = 0;
+            
+            for (let i = 0; i < configurationCourses.length; i++) {
+                const config = configurationCourses[i];
+                distanceTheoriqueTotale += calculerDistanceTheorique(vma, config.intensite, config.duree);
+                distanceReelleTotale += plotsReelsCourses[i] * 10;
+            }
+            
+            const ecartMetres = distanceReelleTotale - distanceTheoriqueTotale;
+            const ecartPlots = ecartMetres / 10;
+            
+            document.getElementById('distanceTheorique').textContent = distanceTheoriqueTotale + ' m';
+            document.getElementById('distanceReelle').textContent = distanceReelleTotale + ' m';
+            
+            const ecartElement = document.getElementById('ecartTotal');
+            if (ecartPlots > 0) {
+                ecartElement.textContent = '+' + ecartPlots.toFixed(1) + ' plots (+' + ecartMetres + 'm)';
+                ecartElement.style.color = '#11998e';
+            } else if (ecartPlots < 0) {
+                ecartElement.textContent = ecartPlots.toFixed(1) + ' plots (' + ecartMetres + 'm)';
+                ecartElement.style.color = '#ee0979';
+            } else {
+                ecartElement.textContent = '0 plots (0m)';
+                ecartElement.style.color = 'var(--couleur-primaire)';
+            }
+            
+            calculerScoreTotal();
+        }
+        
+        /* ========================================
+           GÉNÉRATION DES SESSIONS DE TIR
+           ======================================== */
+        
+        function genererSessions() {
+            const container = document.getElementById('tirsContainer');
+            container.innerHTML = '';
+            
+            for (let s = 0; s < nombreSessions; s++) {
+                const sessionDiv = document.createElement('div');
+                sessionDiv.className = 'session-tir';
+                
+                const ordreNum = document.createElement('div');
+                ordreNum.className = 'ordre-numero';
+                ordreNum.id = 'ordreTir' + s;
+                ordreNum.textContent = '1';
+                sessionDiv.appendChild(ordreNum);
+                
+                const titre = document.createElement('h3');
+                titre.textContent = `Session de tir ${s + 1}`;
+                sessionDiv.appendChild(titre);
+                
+                const grilleDiv = document.createElement('div');
+                grilleDiv.className = 'tirs-grille';
+                
+                for (let t = 0; t < tirsParSession; t++) {
+                    const tirDiv = document.createElement('div');
+                    tirDiv.className = 'tir-item';
+                    
+                    tirDiv.innerHTML = `
+                        <label>Tir ${t + 1}</label>
+                        <select id="tir_s${s}_t${t}" onchange="calculerTotalPoints(); verifierFinTir(${s})">
+                            <option value="">--</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                    `;
+                    
+                    grilleDiv.appendChild(tirDiv);
+                }
+                
+                sessionDiv.appendChild(grilleDiv);
+                
+                // Ajouter les boutons de réorganisation
+                const reorgDiv = document.createElement('div');
+                reorgDiv.className = 'reorg-controls';
+                reorgDiv.innerHTML = `
+                    <button class="btn-reorg" onclick="deplacerElement('tir', ${s}, 'haut')" title="Déplacer vers le haut">↑</button>
+                    <button class="btn-reorg" onclick="deplacerElement('tir', ${s}, 'bas')" title="Déplacer vers le bas">↓</button>
+                `;
+                sessionDiv.appendChild(reorgDiv);
+                
+                container.appendChild(sessionDiv);
+            }
+            
+            calculerTotalPoints();
+        }
+        
+        /* ========================================
+           CALCUL TOTAL POINTS TIR
+           ======================================== */
+        
+        function calculerTotalPoints() {
+            let total = 0;
+            
+            for (let s = 0; s < nombreSessions; s++) {
+                for (let t = 0; t < tirsParSession; t++) {
+                    const select = document.getElementById(`tir_s${s}_t${t}`);
+                    if (select && select.value !== '') {
+                        const valeurOriginale = parseInt(select.value);
+                        // Utiliser le barème configurable
+                        total += baremeTirs[valeurOriginale] || valeurOriginale;
+                   
+            // Mettre à jour les verrouillages si besoin
+            mettreAJourVerrouillages();
+        }
+                }
+            }
+            
+            document.getElementById('totalPoints').textContent = total;
+            calculerScoreTotal();
+        }
+        
+        /* ========================================
+           CALCUL SCORE TOTAL
+           ======================================== */
+        
+        function calculerScoreTotal() {
+            const vma = parseFloat(document.getElementById('vma').value);
+            let pointsCourseTotal = 0;
+            
+            for (let i = 0; i < configurationCourses.length; i++) {
+                const config = configurationCourses[i];
+                const distanceTheorique = calculerDistanceTheorique(vma, config.intensite, config.duree);
+                const plotsTheoriques = Math.round(distanceTheorique / 10);
+                const plotsReels = plotsReelsCourses[i];
+                
+                const ecartPlots = Math.abs(plotsReels - plotsTheoriques);
+                
+                // Utiliser le barème configurable
+                let pointsCourse = 0;
+                if (ecartPlots < 1) {
+                    pointsCourse = baremeCourses[0];
+                } else if (ecartPlots === 1) {
+                    pointsCourse = baremeCourses[1];
+                } else if (ecartPlots === 2) {
+                    pointsCourse = baremeCourses[2];
+                } else if (ecartPlots === 3) {
+                    pointsCourse = baremeCourses[3];
+                } else {
+                    pointsCourse = baremeCourses[4];
+                }
+                
+                pointsCourseTotal += pointsCourse;
+            }
+            
+            const pointsTir = parseInt(document.getElementById('totalPoints').textContent) || 0;
+            const scoreTotal = pointsCourseTotal + pointsTir;
+            
+            document.getElementById('pointsCourse').textContent = pointsCourseTotal.toFixed(1);
+            document.getElementById('pointsTir').textContent = pointsTir;
+            document.getElementById('scoreTotal').textContent = scoreTotal.toFixed(1);
+        }
+        
+        /* ========================================
+           ENREGISTREMENT
+           ======================================== */
+        
+        function enregistrerSeance() {
+            const nomCoureur = document.getElementById('nomCoureur').value || 'Non renseigné';
+            const nomObservateur = document.getElementById('nomObservateur').value || 'Non renseigné';
+            const vma = parseFloat(document.getElementById('vma').value);
+            const classe = document.getElementById('classe').value || 'Non renseigné';
+            
+            let distanceTheoriqueTotale = 0;
+            let distanceReelleTotale = 0;
+            let pointsCourseTotal = 0;
+            let detailsCourses = [];
+            
+            for (let i = 0; i < configurationCourses.length; i++) {
+                const config = configurationCourses[i];
+                const distanceTheo = calculerDistanceTheorique(vma, config.intensite, config.duree);
+                const plotsTheoriques = Math.round(distanceTheo / 10);
+                const plotsReels = plotsReelsCourses[i];
+                const distanceReelle = plotsReels * 10;
+                const ecartPlots = plotsReels - plotsTheoriques;
+                const ecartMetres = distanceReelle - distanceTheo;
+                
+                const ecartPlotsAbsolu = Math.abs(ecartPlots);
+                let pointsCourse = 0;
+                if (ecartPlotsAbsolu < 1) {
+                    pointsCourse = baremeCourses[0];
+                } else if (ecartPlotsAbsolu === 1) {
+                    pointsCourse = baremeCourses[1];
+                } else if (ecartPlotsAbsolu === 2) {
+                    pointsCourse = baremeCourses[2];
+                } else if (ecartPlotsAbsolu === 3) {
+                    pointsCourse = baremeCourses[3];
+                } else {
+                    pointsCourse = baremeCourses[4];
+                }
+                
+                distanceTheoriqueTotale += distanceTheo;
+                distanceReelleTotale += distanceReelle;
+                pointsCourseTotal += pointsCourse;
+                
+                detailsCourses.push({
+                    numero: i + 1,
+                    duree: config.duree,
+                    intensite: config.intensite,
+                    distanceTheorique: distanceTheo,
+                    plotsTheoriques: plotsTheoriques,
+                    plotsReels: plotsReels,
+                    distanceReelle: distanceReelle,
+                    ecartPlots: ecartPlots,
+                    ecartMetres: ecartMetres,
+                    points: pointsCourse,
+                    temps: tempsCourses[i] > 0 ? formaterTemps(tempsCourses[i]) : 'Non chronométré'
+                });
+            }
+            
+            // Collecter les scores de tir
+            let detailsTirs = [];
+            let totalTir = 0;
+            
+            for (let s = 0; s < nombreSessions; s++) {
+                let sessionScores = [];
+                for (let t = 0; t < tirsParSession; t++) {
+                    const select = document.getElementById(`tir_s${s}_t${t}`);
+                    const valeur = select ? (select.value || '0') : '0';
+                    sessionScores.push(valeur);
+                    const valeurOriginale = parseInt(valeur);
+                    // Utiliser le barème configurable
+                    totalTir += baremeTirs[valeurOriginale] || valeurOriginale;
+                }
+                detailsTirs.push({
+                    session: s + 1,
+                    scores: sessionScores.join(';')
+                });
+            }
+            
+            const scoreTotal = pointsCourseTotal + totalTir;
+            
+            const donnees = {
+                nomCoureur: nomCoureur,
+                nomObservateur: nomObservateur,
+                vma: vma,
+                classe: classe,
+                detailsCourses: detailsCourses,
+                distanceTheoriqueTotale: distanceTheoriqueTotale,
+                distanceReelleTotale: distanceReelleTotale,
+                pointsCourse: pointsCourseTotal,
+                nombreSessions: nombreSessions,
+                tirsParSession: tirsParSession,
+                detailsTirs: detailsTirs,
+                totalTir: totalTir,
+                scoreTotal: scoreTotal,
+                ordreElements: ordreElements,
+                dateSeance: new Date().toLocaleString('fr-FR')
+            };
+            
+            localStorage.setItem('derniereSeance', JSON.stringify(donnees));
+            
+            const csv = genererCSV(donnees);
+
+            // Affichage du bloc QR + actions CSV
+            const blocQR = document.getElementById('qrContainer');
+            if(blocQR){
+                blocQR.classList.remove('cache');
+                // nettoie d'anciens boutons éventuels
+                blocQR.querySelectorAll('a.bouton, button.bouton-secondaire').forEach(el => el.remove());
+            }
+
+            genererQRCode(genererPayloadQRUltraCompact(donnees));
+
+            // Ajoute boutons (même si le QR échoue)
+            if(blocQR){
+                ajouterBoutonTelechargement(blocQR, csv);
+                ajouterBoutonCopier(blocQR, csv);
+            }
+            
+            mettreAJourProgression(4); // Étape Terminé
+            
+            const messageSucces = document.getElementById('messageSucces');
+            messageSucces.classList.remove('cache');
+            setTimeout(() => {
+                messageSucces.classList.add('cache');
+            }, 3000);
+        }
+        
+        /* ========================================
+           GÉNÉRATION CSV
+           ======================================== */
+        
+        
+
+function genererCSV(donnees) {
+    // CSV minimal pour compatibilité QR (données essentielles)
+    const SEP = ';';
+
+    const entetes = [
+        'Date séance',
+        'Prénom coureur',
+        'Prénom observateur',
+        'Classe',
+        'VMA saisie (km/h)',
+        'Distance théorique totale (m)',
+        'Distance réelle totale (m)',
+        'Ordre parcours'
+    ];
+
+    const nbCourses = (donnees.detailsCourses || []).length;
+    for (let i = 0; i < nbCourses; i++) {
+        entetes.push(
+            `Course ${i+1} durée (s)`,
+            `Course ${i+1} intensité (%)`,
+            `Course ${i+1} dist. théo (m)`,
+            `Course ${i+1} dist. réelle (m)`,
+            `Course ${i+1} écart (m)`,
+            `Course ${i+1} points`
+        );
+    }
+    entetes.push('Score course');
+
+    const nbSessions = (donnees.detailsTirs || []).length;
+    for (let s = 0; s < nbSessions; s++) {
+        entetes.push(`Session ${s+1} scores`);
+    }
+    entetes.push('Score tirs');
+
+    const ordreTexte = (donnees.ordreElements || []).map((el, idx) => {
+        if (el.type === 'course') return `${idx + 1}:C${el.index + 1}`;
+        return `${idx + 1}:T${el.index + 1}`;
+    }).join('>');
+
+    const valeurs = [
+        donnees.dateSeance || '',
+        donnees.nomCoureur || '',
+        donnees.nomObservateur || '',
+        donnees.classe || '',
+        donnees.vma || '',
+        donnees.distanceTheoriqueTotale || 0,
+        donnees.distanceReelleTotale || 0,
+        '"' + ordreTexte + '"'
+    ];
+
+    for (let i = 0; i < nbCourses; i++) {
+        const c = donnees.detailsCourses[i] || {};
+        valeurs.push(
+            c.duree ?? '',
+            c.intensite ?? '',
+            c.distanceTheorique ?? '',
+            c.distanceReelle ?? '',
+            c.ecartMetres ?? '',
+            c.points ?? ''
+        );
+    }
+    valeurs.push(donnees.pointsCourse != null ? Number(donnees.pointsCourse).toFixed(1) : '');
+
+    for (let s = 0; s < nbSessions; s++) {
+        const t = donnees.detailsTirs[s] || {};
+        valeurs.push('"' + (t.scores || '') + '"');
+    }
+    valeurs.push(donnees.totalTir != null ? Number(donnees.totalTir).toFixed(1) : '');
+
+    const safe = (v) => String(v).split('\n').join(' ').split('\r').join(' ');
+    return entetes.map(safe).join(SEP) + '\n' + valeurs.map(safe).join(SEP);
+}
+
+
+
+function genererPayloadQRUltraCompact(donnees){
+    // JSON ultra-compact (clés courtes + tableaux) pour maximiser la capacité QR
+    // Schéma v1:
+    // {v:1,d:date,c:coureur,o:observateur,cl:classe,vm:vma,dt:distTheoTot,dr:distReelTot,or:[ordre],cs:[[...courses]],sc:scoreCourse,ts:[scoresSessions],st:scoreTirs}
+    const ordre = (donnees.ordreElements || []).map(el => (el.type === 'course' ? (el.index+1) : -(el.index+1)));
+    const cs = (donnees.detailsCourses || []).map(c => [
+        +(c.duree ?? 0),             // dur (s)
+        +(c.intensite ?? 0),         // intensité (%)
+        +(c.distanceTheorique ?? 0), // théo (m)
+        +(c.distanceReelle ?? 0),    // réel (m)
+        +(c.ecartMetres ?? 0),       // écart (m)
+        +(c.points ?? 0)             // points
+    ]);
+    const ts = (donnees.detailsTirs || []).map(t => (t.scores || ""));
+
+    const obj = {
+        v: 1,
+        d: donnees.dateSeance || "",
+        c: donnees.nomCoureur || "",
+        o: donnees.nomObservateur || "",
+        cl: donnees.classe || "",
+        vm: donnees.vma || "",
+        dt: +(donnees.distanceTheoriqueTotale || 0),
+        dr: +(donnees.distanceReelleTotale || 0),
+        or: ordre,
+        cs: cs,
+        sc: (donnees.pointsCourse != null ? +Number(donnees.pointsCourse).toFixed(1) : ""),
+        ts: ts,
+        st: (donnees.totalTir != null ? +Number(donnees.totalTir).toFixed(1) : "")
+    };
+
+    // Préfixe très court pour identifier le format
+    return "BJ1|" + JSON.stringify(obj);
+}
+
+
+/* ========================================
+QR CODE
+           ======================================== */
+        
+        
+
+
+function genererQRCode(csvData) {
+    const qrContainer = document.getElementById('qrcode');
+    const bloc = document.getElementById('qrContainer');
+    if (bloc) bloc.classList.remove('cache');
+    if (!qrContainer) return;
+
+    qrContainer.innerHTML = '';
+
+    // Payload : on met une signature + le CSV (UTF-8)
+    const payload = csvData;
+
+    try {
+        // La lib expose QRCode en global
+        if (typeof QRCode === 'undefined') {
+            throw new Error("QRCode (lib) indisponible");
+        }
+
+        // Conteneur carré (responsive)
+        const box = document.createElement('div');
+        box.style.width = '260px';
+        box.style.height = '260px';
+        box.style.margin = '0 auto';
+        box.style.background = '#fff';
+        box.style.borderRadius = '12px';
+        box.style.padding = '10px';
+        box.style.boxShadow = '0 2px 10px rgba(0,0,0,0.08)';
+        qrContainer.appendChild(box);
+
+        // Génération QR (H = plus robuste mais moins de capacité)
+        // Si le contenu est trop long, ça peut lever "Too long data" -> on gère en fallback.
+        new QRCode(box, {
+            text: payload,
+            width: 240,
+            height: 240,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.M
+        });
+
+        const hint = document.createElement('div');
+        hint.style.marginTop = '10px';
+        hint.style.color = '#ddd';
+        hint.style.fontSize = '0.95em';
+        hint.style.textAlign = 'center';
+        hint.textContent = "✅ QR code généré (JSON compact). Scannez pour récupérer les résultats.";
+        qrContainer.appendChild(hint);
+    } catch (e) {
+        console.warn("QR generation failed:", e);
+
+        const msg = document.createElement('div');
+        msg.style.padding = '12px';
+        msg.style.borderRadius = '10px';
+        msg.style.background = 'rgba(255,255,255,0.9)';
+        msg.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+        msg.style.color = '#333';
+        msg.innerHTML = "⚠️ <strong>QR code impossible à générer</strong> (données trop longues).<br>Utilisez plutôt <em>Télécharger le CSV</em> ou <em>Copier le CSV</em>.";
+        qrContainer.appendChild(msg);
+    }
+}
+
+
+function ajouterBoutonTelechargement(conteneur, csvData) {
+            const lienTelecharger = document.createElement('a');
+            const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            lienTelecharger.href = url;
+            lienTelecharger.download = 'biathlon_vma_' + new Date().getTime() + '.csv';
+            lienTelecharger.className = 'bouton bouton-primaire';
+            lienTelecharger.textContent = '⬇️ Télécharger le CSV';
+            lienTelecharger.style.marginTop = '15px';
+            lienTelecharger.style.display = 'inline-block';
+            
+            conteneur.appendChild(document.createElement('br'));
+            conteneur.appendChild(lienTelecharger);
+        }
+
+        
+function ajouterBoutonCopier(conteneur, csvData) {
+            const btnCopier = document.createElement('button');
+            btnCopier.className = 'bouton bouton-secondaire';
+            btnCopier.textContent = '📋 Copier le CSV';
+            btnCopier.style.marginTop = '10px';
+            btnCopier.onclick = async () => {
+                try{
+                    if(navigator.clipboard && navigator.clipboard.writeText){
+                        await navigator.clipboard.writeText(csvData);
+                    }else{
+                        // fallback
+                        const ta = document.createElement('textarea');
+                        ta.value = csvData;
+                        ta.style.position = 'fixed';
+                        ta.style.left = '-9999px';
+                        document.body.appendChild(ta);
+                        ta.focus();
+                        ta.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(ta);
+                    }
+                    btnCopier.textContent = '✅ Copié !';
+                    setTimeout(()=>btnCopier.textContent='📋 Copier le CSV', 1800);
+                }catch(e){
+                    alert("Impossible de copier automatiquement. Utilisez plutôt 'Télécharger le CSV'.");
+                    console.warn(e);
+                }
+            };
+            conteneur.appendChild(document.createElement('br'));
+            conteneur.appendChild(btnCopier);
+        }
+
+
+
+        
+        /* ========================================
+           NOUVELLE SÉANCE
+           ======================================== */
+        
+        function nouvelleSeance() {
+            if (confirm('Voulez-vous vraiment commencer une nouvelle séance ? Toutes les données non enregistrées seront perdues.')) {
+                location.reload();
+            }
+        }
+    
+function retourConfiguration(){
+    const recap = document.getElementById('sectionRecapitulatif');
+    const config = document.getElementById('sectionConfiguration');
+    if(recap) recap.classList.add('cache');
+    if(config) config.classList.remove('cache');
+    mettreAJourProgression(1); // Retour au Paramétrage
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+</script>
+
+    <script>
+      // PWA hors-ligne (fonctionne si la page est servie via http(s) / localhost)
+      if (location.protocol !== 'file:' && 'serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+        });
+      }
+    </script>
+
+</body>
+</html>
