@@ -1,5 +1,5 @@
 /* Biathlon VMA - Service Worker (offline-first) */
-const CACHE_NAME = "biathlon-vma-cache-v3";
+const CACHE_NAME = "biathlon-vma-cache-v9";
 
 const PRECACHE_URLS = [
   "./",
