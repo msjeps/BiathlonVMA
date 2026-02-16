@@ -1,48 +1,43 @@
-/* Biathlon VMA - Service Worker (offline-first) */
-const CACHE_NAME = "biathlon-vma-cache-v9";
+/* Biathlon VMA - Service worker (offline-first) */
+
+const CACHE_NAME = "biathlon-vma-cache-v10";
 
 const PRECACHE_URLS = [
   "./",
-  "./index.html",
-  "./manifest.webmanifest",
-  "./icon-192x192.png",
-  "./icon-512x512.png"
+  "index.html",
+  "manifest.webmanifest",
+  "icon_192.png",
+  "icon_512.png"
 ];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS)));
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(PRECACHE_URLS);
+    })
+  );
   self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.map((k) => (k === CACHE_NAME ? null : caches.delete(k))))
-    )
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
   );
   self.clients.claim();
 });
 
 self.addEventListener("fetch", (event) => {
-  const req = event.request;
-  if (req.method !== "GET") return;
-
   event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) return cached;
-
-      return fetch(req)
-        .then((resp) => {
-          if (resp && resp.status === 200) {
-            const clone = resp.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
-          }
-          return resp;
-        })
-        .catch(() => {
-          if (req.mode === "navigate") return caches.match("./index.html");
-          return cached;
-        });
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
     })
   );
 });
