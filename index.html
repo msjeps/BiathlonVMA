@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biathlon VMA</title>
+    <title>Biathlon VMA - 5ème</title>
 
     <meta name="theme-color" content="#2f3f4f">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -262,7 +262,7 @@
         .modale {
             display: none;
             position: fixed;
-            z-index: 2100;
+            z-index: 2100; /* Au-dessus du header (2000) */
             left: 0;
             top: 0;
             width: 100%;
@@ -273,12 +273,12 @@
 
         .modale-contenu {
             background: var(--couleur-fond);
-            margin: 90px auto 5% auto;
+            margin: 90px auto 5% auto; /* 90px en haut pour éviter le header fixe */
             padding: 30px;
             border-radius: var(--rayon);
             width: 90%;
             max-width: 600px;
-            max-height: calc(100vh - 110px);
+            max-height: calc(100vh - 110px); /* Ajuster la hauteur max pour tenir compte du header */
             overflow-y: auto;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             animation: slideIn 0.3s ease-out;
@@ -1190,7 +1190,7 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
                 </div>
                 <div class="resultat-item">
                     <span class="resultat-label">Écart total :</span>
-                    <span class="resultat-valeur" id="ecartTotal">0 plots</span>
+                    <span class="resultat-valeur" id="ecartTotal">0 m</span>
                 </div>
                 <div class="resultat-item">
                     <span class="resultat-label">Total des points de tir :</span>
@@ -1759,9 +1759,9 @@ function qrPenalty(mod){
 
         // Paramètres utilisateur
         let parametres = {
-            bipChrono: true,
-            vibration: true,
-            modeSombre: true
+            bipChrono: true,     // ✅ Activé par défaut
+            vibration: true,     // ✅ Activé par défaut
+            modeSombre: true     // ✅ Activé par défaut
         };
         
         /* ========================================
@@ -1772,7 +1772,17 @@ function qrPenalty(mod){
             genererConfigurationCourses();
             chargerBaremes();
             chargerParametres();
-            mettreAJourProgression(0); // Initialiser à Configuration
+
+            // Restaurer la session si elle existe
+            const sessionRestauree = restaurerSession();
+
+            // Attacher l'auto-save sur tous les champs
+            attacherAutoSave();
+
+            // Si une session a été restaurée, ne pas réinitialiser la progression
+            if (!sessionRestauree) {
+                mettreAJourProgression(0); // Initialiser à Configuration
+            }
         });
         
         /* ========================================
@@ -1822,7 +1832,11 @@ function qrPenalty(mod){
             
             // Vibration sur les appareils qui le supportent
             if (navigator.vibrate) {
-                navigator.vibrate(150); // 150ms de vibration
+                // Pattern : [vibrer, pause, vibrer]
+                // navigator.vibrate([100, 50, 100]); // Double tap (plus marqué)
+                
+                // OU simple vibration longue :
+                navigator.vibrate(150); // 150ms de vibration (bien perceptible)
             }
         }
         
@@ -1877,17 +1891,453 @@ function qrPenalty(mod){
         function chargerParametres() {
             // Charger les paramètres depuis localStorage
             const parametresStr = localStorage.getItem('parametres');
-            
+
             if (parametresStr) {
                 parametres = JSON.parse(parametresStr);
             }
-            
+
             // Appliquer le mode sombre si activé
             if (parametres.modeSombre) {
                 document.body.classList.add('mode-sombre');
             }
         }
-        
+
+        /* ========================================
+           PERSISTENCE DE SESSION (AUTO-SAVE)
+           ======================================== */
+
+        let autoSaveTimeout = null;
+
+        function sauvegarderSession() {
+            // Débounce: attendre 500ms avant de sauvegarder
+            if (autoSaveTimeout) {
+                clearTimeout(autoSaveTimeout);
+            }
+
+            autoSaveTimeout = setTimeout(() => {
+                try {
+                    // Déterminer l'étape actuelle basée sur les sections visibles
+                    let etapeActuelle = 0;
+                    if (!document.getElementById('sectionConfiguration')?.classList.contains('cache')) {
+                        etapeActuelle = 1; // Configuration
+                    } else if (!document.getElementById('sectionRecapitulatif')?.classList.contains('cache')) {
+                        etapeActuelle = 2; // Récapitulatif
+                    } else if (!document.getElementById('sectionDeroulement')?.classList.contains('cache')) {
+                        etapeActuelle = 3; // En cours
+                    }
+
+                    const sessionData = {
+                        // Informations du coureur
+                        nomCoureur: document.getElementById('nomCoureur')?.value || '',
+                        nomObservateur: document.getElementById('nomObservateur')?.value || '',
+                        classe: document.getElementById('classe')?.value || '',
+                        vma: document.getElementById('vma')?.value || '',
+
+                        // Configuration
+                        nombreCourses: document.getElementById('nombreCourses')?.value || 2,
+                        nombreSessions: document.getElementById('nombreSessions')?.value || 2,
+                        tirsParSession: document.getElementById('tirsParSession')?.value || 2,
+
+                        // Configuration des courses
+                        configurationCourses: configurationCourses,
+
+                        // Ordre des éléments
+                        ordreElements: ordreElements,
+
+                        // Progression et résultats
+                        etapeActuelle: etapeActuelle,
+                        etapesTerminees: etapesTerminees,
+                        plotsReelsCourses: plotsReelsCourses,
+                        tempsCourses: tempsCourses,
+                        coursesFinies: coursesFinies,
+                        tirsFinis: tirsFinis,
+                        donneesVitesse: donneesVitesse,
+
+                        // État des chronomètres (sauvegarder l'état mais pas les intervals)
+                        chronometresEtat: chronometres.map(chrono => ({
+                            tempsEcoule: chrono ? chrono.tempsEcoule : 0,
+                            actif: chrono ? chrono.actif : false
+                        })),
+
+                        // Timestamp de sauvegarde
+                        lastSaved: new Date().toISOString()
+                    };
+
+                    // Sauvegarder les résultats de tir
+                    const tirsData = {};
+                    document.querySelectorAll('.tirs-grille select').forEach(select => {
+                        if (select.id && select.value) {
+                            tirsData[select.id] = select.value;
+                        }
+                    });
+                    sessionData.tirsData = tirsData;
+
+                    localStorage.setItem('sessionEnCours', JSON.stringify(sessionData));
+                } catch(e) {
+                    console.error('Erreur lors de la sauvegarde de la session:', e);
+                }
+            }, 500);
+        }
+
+        function restaurerSession() {
+            try {
+                const sessionStr = localStorage.getItem('sessionEnCours');
+                const derniereSeanceStr = localStorage.getItem('derniereSeance');
+
+                // Si une session est EN COURS, la restaurer (priorité)
+                if (sessionStr) {
+                    const sessionData = JSON.parse(sessionStr);
+
+                // Restaurer les informations du coureur
+                if (sessionData.nomCoureur) {
+                    const el = document.getElementById('nomCoureur');
+                    if (el) el.value = sessionData.nomCoureur;
+                }
+                if (sessionData.nomObservateur) {
+                    const el = document.getElementById('nomObservateur');
+                    if (el) el.value = sessionData.nomObservateur;
+                }
+                if (sessionData.classe) {
+                    const el = document.getElementById('classe');
+                    if (el) el.value = sessionData.classe;
+                }
+                if (sessionData.vma) {
+                    const el = document.getElementById('vma');
+                    if (el) el.value = sessionData.vma;
+                }
+
+                // Restaurer la configuration
+                if (sessionData.nombreCourses) {
+                    const el = document.getElementById('nombreCourses');
+                    if (el) el.value = sessionData.nombreCourses;
+                }
+                if (sessionData.nombreSessions) {
+                    const el = document.getElementById('nombreSessions');
+                    if (el) el.value = sessionData.nombreSessions;
+                }
+                if (sessionData.tirsParSession) {
+                    const el = document.getElementById('tirsParSession');
+                    if (el) el.value = sessionData.tirsParSession;
+                }
+
+                // Restaurer les variables globales
+                if (sessionData.configurationCourses) {
+                    configurationCourses = sessionData.configurationCourses;
+                }
+                if (sessionData.ordreElements) {
+                    ordreElements = sessionData.ordreElements;
+                }
+                if (sessionData.etapesTerminees) {
+                    etapesTerminees = sessionData.etapesTerminees;
+                }
+                if (sessionData.plotsReelsCourses) {
+                    plotsReelsCourses = sessionData.plotsReelsCourses;
+                }
+                if (sessionData.tempsCourses) {
+                    tempsCourses = sessionData.tempsCourses;
+                }
+                if (sessionData.nombreSessions) {
+                    nombreSessions = sessionData.nombreSessions;
+                }
+                if (sessionData.tirsParSession) {
+                    tirsParSession = sessionData.tirsParSession;
+                }
+                if (sessionData.coursesFinies) {
+                    coursesFinies = sessionData.coursesFinies;
+                }
+                if (sessionData.tirsFinis) {
+                    tirsFinis = sessionData.tirsFinis;
+                }
+                if (sessionData.donneesVitesse) {
+                    donneesVitesse = sessionData.donneesVitesse;
+                }
+
+                // Regénérer la configuration des courses si nécessaire
+                genererConfigurationCourses();
+
+                // Restaurer les valeurs de configuration de courses si elles existent
+                if (sessionData.configurationCourses && sessionData.configurationCourses.length > 0) {
+                    setTimeout(() => {
+                        sessionData.configurationCourses.forEach((course, index) => {
+                            const dureeEl = document.getElementById('duree' + index);
+                            const intensiteEl = document.getElementById('intensite' + index);
+                            if (dureeEl) dureeEl.value = course.duree;
+                            if (intensiteEl) intensiteEl.value = course.intensite;
+                        });
+                    }, 100);
+                }
+
+                // Restaurer l'étape actuelle et afficher les bonnes sections
+                if (sessionData.etapeActuelle) {
+                    const etape = sessionData.etapeActuelle;
+
+                    // Masquer toutes les sections
+                    document.getElementById('sectionConfiguration')?.classList.add('cache');
+                    document.getElementById('sectionRecapitulatif')?.classList.add('cache');
+                    document.getElementById('sectionDeroulement')?.classList.add('cache');
+
+                    // Afficher la bonne section selon l'étape
+                    if (etape === 1) {
+                        document.getElementById('sectionConfiguration')?.classList.remove('cache');
+                        mettreAJourProgression(1);
+                    } else if (etape === 2) {
+                        document.getElementById('sectionRecapitulatif')?.classList.remove('cache');
+                        mettreAJourProgression(2);
+                        // Régénérer le récapitulatif
+                        setTimeout(() => {
+                            afficherRecapitulatif();
+                        }, 100);
+                    } else if (etape === 3) {
+                        document.getElementById('sectionDeroulement')?.classList.remove('cache');
+                        document.getElementById('sectionEnregistrement')?.classList.remove('cache');
+                        mettreAJourProgression(3);
+                        // Régénérer le déroulement
+                        setTimeout(() => {
+                            genererDeroulement();
+                            // Restaurer les chronomètres après génération du déroulement
+                            if (sessionData.chronometresEtat && sessionData.chronometresEtat.length > 0) {
+                                setTimeout(() => {
+                                    restaurerChronometres(sessionData.chronometresEtat);
+                                }, 200);
+                            }
+                            // Restaurer les résultats de tir APRÈS génération du déroulement
+                            if (sessionData.tirsData) {
+                                setTimeout(() => {
+                                    console.log('Restauration des tirs:', sessionData.tirsData);
+                                    let compteurRestaurations = 0;
+                                    Object.keys(sessionData.tirsData).forEach(selectId => {
+                                        const select = document.getElementById(selectId);
+                                        if (select) {
+                                            select.value = sessionData.tirsData[selectId];
+                                            compteurRestaurations++;
+                                            console.log(`Restauré ${selectId} = ${sessionData.tirsData[selectId]}`);
+                                        } else {
+                                            console.warn(`Select ${selectId} introuvable!`);
+                                        }
+                                    });
+                                    console.log(`${compteurRestaurations} scores de tirs restaurés`);
+
+                                    // Recalculer le total des points après restauration
+                                    setTimeout(() => {
+                                        calculerTotalPoints();
+                                    }, 100);
+                                }, 600);
+                            }
+                        }, 100);
+                    }
+                } else {
+                    // Restaurer l'état des chronomètres si on est déjà sur la page de déroulement
+                    if (sessionData.chronometresEtat && sessionData.chronometresEtat.length > 0) {
+                        setTimeout(() => {
+                            restaurerChronometres(sessionData.chronometresEtat);
+                        }, 300);
+                    }
+                }
+
+                return true;
+
+            } else if (derniereSeanceStr) {
+                // Aucune session en cours, mais il y a une dernière séance terminée
+                // Restaurer le QR code
+                setTimeout(() => {
+                    restaurerSeanceTerminee();
+                }, 100);
+                return true;
+
+            } else {
+                // Aucune session à restaurer
+                return false;
+            }
+            } catch(e) {
+                console.error('Erreur lors de la restauration de la session:', e);
+                return false;
+            }
+        }
+
+        function restaurerChronometres(chronometresEtat) {
+            try {
+                chronometresEtat.forEach((etat, index) => {
+                    if (!chronometres[index]) {
+                        // Initialiser le chronomètre s'il n'existe pas encore
+                        chronometres[index] = {
+                            tempsEcoule: 0,
+                            actif: false,
+                            interval: null
+                        };
+                    }
+
+                    // Restaurer le temps écoulé
+                    chronometres[index].tempsEcoule = etat.tempsEcoule || 0;
+
+                    // Afficher le temps restauré
+                    if (chronometres[index].tempsEcoule > 0) {
+                        afficherTempsCourse(index, chronometres[index].tempsEcoule);
+                    }
+
+                    // Si le chronomètre était actif, le redémarrer
+                    if (etat.actif) {
+                        // Redémarrer le chronomètre
+                        chronometres[index].actif = true;
+                        const depart = Date.now() - chronometres[index].tempsEcoule;
+                        const config = configurationCourses[index];
+                        const dureeMax = config.duree * 1000; // en millisecondes
+
+                        chronometres[index].interval = setInterval(function() {
+                            chronometres[index].tempsEcoule = Date.now() - depart;
+
+                            // Arrêt automatique à la durée configurée
+                            if (chronometres[index].tempsEcoule >= dureeMax) {
+                                chronometres[index].tempsEcoule = dureeMax;
+                                afficherTempsCourse(index, dureeMax);
+                                stopChrono(index);
+                                return;
+                            }
+
+                            afficherTempsCourse(index, chronometres[index].tempsEcoule);
+                        }, 100);
+
+                        // Mettre à jour l'état des boutons
+                        const btnStart = document.getElementById('btnStart' + index);
+                        const btnStop = document.getElementById('btnStop' + index);
+                        const btnPlus = document.getElementById('btnPlus' + index);
+
+                        if (btnStart) btnStart.disabled = true;
+                        if (btnStop) btnStop.disabled = false;
+                        if (btnPlus) btnPlus.disabled = false;
+                    }
+                });
+
+                // Restaurer l'affichage des distances pour chaque course
+                if (plotsReelsCourses && plotsReelsCourses.length > 0) {
+                    plotsReelsCourses.forEach((plots, index) => {
+                        if (plots > 0) {
+                            const distanceReelle = plots * 10; // chaque plot = 10m
+                            const distanceEl = document.getElementById('distance' + index);
+                            if (distanceEl) {
+                                distanceEl.textContent = distanceReelle + ' m';
+                            }
+                        }
+                    });
+                }
+
+                // Restaurer l'affichage des écarts et graphiques pour les courses terminées
+                if (coursesFinies && coursesFinies.length > 0) {
+                    coursesFinies.forEach((finie, index) => {
+                        if (finie) {
+                            // Afficher l'écart final
+                            afficherEcartFinal(index);
+
+                            // Recréer le graphique de vitesse si on a les données
+                            if (donneesVitesse && donneesVitesse[index] && donneesVitesse[index].temps.length > 0) {
+                                creerGraphiqueVitesse(index);
+                            }
+
+                            // Désactiver tous les boutons pour une course terminée
+                            const btnStart = document.getElementById('btnStart' + index);
+                            const btnStop = document.getElementById('btnStop' + index);
+                            const btnPlus = document.getElementById('btnPlus' + index);
+                            if (btnStart) btnStart.disabled = true;
+                            if (btnStop) btnStop.disabled = true;
+                            if (btnPlus) btnPlus.disabled = true;
+                        }
+                    });
+                }
+
+                // Recalculer la distance totale
+                calculerDistanceTotale();
+
+            } catch(e) {
+                console.error('Erreur lors de la restauration des chronomètres:', e);
+            }
+        }
+
+        function restaurerSeanceTerminee() {
+            try {
+                const derniereSeanceStr = localStorage.getItem('derniereSeance');
+                if (!derniereSeanceStr) return;
+
+                const donnees = JSON.parse(derniereSeanceStr);
+
+                // Afficher la section d'enregistrement et cacher les autres
+                document.getElementById('sectionConfiguration')?.classList.add('cache');
+                document.getElementById('sectionRecapitulatif')?.classList.add('cache');
+                document.getElementById('sectionDeroulement')?.classList.add('cache');
+                document.getElementById('sectionEnregistrement')?.classList.remove('cache');
+
+                // Mettre à jour la progression
+                mettreAJourProgression(4);
+
+                // Générer le CSV
+                const csv = genererCSV(donnees);
+
+                // Afficher le bloc QR code
+                const blocQR = document.getElementById('qrContainer');
+                if (blocQR) {
+                    blocQR.classList.remove('cache');
+                    // Nettoyer d'anciens boutons éventuels
+                    blocQR.querySelectorAll('a.bouton, button.bouton-secondaire').forEach(el => el.remove());
+                }
+
+                // Générer le QR code
+                genererQRCode(genererPayloadQRUltraCompact(donnees));
+
+                // Ajouter les boutons de téléchargement
+                if (blocQR) {
+                    ajouterBoutonTelechargement(blocQR, csv);
+                    ajouterBoutonCopier(blocQR, csv);
+                }
+
+                console.log('Séance terminée restaurée avec QR code');
+            } catch(e) {
+                console.error('Erreur lors de la restauration de la séance terminée:', e);
+            }
+        }
+
+        function attacherAutoSave() {
+            // Attacher les listeners sur tous les champs de formulaire
+            const champsASurveiller = [
+                'nomCoureur', 'nomObservateur', 'classe', 'vma',
+                'nombreCourses', 'nombreSessions', 'tirsParSession'
+            ];
+
+            champsASurveiller.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', sauvegarderSession);
+                    element.addEventListener('change', sauvegarderSession);
+                }
+            });
+
+            // Observer les changements dynamiques dans le DOM pour les champs de courses et tirs
+            const observer = new MutationObserver(() => {
+                // Attacher aux champs de configuration de courses
+                document.querySelectorAll('[id^="duree"], [id^="intensite"]').forEach(el => {
+                    if (!el.hasAttribute('data-autosave-attached')) {
+                        el.setAttribute('data-autosave-attached', 'true');
+                        el.addEventListener('input', sauvegarderSession);
+                        el.addEventListener('change', sauvegarderSession);
+                    }
+                });
+
+                // Attacher aux sélecteurs de tirs
+                document.querySelectorAll('.tirs-grille select').forEach(el => {
+                    if (!el.hasAttribute('data-autosave-attached')) {
+                        el.setAttribute('data-autosave-attached', 'true');
+                        el.addEventListener('change', sauvegarderSession);
+                    }
+                });
+            });
+
+            // Observer les changements dans le conteneur principal
+            const conteneur = document.querySelector('.conteneur-principal');
+            if (conteneur) {
+                observer.observe(conteneur, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+        }
+
         /* ========================================
            ACCÈS PROFESSEUR
            ======================================== */
@@ -2074,9 +2524,12 @@ function qrPenalty(mod){
             const temp = ordreElements[position];
             ordreElements[position] = ordreElements[nouvellePosition];
             ordreElements[nouvellePosition] = temp;
-            
+
             // Réafficher
             afficherOrdreRecap();
+
+            // Sauvegarder la session automatiquement
+            sauvegarderSession();
         }
         
         function confirmerEtDemarrer() {
@@ -2086,11 +2539,14 @@ function qrPenalty(mod){
             document.getElementById('sectionRecapitulatif').classList.add('cache');
             document.getElementById('sectionDeroulement').classList.remove('cache');
             document.getElementById('sectionEnregistrement').classList.remove('cache');
-            
+
             mettreAJourProgression(3); // Étape En cours
-            
+
             // Générer le déroulement avec l'ordre confirmé
             genererDeroulement();
+
+            // Sauvegarder la session automatiquement
+            sauvegarderSession();
 
         }
         
@@ -2100,45 +2556,51 @@ function qrPenalty(mod){
         
         function genererConfigurationCourses() {
             const nombreCourses = parseInt(document.getElementById('nombreCourses').value);
-            
+
             if (isNaN(nombreCourses) || nombreCourses < 1 || nombreCourses > 5) {
                 return;
             }
-            
+
             const container = document.getElementById('coursesConfig');
             container.innerHTML = '<h3 style="margin-bottom: 15px;">Configuration des courses :</h3>';
-            
+
+            // Sauvegarder les valeurs existantes avant de réinitialiser
+            const configExistante = configurationCourses && configurationCourses.length > 0 ? [...configurationCourses] : null;
             configurationCourses = [];
-            
+
             for (let i = 0; i < nombreCourses; i++) {
+                // Utiliser les valeurs existantes si disponibles, sinon les valeurs par défaut
+                const dureeExistante = configExistante && configExistante[i] ? configExistante[i].duree : 60;
+                const intensiteExistante = configExistante && configExistante[i] ? configExistante[i].intensite : 80;
+
                 const div = document.createElement('div');
                 div.style.marginBottom = '15px';
                 div.style.padding = '15px';
                 div.style.background = 'rgba(149, 225, 211, 0.2)';
                 div.style.borderRadius = '10px';
-                
+
                 const titre = document.createElement('h4');
                 titre.textContent = `Course ${i + 1}`;
                 titre.style.marginBottom = '10px';
                 div.appendChild(titre);
-                
+
                 const grille = document.createElement('div');
                 grille.className = 'grille-2col';
                 grille.innerHTML = `
                     <div class="groupe-champ" style="margin-bottom: 0;">
                         <label for="duree${i}">Durée (secondes) :</label>
-                        <input type="number" id="duree${i}" min="10" max="600" value="60">
+                        <input type="number" id="duree${i}" min="10" max="600" value="${dureeExistante}">
                     </div>
                     <div class="groupe-champ" style="margin-bottom: 0;">
                         <label for="intensite${i}">Intensité (% VMA) :</label>
-                        <input type="number" id="intensite${i}" min="60" max="120" step="5" value="80">
+                        <input type="number" id="intensite${i}" min="60" max="120" step="5" value="${intensiteExistante}">
                     </div>
                 `;
-                
+
                 div.appendChild(grille);
                 container.appendChild(div);
-                
-                configurationCourses.push({ duree: 60, intensite: 80 });
+
+                configurationCourses.push({ duree: dureeExistante, intensite: intensiteExistante });
             }
         }
         
@@ -2190,9 +2652,12 @@ function qrPenalty(mod){
             // Masquer la configuration et afficher le récapitulatif
             document.getElementById('sectionConfiguration').classList.add('cache');
             document.getElementById('sectionRecapitulatif').classList.remove('cache');
-            
+
             mettreAJourProgression(2); // Étape Récapitulatif
             afficherRecapitulatif();
+
+            // Sauvegarder la session automatiquement
+            sauvegarderSession();
         }
         
         /* ========================================
@@ -2221,7 +2686,9 @@ function marquerEtapeTerminee(type, index, value=true){
 }
 
 function estTirTermine(sessionIndex){
-    const selects = document.querySelectorAll(`.tir-grille[data-session="${sessionIndex}"] select`);
+    const grilleDiv = document.getElementById('tirsGrille' + sessionIndex);
+    if(!grilleDiv) return false;
+    const selects = grilleDiv.querySelectorAll('select');
     if(!selects || selects.length === 0) return false;
     for(const s of selects){
         if(!s.value || s.value === "") return false;
@@ -2291,7 +2758,14 @@ function genererDeroulement() {
             const vma = parseFloat(document.getElementById('vma').value);
             const container = document.getElementById('deroulementContainer');
             container.innerHTML = '';
-            
+
+            // Sauvegarder les valeurs existantes avant de réinitialiser
+            const plotsSauvegardes = plotsReelsCourses && plotsReelsCourses.length > 0 ? [...plotsReelsCourses] : null;
+            const tempsSauvegardes = tempsCourses && tempsCourses.length > 0 ? [...tempsCourses] : null;
+            const coursesFiniesSauvegardes = coursesFinies && coursesFinies.length > 0 ? [...coursesFinies] : null;
+            const tirsFinisauvegardes = tirsFinis && tirsFinis.length > 0 ? [...tirsFinis] : null;
+            const donneesVitesseSauvegardes = donneesVitesse && donneesVitesse.length > 0 ? JSON.parse(JSON.stringify(donneesVitesse)) : null;
+
             // Initialiser les tableaux
             plotsReelsCourses = new Array(configurationCourses.length).fill(0);
             chronometres = new Array(configurationCourses.length).fill(null);
@@ -2328,6 +2802,33 @@ function genererDeroulement() {
             
             calculerDistanceTotale();
             mettreAJourVerrouillages();
+
+            // Restaurer les valeurs sauvegardées si elles existent
+            if (plotsSauvegardes && plotsSauvegardes.length === plotsReelsCourses.length) {
+                plotsReelsCourses = [...plotsSauvegardes];
+                // Mettre à jour l'affichage des distances
+                plotsReelsCourses.forEach((plots, index) => {
+                    if (plots > 0) {
+                        const distanceReelle = plots * 10;
+                        const distanceEl = document.getElementById('distance' + index);
+                        if (distanceEl) {
+                            distanceEl.textContent = distanceReelle + ' m';
+                        }
+                    }
+                });
+            }
+            if (tempsSauvegardes && tempsSauvegardes.length === tempsCourses.length) {
+                tempsCourses = [...tempsSauvegardes];
+            }
+            if (coursesFiniesSauvegardes && coursesFiniesSauvegardes.length === coursesFinies.length) {
+                coursesFinies = [...coursesFiniesSauvegardes];
+            }
+            if (tirsFinisauvegardes && tirsFinisauvegardes.length === tirsFinis.length) {
+                tirsFinis = [...tirsFinisauvegardes];
+            }
+            if (donneesVitesseSauvegardes && donneesVitesseSauvegardes.length === donneesVitesse.length) {
+                donneesVitesse = JSON.parse(JSON.stringify(donneesVitesseSauvegardes));
+            }
         }
         
         
@@ -2495,13 +2996,13 @@ function genererDeroulement() {
                 chronometres[index].actif = true;
                 const depart = Date.now() - chronometres[index].tempsEcoule;
                 const dureeMax = configurationCourses[index].duree * 1000; // en millisecondes
-                
+
                 // Jouer le bip de démarrage
                 jouerBip('start');
-                
+
                 chronometres[index].interval = setInterval(function() {
                     chronometres[index].tempsEcoule = Date.now() - depart;
-                    
+
                     // Arrêt automatique à la durée configurée
                     if (chronometres[index].tempsEcoule >= dureeMax) {
                         chronometres[index].tempsEcoule = dureeMax;
@@ -2509,14 +3010,17 @@ function genererDeroulement() {
                         stopChrono(index);
                         return;
                     }
-                    
+
                     afficherTempsCourse(index, chronometres[index].tempsEcoule);
                 }, 100);
-                
+
                 document.getElementById('btnStart' + index).disabled = true;
                 document.getElementById('btnStop' + index).disabled = false;
                 // Activer le bouton + pendant la course
                 document.getElementById('btnPlus' + index).disabled = false;
+
+                // Sauvegarder la session automatiquement
+                sauvegarderSession();
             }
         }
         
@@ -2524,23 +3028,26 @@ function genererDeroulement() {
             chronometres[index].actif = false;
             clearInterval(chronometres[index].interval);
             tempsCourses[index] = chronometres[index].tempsEcoule;
-            
+
             // Jouer le bip de fin
             jouerBip('stop');
-            
+
             document.getElementById('btnStart' + index).disabled = true;
             document.getElementById('btnStop' + index).disabled = true;
             // Désactiver le bouton + après la course
             document.getElementById('btnPlus' + index).disabled = true;
-            
+
             // Afficher l'écart à la fin de la course
             afficherEcartFinal(index);
-            
+
             // Créer le graphique de vitesse
             creerGraphiqueVitesse(index);
-       
+
             coursesFinies[index] = true;
             mettreAJourVerrouillages();
+
+            // Sauvegarder la session automatiquement
+            sauvegarderSession();
         }
         
         function afficherTempsCourse(index, ms) {
@@ -2582,7 +3089,7 @@ function genererDeroulement() {
                 ecartValeur.textContent = ecartPlots + ' plots (' + ecartMetres + 'm)';
                 ecartDiv.className = 'ecart-info negatif';
             } else {
-                ecartValeur.textContent = '0 plots (0m)';
+                ecartValeur.textContent = '0 m';
                 ecartDiv.className = 'ecart-info';
             }
             
@@ -2737,9 +3244,12 @@ function genererDeroulement() {
             const temp = ordreElements[positionActuelle];
             ordreElements[positionActuelle] = ordreElements[nouvellePosition];
             ordreElements[nouvellePosition] = temp;
-            
+
             // Régénérer tout le déroulement avec le nouvel ordre
             genererDeroulement();
+
+            // Sauvegarder la session automatiquement
+            sauvegarderSession();
         }
         
         /* ========================================
@@ -2748,11 +3258,11 @@ function genererDeroulement() {
         
         function ajouterPlot(indexCourse) {
             plotsReelsCourses[indexCourse]++;
-            
+
             const distanceReelle = plotsReelsCourses[indexCourse] * 10;
             // Afficher uniquement la distance parcourue en temps réel
             document.getElementById('distance' + indexCourse).textContent = distanceReelle + ' m';
-            
+
             // Vibration et animation
             vibrer();
             const bouton = document.getElementById('btnPlus' + indexCourse);
@@ -2760,16 +3270,16 @@ function genererDeroulement() {
             setTimeout(() => {
                 bouton.classList.remove('vibrant');
             }, 150);
-            
+
             // Enregistrer les données de vitesse
             const tempsActuel = chronometres[indexCourse].tempsEcoule / 1000; // en secondes
             const donnees = donneesVitesse[indexCourse];
-            
+
             if (donnees.temps.length > 0) {
                 // Calculer la vitesse instantanée
                 const deltaDistance = (plotsReelsCourses[indexCourse] - donnees.plotsPrecedent) * 10; // en mètres
                 const deltaTemps = tempsActuel - donnees.tempsPrecedent; // en secondes
-                
+
                 if (deltaTemps > 0) {
                     const vitesseKmH = (deltaDistance / deltaTemps) * 3.6; // conversion m/s en km/h
                     donnees.vitesses.push(vitesseKmH);
@@ -2783,12 +3293,15 @@ function genererDeroulement() {
                     donnees.temps.push(tempsActuel);
                 }
             }
-            
+
             donnees.plotsPrecedent = plotsReelsCourses[indexCourse];
             donnees.tempsPrecedent = tempsActuel;
-            
+
             calculerDistanceTotale();
             mettreAJourVerrouillages();
+
+            // Sauvegarder la session automatiquement
+            sauvegarderSession();
         }
         
         /* ========================================
@@ -2818,10 +3331,10 @@ function genererDeroulement() {
                 ecartElement.textContent = '+' + ecartPlots.toFixed(1) + ' plots (+' + ecartMetres + 'm)';
                 ecartElement.style.color = '#11998e';
             } else if (ecartPlots < 0) {
-                ecartElement.textContent = ecartPlots.toFixed(1) + ' plots (' + ecartMetres + 'm)';
+                ecartElement.textContent = ecartMetres.toFixed(1) + ' m';
                 ecartElement.style.color = '#ee0979';
             } else {
-                ecartElement.textContent = '0 plots (0m)';
+                ecartElement.textContent = '0 m';
                 ecartElement.style.color = 'var(--couleur-primaire)';
             }
             
@@ -3058,7 +3571,10 @@ function genererDeroulement() {
             };
             
             localStorage.setItem('derniereSeance', JSON.stringify(donnees));
-            
+
+            // La session est terminée, supprimer la session en cours
+            localStorage.removeItem('sessionEnCours');
+
             const csv = genererCSV(donnees);
 
             // Affichage du bloc QR + actions CSV
@@ -3327,12 +3843,36 @@ function ajouterBoutonCopier(conteneur, csvData) {
            NOUVELLE SÉANCE
            ======================================== */
         
-        function nouvelleSeance() {
-            if (confirm('Voulez-vous vraiment commencer une nouvelle séance ? Toutes les données non enregistrées seront perdues.')) {
-                location.reload();
-            }
-        }
-    
+        
+function nouvelleSeance() {
+    // Supprimer UNIQUEMENT les données de session en cours
+    // Ne PAS toucher aux parametres et barèmes
+    try {
+        localStorage.removeItem('sessionEnCours');
+        localStorage.removeItem('derniereSeance');
+    } catch(e){}
+
+    try { sessionStorage.clear(); } catch(e){}
+
+    // Réinitialiser les variables globales de session
+    try {
+        donneesSeance = null;
+        resultats = null;
+        historique = null;
+        etapesTerminees = {};
+        configurationCourses = [];
+        plotsReelsCourses = [];
+        chronometres = [];
+        tempsCourses = [];
+        donneesVitesse = [];
+        ordreElements = [];
+    } catch(e){}
+
+    // Forcer un vrai rechargement propre (important sur tablette / WebView)
+    const base = window.location.href.split('#')[0].split('?')[0];
+    window.location.replace(base + '?reset=' + Date.now());
+}
+   
 function retourConfiguration(){
     const recap = document.getElementById('sectionRecapitulatif');
     const config = document.getElementById('sectionConfiguration');
