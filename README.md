@@ -6,8 +6,8 @@ Biathlon VMA est une application éducative conçue pour les cours d'EPS en coll
 - `index.html` - Application principale (votre version actuelle)
 - `manifest.webmanifest` - Configuration PWA
 - `service-worker.js` - Cache offline
-- `icon-192x192.png` - Icône application (petite)
-- `icon-512x512.png` - Icône application (grande)
+- `icon-192.png` - Icône application (petite)
+- `icon-512.png` - Icône application (grande)
 
 # 🚀 Installation rapide
 
@@ -30,11 +30,11 @@ Biathlon VMA est une application éducative conçue pour les cours d'EPS en coll
 # ✨ Configuration application
 Accès professeur via le menu "Configuration des barèmes"
 (protégé par mot de passe : ADMINPROF)
-1. Réglage des points à attribuer au lancer de vortex selon les zones atteintes 
-2. Réglage des points à attribuer en fonction des écarts dans les courses 
+1. Réglage des points à attribuer en fonction des points d'impact du vortex (zones configurées tous les 5 mètres de zone 1 à 10)
+2. Réglage des points à attribuer en fonction des écarts dans les courses (plots placés tous les 10 mètres)
 
 
 ---
-**Version** : 1.0
+**Version** : 1.1
 **Créé pour** : Collège Mont Saint Jean - Antibes 
 **Par** : Nathalie Prenois
