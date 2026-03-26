@@ -2283,7 +2283,7 @@ function qrPenalty(mod){
 
                 // Ajouter les boutons de téléchargement
                 if (blocQR) {
-                    ajouterBoutonTelechargement(blocQR, csv);
+                    ajouterBoutonTelechargement(blocQR, csv, donnees);
                     ajouterBoutonCopier(blocQR, csv);
                 }
 
@@ -3589,7 +3589,7 @@ function genererDeroulement() {
 
             // Ajoute boutons (même si le QR échoue)
             if(blocQR){
-                ajouterBoutonTelechargement(blocQR, csv);
+                ajouterBoutonTelechargement(blocQR, csv, donnees);
                 ajouterBoutonCopier(blocQR, csv);
             }
             
@@ -3613,14 +3613,11 @@ function genererCSV(donnees) {
     const SEP = ';';
 
     const entetes = [
-        'Date séance',
         'Prénom coureur',
         'Prénom observateur',
-        'Classe',
         'VMA saisie (km/h)',
         'Distance théorique totale (m)',
-        'Distance réelle totale (m)',
-        'Ordre parcours'
+        'Distance réelle totale (m)'
     ];
 
     const nbCourses = (donnees.detailsCourses || []).length;
@@ -3642,20 +3639,12 @@ function genererCSV(donnees) {
     }
     entetes.push('Score tirs');
 
-    const ordreTexte = (donnees.ordreElements || []).map((el, idx) => {
-        if (el.type === 'course') return `${idx + 1}:C${el.index + 1}`;
-        return `${idx + 1}:T${el.index + 1}`;
-    }).join('>');
-
     const valeurs = [
-        donnees.dateSeance || '',
         donnees.nomCoureur || '',
         donnees.nomObservateur || '',
-        donnees.classe || '',
         donnees.vma || '',
         donnees.distanceTheoriqueTotale || 0,
-        donnees.distanceReelleTotale || 0,
-        '"' + ordreTexte + '"'
+        donnees.distanceReelleTotale || 0
     ];
 
     for (let i = 0; i < nbCourses; i++) {
@@ -3685,9 +3674,8 @@ function genererCSV(donnees) {
 
 function genererPayloadQRUltraCompact(donnees){
     // JSON ultra-compact (clés courtes + tableaux) pour maximiser la capacité QR
-    // Schéma v1:
-    // {v:1,d:date,c:coureur,o:observateur,cl:classe,vm:vma,dt:distTheoTot,dr:distReelTot,or:[ordre],cs:[[...courses]],sc:scoreCourse,ts:[scoresSessions],st:scoreTirs}
-    const ordre = (donnees.ordreElements || []).map(el => (el.type === 'course' ? (el.index+1) : -(el.index+1)));
+    // Schéma v2 : sans classe, date, ordre (déjà dans le nom du fichier CSV)
+    // {v:2,c:coureur,o:observateur,vm:vma,dt:distTheoTot,dr:distReelTot,cs:[[...courses]],sc:scoreCourse,ts:[scoresSessions],st:scoreTirs}
     const cs = (donnees.detailsCourses || []).map(c => [
         +(c.duree ?? 0),             // dur (s)
         +(c.intensite ?? 0),         // intensité (%)
@@ -3699,15 +3687,12 @@ function genererPayloadQRUltraCompact(donnees){
     const ts = (donnees.detailsTirs || []).map(t => (t.scores || ""));
 
     const obj = {
-        v: 1,
-        d: donnees.dateSeance || "",
+        v: 2,
         c: donnees.nomCoureur || "",
         o: donnees.nomObservateur || "",
-        cl: donnees.classe || "",
         vm: donnees.vma || "",
         dt: +(donnees.distanceTheoriqueTotale || 0),
         dr: +(donnees.distanceReelleTotale || 0),
-        or: ordre,
         cs: cs,
         sc: (donnees.pointsCourse != null ? +Number(donnees.pointsCourse).toFixed(1) : ""),
         ts: ts,
@@ -3715,7 +3700,7 @@ function genererPayloadQRUltraCompact(donnees){
     };
 
     // Préfixe très court pour identifier le format
-    return "BJ1|" + JSON.stringify(obj);
+    return "BJ2|" + JSON.stringify(obj);
 }
 
 
@@ -3734,73 +3719,124 @@ function genererQRCode(csvData) {
 
     qrContainer.innerHTML = '';
 
-    // Payload : on met une signature + le CSV (UTF-8)
-    const payload = csvData;
+    // Normalise en ASCII pur (contourne un bug UTF-8 dans qrcode.min.js
+    // où le buffer multi-octets n'est pas réinitialisé entre les caractères)
+    const payload = csvData.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-    try {
-        // La lib expose QRCode en global
-        if (typeof QRCode === 'undefined') {
-            throw new Error("QRCode (lib) indisponible");
+    // Vérification lib QRCode
+    if (typeof QRCode === 'undefined') {
+        console.error("QRCode library not loaded");
+        const msg = document.createElement('div');
+        msg.style.padding = '12px';
+        msg.style.borderRadius = '10px';
+        msg.style.background = 'rgba(255,255,255,0.9)';
+        msg.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+        msg.style.color = '#c00';
+        msg.innerHTML = "⚠️ <strong>Bibliothèque QR non chargée.</strong><br>Utilisez <em>Télécharger le CSV</em> ou <em>Copier le CSV</em>.";
+        qrContainer.appendChild(msg);
+        return;
+    }
+
+    // Essai progressif : L (max capacité) puis M, puis payload tronqué
+    const niveaux = [QRCode.CorrectLevel.L, QRCode.CorrectLevel.M];
+    let success = false;
+
+    for (const niveau of niveaux) {
+        try {
+            qrContainer.innerHTML = '';
+
+            const box = document.createElement('div');
+            box.style.width = '260px';
+            box.style.height = '260px';
+            box.style.margin = '0 auto';
+            box.style.background = '#fff';
+            box.style.borderRadius = '12px';
+            box.style.padding = '10px';
+            box.style.boxShadow = '0 2px 10px rgba(0,0,0,0.08)';
+            qrContainer.appendChild(box);
+
+            new QRCode(box, {
+                text: payload,
+                width: 240,
+                height: 240,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: niveau
+            });
+
+            const hint = document.createElement('div');
+            hint.style.marginTop = '10px';
+            hint.style.color = '#666';
+            hint.style.fontSize = '0.95em';
+            hint.style.textAlign = 'center';
+            hint.textContent = "✅ QR code généré. Scannez pour récupérer les résultats.";
+            qrContainer.appendChild(hint);
+            success = true;
+            break;
+        } catch (e) {
+            console.warn("QR level " + niveau + " failed (" + payload.length + " chars):", e.message);
         }
+    }
 
-        // Conteneur carré (responsive)
-        const box = document.createElement('div');
-        box.style.width = '260px';
-        box.style.height = '260px';
-        box.style.margin = '0 auto';
-        box.style.background = '#fff';
-        box.style.borderRadius = '12px';
-        box.style.padding = '10px';
-        box.style.boxShadow = '0 2px 10px rgba(0,0,0,0.08)';
-        qrContainer.appendChild(box);
-
-        // Génération QR (H = plus robuste mais moins de capacité)
-        // Si le contenu est trop long, ça peut lever "Too long data" -> on gère en fallback.
-        new QRCode(box, {
-            text: payload,
-            width: 240,
-            height: 240,
-            colorDark: "#000000",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.M
-        });
-
-        const hint = document.createElement('div');
-        hint.style.marginTop = '10px';
-        hint.style.color = '#666';
-        hint.style.fontSize = '0.95em';
-        hint.style.textAlign = 'center';
-        hint.textContent = "✅ QR code généré (JSON compact). Scannez pour récupérer les résultats.";
-        qrContainer.appendChild(hint);
-    } catch (e) {
-        console.warn("QR generation failed:", e);
-
+    if (!success) {
+        qrContainer.innerHTML = '';
+        console.warn("QR generation failed for all levels, payload length:", payload.length);
         const msg = document.createElement('div');
         msg.style.padding = '12px';
         msg.style.borderRadius = '10px';
         msg.style.background = 'rgba(255,255,255,0.9)';
         msg.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
         msg.style.color = '#333';
-        msg.innerHTML = "⚠️ <strong>QR code impossible à générer</strong> (données trop longues).<br>Utilisez plutôt <em>Télécharger le CSV</em> ou <em>Copier le CSV</em>.";
+        msg.innerHTML = "⚠️ <strong>QR code impossible à générer</strong> (données trop longues : " + payload.length + " car.).<br>Utilisez plutôt <em>Télécharger le CSV</em> ou <em>Copier le CSV</em>.";
         qrContainer.appendChild(msg);
     }
 }
 
 
-function ajouterBoutonTelechargement(conteneur, csvData) {
-            const lienTelecharger = document.createElement('a');
-            const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            
-            lienTelecharger.href = url;
-            lienTelecharger.download = 'biathlon_vma_' + new Date().getTime() + '.csv';
-            lienTelecharger.className = 'bouton bouton-primaire';
-            lienTelecharger.textContent = '⬇️ Télécharger le CSV';
-            lienTelecharger.style.marginTop = '15px';
-            lienTelecharger.style.display = 'inline-block';
-            
+function ajouterBoutonTelechargement(conteneur, csvData, donnees) {
+            const classe = (donnees && donnees.classe || 'classe').replace(/[^a-zA-Z0-9_-]/g, '_');
+            const dateStr = (donnees && donnees.dateSeance || '').replace(/[/:]/g, '-').replace(/ /g, '_') || new Date().toISOString().slice(0,10);
+            const fileName = 'biathlon_vma_' + classe + '_' + dateStr + '.csv';
+
+            const btnTelecharger = document.createElement('button');
+            btnTelecharger.className = 'bouton bouton-primaire';
+            btnTelecharger.textContent = '⬇️ TÉLÉCHARGER LE CSV';
+            btnTelecharger.style.marginTop = '15px';
+            btnTelecharger.style.display = 'inline-block';
+            btnTelecharger.style.cursor = 'pointer';
+
+            btnTelecharger.onclick = function() {
+                // APK Android : utilise l'interface Kotlin pour sauvegarder
+                if (typeof AndroidDownload !== 'undefined' && AndroidDownload.saveFile) {
+                    try {
+                        var base64 = btoa(unescape(encodeURIComponent(csvData)));
+                        AndroidDownload.saveFile(base64, fileName, 'text/csv');
+                        btnTelecharger.textContent = '✅ Fichier sauvegardé !';
+                        setTimeout(function(){ btnTelecharger.textContent = '⬇️ TÉLÉCHARGER LE CSV'; }, 2500);
+                        return;
+                    } catch(e) {
+                        console.warn('AndroidDownload failed, fallback to blob:', e);
+                    }
+                }
+                // Fallback navigateur classique (web / hors APK)
+                try {
+                    var blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+                    var url = URL.createObjectURL(blob);
+                    var a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+                } catch(e2) {
+                    alert('Téléchargement impossible. Utilisez "Copier le CSV".');
+                    console.warn(e2);
+                }
+            };
+
             conteneur.appendChild(document.createElement('br'));
-            conteneur.appendChild(lienTelecharger);
+            conteneur.appendChild(btnTelecharger);
         }
 
         
@@ -3886,7 +3922,10 @@ function retourConfiguration(){
 
     <script>
       // PWA hors-ligne (fonctionne si la page est servie via http(s) / localhost)
-      if (location.protocol !== 'file:' && 'serviceWorker' in navigator) {
+      // Ne pas enregistrer le SW dans l'APK (WebViewAssetLoader sert déjà les fichiers locaux)
+      if (location.protocol !== 'file:'
+          && !location.hostname.includes('appassets.androidplatform.net')
+          && 'serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('./service-worker.js').catch(() => {});
         });
