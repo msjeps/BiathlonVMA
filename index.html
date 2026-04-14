@@ -611,16 +611,129 @@
             font-family: 'Courier New', monospace;
         }
 
+        /* Contrôles chrono : 2 rangées (principaux / secondaires) */
         .mini-chrono .controles {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 12px;
+            align-items: center;
         }
 
-        .mini-chrono .bouton {
-            padding: 8px 15px;
-            font-size: 0.9em;
+        .mini-chrono .controles-principaux {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .mini-chrono .controles-secondaires {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+        }
+
+        /* Boutons principaux (Start / Stop) : gros rectangles */
+        .mini-chrono .bouton-principal {
+            padding: 16px 10px;
+            font-size: 1.6em;
+            font-weight: 800;
+            border-radius: 14px;
+            min-height: 60px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            letter-spacing: 1px;
+            border: none;
+            cursor: pointer;
+            color: var(--couleur-blanc);
+            transition: transform 0.12s, box-shadow 0.12s, opacity 0.12s;
+        }
+
+        .mini-chrono .bouton-principal:not(:disabled):hover,
+        .mini-chrono .bouton-principal:not(:disabled):active {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .mini-chrono .bouton-principal:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Boutons secondaires (Pause / Reset) : petits cercles */
+        .mini-chrono .bouton-secondaire-chrono {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            padding: 0;
+            font-size: 1em;
+            font-weight: 700;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            color: var(--couleur-blanc);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.12s, opacity 0.12s, background 0.2s;
+        }
+
+        .mini-chrono .bouton-secondaire-chrono:not(:disabled):hover,
+        .mini-chrono .bouton-secondaire-chrono:not(:disabled):active {
+            transform: scale(1.08);
+        }
+
+        .mini-chrono .bouton-secondaire-chrono:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .mini-chrono .bouton-secondaire-chrono.pause {
+            background: rgba(240, 147, 251, 0.85);
+        }
+
+        .mini-chrono .bouton-secondaire-chrono.reset {
+            background: rgba(247, 151, 30, 0.85);
+        }
+
+        .mini-chrono .badge-pause {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.18);
+            color: #FFE66D;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.78em;
+            font-weight: 600;
+            margin-top: 4px;
+            letter-spacing: 0.3px;
+        }
+
+        .mini-chrono .badge-pause.cache {
+            display: none;
+        }
+
+        /* BARRE QUITTER SÉANCE (en haut du déroulement) */
+        .barre-quitter-seance {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 12px;
+        }
+
+        .barre-quitter-seance .bouton-quitter {
+            background: linear-gradient(135deg, #eb3349, #f45c43);
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            font-size: 0.95em;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(235, 51, 73, 0.35);
+            transition: transform 0.15s;
+        }
+
+        .barre-quitter-seance .bouton-quitter:hover,
+        .barre-quitter-seance .bouton-quitter:active {
+            transform: scale(0.97);
         }
 
         /* CARTES DE COURSE */
@@ -1026,8 +1139,10 @@
                 grid-template-columns: 1fr;
             }
 
-            .mini-chrono .controles {
-                grid-template-columns: 1fr;
+            .mini-chrono .bouton-principal {
+                font-size: 1.4em;
+                min-height: 54px;
+                padding: 14px 8px;
             }
         }
 
@@ -1225,8 +1340,11 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
 
         <!-- SECTION DÉROULEMENT CHRONOLOGIQUE (cachée initialement) -->
         <div class="section cache" id="sectionDeroulement">
+            <div class="barre-quitter-seance">
+                <button type="button" class="bouton-quitter" onclick="quitterSeance()" title="Quitter la séance en cours (la configuration sera conservée)">❌ Quitter la séance</button>
+            </div>
             <h2>📋 Déroulement de la séance</h2>
-            
+
             <div id="deroulementContainer">
                 <!-- Généré dynamiquement selon l'ordre -->
             </div>
@@ -2174,10 +2292,20 @@ function qrPenalty(mod){
                         donneesVitesse: donneesVitesse,
 
                         // État des chronomètres (sauvegarder l'état mais pas les intervals)
-                        chronometresEtat: chronometres.map(chrono => ({
-                            tempsEcoule: chrono ? chrono.tempsEcoule : 0,
-                            actif: chrono ? chrono.actif : false
-                        })),
+                        chronometresEtat: chronometres.map(chrono => {
+                            if (!chrono) return { tempsEcoule: 0, actif: false, enPause: false, tempsPauseCumule: 0 };
+                            // Si on sauvegarde pendant une pause en cours, fixer le cumul actuel
+                            let cumul = chrono.tempsPauseCumule || 0;
+                            if (chrono.enPause && chrono.tempsPauseDebut) {
+                                cumul += Date.now() - chrono.tempsPauseDebut;
+                            }
+                            return {
+                                tempsEcoule: chrono.tempsEcoule || 0,
+                                actif: chrono.actif || false,
+                                enPause: chrono.enPause || false,
+                                tempsPauseCumule: cumul
+                            };
+                        }),
 
                         // Timestamp de sauvegarde
                         lastSaved: new Date().toISOString()
@@ -2395,46 +2523,81 @@ function qrPenalty(mod){
                         chronometres[index] = {
                             tempsEcoule: 0,
                             actif: false,
-                            interval: null
+                            interval: null,
+                            enPause: false,
+                            tempsPauseDebut: null,
+                            tempsPauseCumule: 0,
+                            intervalBadge: null
                         };
                     }
 
-                    // Restaurer le temps écoulé
+                    // Restaurer le temps écoulé et le cumul de pause
                     chronometres[index].tempsEcoule = etat.tempsEcoule || 0;
+                    chronometres[index].tempsPauseCumule = etat.tempsPauseCumule || 0;
 
                     // Afficher le temps restauré
                     if (chronometres[index].tempsEcoule > 0) {
                         afficherTempsCourse(index, chronometres[index].tempsEcoule);
                     }
 
-                    // Si le chronomètre était actif, le redémarrer
-                    if (etat.actif) {
-                        // Redémarrer le chronomètre
+                    // Mise à jour du badge de pause (cumul éventuel)
+                    mettreAJourBadgePause(index);
+
+                    // Si le chronomètre était en pause, restaurer l'état de pause
+                    if (etat.enPause) {
+                        chronometres[index].actif = false;
+                        chronometres[index].enPause = true;
+                        chronometres[index].tempsPauseDebut = Date.now();
+                        chronometres[index].intervalBadge = setInterval(function() {
+                            mettreAJourBadgePause(index);
+                        }, 500);
+
+                        // Boutons : Start = reprendre, Pause désactivé, Stop accessible
+                        const btnStart = document.getElementById('btnStart' + index);
+                        const btnPause = document.getElementById('btnPause' + index);
+                        const btnStop = document.getElementById('btnStop' + index);
+                        const btnPlus = document.getElementById('btnPlus' + index);
+
+                        if (btnStart) btnStart.disabled = false;
+                        if (btnPause) btnPause.disabled = true;
+                        if (btnStop) btnStop.disabled = false;
+                        if (btnPlus) btnPlus.disabled = true;
+                    } else if (etat.actif) {
+                        // Redémarrer le chronomètre actif
                         chronometres[index].actif = true;
                         const depart = Date.now() - chronometres[index].tempsEcoule;
                         const config = configurationCourses[index];
-                        const dureeMax = config.duree * 1000; // en millisecondes
 
-                        chronometres[index].interval = setInterval(function() {
-                            chronometres[index].tempsEcoule = Date.now() - depart;
+                        if (modeCourse === 'distance') {
+                            chronometres[index].interval = setInterval(function() {
+                                chronometres[index].tempsEcoule = Date.now() - depart;
+                                afficherTempsCourse(index, chronometres[index].tempsEcoule);
+                            }, 100);
+                        } else {
+                            const dureeMax = config.duree * 1000; // en millisecondes
+                            chronometres[index].interval = setInterval(function() {
+                                chronometres[index].tempsEcoule = Date.now() - depart;
 
-                            // Arrêt automatique à la durée configurée
-                            if (chronometres[index].tempsEcoule >= dureeMax) {
-                                chronometres[index].tempsEcoule = dureeMax;
-                                afficherTempsCourse(index, dureeMax);
-                                stopChrono(index);
-                                return;
-                            }
+                                // Arrêt automatique à la durée configurée
+                                if (chronometres[index].tempsEcoule >= dureeMax) {
+                                    chronometres[index].tempsEcoule = dureeMax;
+                                    afficherTempsCourse(index, dureeMax);
+                                    stopChrono(index);
+                                    return;
+                                }
 
-                            afficherTempsCourse(index, chronometres[index].tempsEcoule);
-                        }, 100);
+                                afficherTempsCourse(index, chronometres[index].tempsEcoule);
+                            }, 100);
+                        }
 
                         // Mettre à jour l'état des boutons
                         const btnStart = document.getElementById('btnStart' + index);
+                        const btnPause = document.getElementById('btnPause' + index);
                         const btnStop = document.getElementById('btnStop' + index);
                         const btnPlus = document.getElementById('btnPlus' + index);
 
                         if (btnStart) btnStart.disabled = true;
+                        if (btnPause) btnPause.disabled = false;
                         if (btnStop) btnStop.disabled = false;
                         if (btnPlus) btnPlus.disabled = false;
                     }
@@ -2465,13 +2628,18 @@ function qrPenalty(mod){
                                 creerGraphiqueVitesse(index);
                             }
 
-                            // Désactiver tous les boutons pour une course terminée
+                            // Désactiver tous les boutons (sauf Reset) pour une course terminée
                             const btnStart = document.getElementById('btnStart' + index);
+                            const btnPause = document.getElementById('btnPause' + index);
                             const btnStop = document.getElementById('btnStop' + index);
                             const btnPlus = document.getElementById('btnPlus' + index);
                             if (btnStart) btnStart.disabled = true;
+                            if (btnPause) btnPause.disabled = true;
                             if (btnStop) btnStop.disabled = true;
                             if (btnPlus) btnPlus.disabled = true;
+
+                            // Ré-afficher le badge de pause cumulée si présent
+                            mettreAJourBadgePause(index);
                         }
                     });
                 }
@@ -3111,7 +3279,11 @@ function genererDeroulement() {
                 chronometres[i] = {
                     tempsEcoule: 0,
                     actif: false,
-                    interval: null
+                    interval: null,
+                    enPause: false,
+                    tempsPauseDebut: null,
+                    tempsPauseCumule: 0,
+                    intervalBadge: null
                 };
                 donneesVitesse[i] = {
                     temps: [],
@@ -3250,9 +3422,16 @@ function genererDeroulement() {
 
                     <div class="mini-chrono">
                         <div class="affichage-temps" id="temps${index}">00:00.0</div>
+                        <div class="badge-pause cache" id="badgePause${index}">⏸ pause</div>
                         <div class="controles">
-                            <button class="bouton bouton-demarrer" id="btnStart${index}" onclick="demarrerChrono(${index})">▶</button>
-                            <button class="bouton bouton-stop" id="btnStop${index}" onclick="stopChrono(${index})" disabled>⏹</button>
+                            <div class="controles-principaux">
+                                <button type="button" class="bouton-principal bouton-demarrer" id="btnStart${index}" onclick="demarrerChrono(${index})" aria-label="Démarrer">▶</button>
+                                <button type="button" class="bouton-principal bouton-stop" id="btnStop${index}" onclick="stopChrono(${index})" disabled aria-label="Arrêter">⏹</button>
+                            </div>
+                            <div class="controles-secondaires">
+                                <button type="button" class="bouton-secondaire-chrono pause" id="btnPause${index}" onclick="pauseChrono(${index})" disabled title="Pause" aria-label="Pause">⏸</button>
+                                <button type="button" class="bouton-secondaire-chrono reset" id="btnReset${index}" onclick="resetChrono(${index})" title="Remettre la course à zéro" aria-label="Remettre à zéro">↻</button>
+                            </div>
                         </div>
                     </div>
 
@@ -3283,9 +3462,16 @@ function genererDeroulement() {
 
                     <div class="mini-chrono">
                         <div class="affichage-temps" id="temps${index}">00:00.0</div>
+                        <div class="badge-pause cache" id="badgePause${index}">⏸ pause</div>
                         <div class="controles">
-                            <button class="bouton bouton-demarrer" id="btnStart${index}" onclick="demarrerChrono(${index})">▶</button>
-                            <button class="bouton bouton-stop" id="btnStop${index}" onclick="stopChrono(${index})" disabled>⏹</button>
+                            <div class="controles-principaux">
+                                <button type="button" class="bouton-principal bouton-demarrer" id="btnStart${index}" onclick="demarrerChrono(${index})" aria-label="Démarrer">▶</button>
+                                <button type="button" class="bouton-principal bouton-stop" id="btnStop${index}" onclick="stopChrono(${index})" disabled aria-label="Arrêter">⏹</button>
+                            </div>
+                            <div class="controles-secondaires">
+                                <button type="button" class="bouton-secondaire-chrono pause" id="btnPause${index}" onclick="pauseChrono(${index})" disabled title="Pause" aria-label="Pause">⏸</button>
+                                <button type="button" class="bouton-secondaire-chrono reset" id="btnReset${index}" onclick="resetChrono(${index})" title="Remettre la course à zéro" aria-label="Remettre à zéro">↻</button>
+                            </div>
                         </div>
                     </div>
 
@@ -3361,56 +3547,222 @@ function genererDeroulement() {
            ======================================== */
         
         function demarrerChrono(index) {
-            if (!chronometres[index].actif) {
-                chronometres[index].actif = true;
-                const depart = Date.now() - chronometres[index].tempsEcoule;
+            const c = chronometres[index];
+            if (!c || c.actif) return;
 
-                // Jouer le bip de démarrage
-                jouerBip('start');
-
-                if (modeCourse === 'distance') {
-                    // Mode distance : pas d'arrêt automatique, chrono libre
-                    chronometres[index].interval = setInterval(function() {
-                        chronometres[index].tempsEcoule = Date.now() - depart;
-                        afficherTempsCourse(index, chronometres[index].tempsEcoule);
-                    }, 100);
-                } else {
-                    // Mode durée : arrêt automatique à la durée configurée
-                    const dureeMax = configurationCourses[index].duree * 1000;
-                    chronometres[index].interval = setInterval(function() {
-                        chronometres[index].tempsEcoule = Date.now() - depart;
-
-                        if (chronometres[index].tempsEcoule >= dureeMax) {
-                            chronometres[index].tempsEcoule = dureeMax;
-                            afficherTempsCourse(index, dureeMax);
-                            stopChrono(index);
-                            return;
-                        }
-
-                        afficherTempsCourse(index, chronometres[index].tempsEcoule);
-                    }, 100);
+            // Reprise après pause : accumuler la durée de pause
+            const reprise = c.enPause === true;
+            if (reprise && c.tempsPauseDebut) {
+                c.tempsPauseCumule += Date.now() - c.tempsPauseDebut;
+                c.enPause = false;
+                c.tempsPauseDebut = null;
+                if (c.intervalBadge) {
+                    clearInterval(c.intervalBadge);
+                    c.intervalBadge = null;
                 }
+                mettreAJourBadgePause(index);
+            } else {
+                // Premier démarrage
+                jouerBip('start');
+            }
 
-                document.getElementById('btnStart' + index).disabled = true;
-                document.getElementById('btnStop' + index).disabled = false;
-                // Activer le bouton + pendant la course (mode durée uniquement)
-                const btnPlus = document.getElementById('btnPlus' + index);
-                if (btnPlus) btnPlus.disabled = false;
+            c.actif = true;
+            const depart = Date.now() - c.tempsEcoule;
 
-                // Sauvegarder la session automatiquement
-                sauvegarderSession();
+            if (modeCourse === 'distance') {
+                // Mode distance : pas d'arrêt automatique, chrono libre
+                c.interval = setInterval(function() {
+                    c.tempsEcoule = Date.now() - depart;
+                    afficherTempsCourse(index, c.tempsEcoule);
+                }, 100);
+            } else {
+                // Mode durée : arrêt automatique à la durée configurée
+                const dureeMax = configurationCourses[index].duree * 1000;
+                c.interval = setInterval(function() {
+                    c.tempsEcoule = Date.now() - depart;
+
+                    if (c.tempsEcoule >= dureeMax) {
+                        c.tempsEcoule = dureeMax;
+                        afficherTempsCourse(index, dureeMax);
+                        stopChrono(index);
+                        return;
+                    }
+
+                    afficherTempsCourse(index, c.tempsEcoule);
+                }, 100);
+            }
+
+            document.getElementById('btnStart' + index).disabled = true;
+            const btnPause = document.getElementById('btnPause' + index);
+            if (btnPause) btnPause.disabled = false;
+            document.getElementById('btnStop' + index).disabled = false;
+            // Activer le bouton + pendant la course (mode durée uniquement)
+            const btnPlus = document.getElementById('btnPlus' + index);
+            if (btnPlus) btnPlus.disabled = false;
+
+            // Sauvegarder la session automatiquement
+            sauvegarderSession();
+        }
+
+        function pauseChrono(index) {
+            const c = chronometres[index];
+            if (!c || !c.actif) return;
+
+            clearInterval(c.interval);
+            c.interval = null;
+            c.actif = false;
+            c.enPause = true;
+            c.tempsPauseDebut = Date.now();
+
+            // Mise à jour en direct du badge pendant la pause
+            mettreAJourBadgePause(index);
+            c.intervalBadge = setInterval(function() {
+                mettreAJourBadgePause(index);
+            }, 500);
+
+            // Boutons : Start réactivé (pour reprendre), Pause désactivé,
+            // Stop toujours accessible (permet de figer le résultat si on abandonne)
+            const btnStart = document.getElementById('btnStart' + index);
+            if (btnStart) btnStart.disabled = false;
+            const btnPause = document.getElementById('btnPause' + index);
+            if (btnPause) btnPause.disabled = true;
+            // Bouton + désactivé pendant la pause (mode durée)
+            const btnPlus = document.getElementById('btnPlus' + index);
+            if (btnPlus) btnPlus.disabled = true;
+
+            sauvegarderSession();
+        }
+
+        function mettreAJourBadgePause(index) {
+            const c = chronometres[index];
+            const badge = document.getElementById('badgePause' + index);
+            if (!c || !badge) return;
+
+            let tempsPause = c.tempsPauseCumule || 0;
+            if (c.enPause && c.tempsPauseDebut) {
+                tempsPause += Date.now() - c.tempsPauseDebut;
+            }
+
+            if (tempsPause > 0) {
+                const secondes = Math.round(tempsPause / 1000);
+                const label = c.enPause ? '⏸ en pause' : '⏸ pause';
+                badge.textContent = label + ' — ' + secondes + 's';
+                badge.classList.remove('cache');
+            } else {
+                badge.textContent = '⏸ pause';
+                badge.classList.add('cache');
             }
         }
 
+        function resetChrono(index) {
+            if (!chronometres[index]) return;
+            if (!confirm("Remettre la course " + (index + 1) + " à zéro ?\n\n✅ Le reste de la séance (noms, VMA, autres courses, tirs) est préservé.\n❌ Seules les mesures de cette course seront perdues.")) return;
+
+            const c = chronometres[index];
+
+            // Arrêter tous les intervals en cours
+            if (c.interval) clearInterval(c.interval);
+            if (c.intervalBadge) clearInterval(c.intervalBadge);
+
+            // Réinitialiser l'état du chrono
+            chronometres[index] = {
+                tempsEcoule: 0,
+                actif: false,
+                interval: null,
+                enPause: false,
+                tempsPauseDebut: null,
+                tempsPauseCumule: 0,
+                intervalBadge: null
+            };
+
+            // Réinitialiser les données de course
+            plotsReelsCourses[index] = 0;
+            tempsCourses[index] = 0;
+            coursesFinies[index] = false;
+            donneesVitesse[index] = {
+                temps: [],
+                vitesses: [],
+                plotsPrecedent: 0,
+                tempsPrecedent: 0
+            };
+
+            // Détruire le graphique si existant
+            if (graphiquesVitesse && graphiquesVitesse[index]) {
+                try {
+                    if (graphiquesVitesse[index].destroy) {
+                        graphiquesVitesse[index].destroy();
+                    }
+                } catch(e) {}
+                graphiquesVitesse[index] = null;
+            }
+
+            // Remise à zéro de l'affichage
+            const tempsEl = document.getElementById('temps' + index);
+            if (tempsEl) tempsEl.textContent = '00:00.0';
+
+            const distanceEl = document.getElementById('distance' + index);
+            if (distanceEl) distanceEl.textContent = '0 m';
+
+            const ecartEl = document.getElementById('ecart' + index);
+            if (ecartEl) ecartEl.classList.add('cache');
+
+            const graphEl = document.getElementById('graphique' + index);
+            if (graphEl) graphEl.classList.remove('visible');
+
+            const badge = document.getElementById('badgePause' + index);
+            if (badge) {
+                badge.textContent = '⏸ pause';
+                badge.classList.add('cache');
+            }
+
+            // Réactiver les boutons (état initial)
+            const btnStart = document.getElementById('btnStart' + index);
+            if (btnStart) btnStart.disabled = false;
+            const btnPause = document.getElementById('btnPause' + index);
+            if (btnPause) btnPause.disabled = true;
+            const btnStop = document.getElementById('btnStop' + index);
+            if (btnStop) btnStop.disabled = true;
+            const btnPlus = document.getElementById('btnPlus' + index);
+            if (btnPlus) btnPlus.disabled = true;
+
+            // Recalculer les résultats et verrouillages
+            calculerDistanceTotale();
+            if (typeof calculerTotalPoints === 'function') calculerTotalPoints();
+            mettreAJourVerrouillages();
+            sauvegarderSession();
+        }
+
         function stopChrono(index) {
-            chronometres[index].actif = false;
-            clearInterval(chronometres[index].interval);
-            tempsCourses[index] = chronometres[index].tempsEcoule;
+            const c = chronometres[index];
+            if (!c) return;
+
+            // Si on arrête pendant une pause, fermer la pause proprement
+            if (c.enPause && c.tempsPauseDebut) {
+                c.tempsPauseCumule += Date.now() - c.tempsPauseDebut;
+                c.enPause = false;
+                c.tempsPauseDebut = null;
+            }
+
+            c.actif = false;
+            if (c.interval) {
+                clearInterval(c.interval);
+                c.interval = null;
+            }
+            if (c.intervalBadge) {
+                clearInterval(c.intervalBadge);
+                c.intervalBadge = null;
+            }
+            tempsCourses[index] = c.tempsEcoule;
+
+            // Mettre à jour le badge (affichage final du temps de pause cumulé)
+            mettreAJourBadgePause(index);
 
             // Jouer le bip de fin
             jouerBip('stop');
 
             document.getElementById('btnStart' + index).disabled = true;
+            const btnPause = document.getElementById('btnPause' + index);
+            if (btnPause) btnPause.disabled = true;
             document.getElementById('btnStop' + index).disabled = true;
             // Désactiver le bouton + après la course (mode durée uniquement)
             const btnPlus = document.getElementById('btnPlus' + index);
@@ -4457,7 +4809,67 @@ function nouvelleSeance() {
     const base = window.location.href.split('#')[0].split('?')[0];
     window.location.replace(base + '?reset=' + Date.now());
 }
-   
+
+function quitterSeance() {
+    if (!confirm("Quitter la séance en cours et revenir à la configuration ?\n\n✅ Noms, classe, VMA et configuration (courses, tirs) seront conservés.\n❌ Les mesures en cours (chronos, plots, tirs) seront perdues.")) return;
+
+    // Arrêter tous les chronos et intervalles en cours
+    try {
+        if (Array.isArray(chronometres)) {
+            chronometres.forEach(function(c) {
+                if (!c) return;
+                if (c.interval) { try { clearInterval(c.interval); } catch(e){} }
+                if (c.intervalBadge) { try { clearInterval(c.intervalBadge); } catch(e){} }
+            });
+        }
+    } catch(e) {}
+
+    // Réinitialiser UNIQUEMENT les mesures (pas la config ni les noms)
+    try {
+        const nbCourses = Array.isArray(configurationCourses) ? configurationCourses.length : 0;
+        plotsReelsCourses = new Array(nbCourses).fill(0);
+        tempsCourses = new Array(nbCourses).fill(0);
+        coursesFinies = new Array(nbCourses).fill(false);
+        chronometres = [];
+        donneesVitesse = [];
+        if (typeof graphiquesVitesse !== 'undefined' && Array.isArray(graphiquesVitesse)) {
+            graphiquesVitesse.forEach(function(g) {
+                if (g && typeof g.destroy === 'function') { try { g.destroy(); } catch(e){} }
+            });
+            graphiquesVitesse = new Array(nbCourses).fill(null);
+        }
+        if (Array.isArray(tirsFinis)) {
+            tirsFinis = tirsFinis.map(function(){ return false; });
+        }
+    } catch(e) {}
+
+    // Effacer la session sauvegardée pour repartir propre
+    try { localStorage.removeItem('sessionEnCours'); } catch(e) {}
+
+    // Vider le container déroulement pour éviter d'anciens handlers
+    try {
+        const cont = document.getElementById('deroulementContainer');
+        if (cont) cont.innerHTML = '';
+    } catch(e) {}
+
+    // Retour à la configuration sans reload (les champs du form restent intacts)
+    const deroulement = document.getElementById('sectionDeroulement');
+    const recap = document.getElementById('sectionRecapitulatif');
+    const config = document.getElementById('sectionConfiguration');
+    const enreg = document.getElementById('sectionEnregistrement');
+    if (deroulement) deroulement.classList.add('cache');
+    if (recap) recap.classList.add('cache');
+    if (enreg) enreg.classList.add('cache');
+    if (config) config.classList.remove('cache');
+
+    // Revenir à l'étape 1 (Paramétrage)
+    if (typeof mettreAJourProgression === 'function') {
+        try { mettreAJourProgression(1); } catch(e) {}
+    }
+
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
 function retourConfiguration(){
     const recap = document.getElementById('sectionRecapitulatif');
     const config = document.getElementById('sectionConfiguration');
