@@ -64,12 +64,35 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 10px;
+            margin-bottom: 0;
         }
 
         .en-tete p {
             color: #666;
             font-size: 1.1em;
+        }
+
+        /* PIED DE PAGE (logo + version + outils-eps.fr) */
+        .pied-page {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(128, 128, 128, 0.3);
+        }
+
+        .pied-page-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .pied-page p {
+            font-size: 0.85em;
+            opacity: 0.7;
         }
 
         .bouton-rond-parametres {
@@ -79,7 +102,7 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #667eea;
             color: white;
             border: none;
             cursor: pointer;
@@ -127,9 +150,16 @@
         }
 
         .toggle-mode-course .label-toggle.actif {
-            background: linear-gradient(135deg, var(--couleur-secondaire), #38b2ac);
+            background: var(--couleur-secondaire);
             color: white;
             box-shadow: 0 2px 8px rgba(78, 205, 196, 0.4);
+        }
+
+        /* Fond du toggle Durée/Distance toujours vert (pas seulement en "Distance"),
+           seul le rond du curseur se déplace — contrairement aux autres switches
+           (Bip/Vibration/Mode sombre) qui gardent gris = désactivé. */
+        .toggle-mode-course .slider {
+            background-color: var(--couleur-secondaire);
         }
 
         body.mode-sombre .toggle-mode-course {
@@ -141,7 +171,45 @@
         }
 
         body.mode-sombre .toggle-mode-course .label-toggle.actif {
-            background: linear-gradient(135deg, #38b2ac, #2d9a8f);
+            background: #38b2ac;
+        }
+
+        /* TOGGLE SEXE F / G */
+        .toggle-sexe {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sexe {
+            flex: 1;
+            text-align: center;
+            font-weight: 600;
+            padding: 14px 15px;
+            min-height: 48px;
+            box-sizing: border-box;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #FAFAFA;
+            color: var(--couleur-texte);
+        }
+
+        .btn-sexe.actif {
+            background: var(--couleur-primaire);
+            border-color: var(--couleur-primaire);
+            color: white;
+        }
+
+        body.mode-sombre .btn-sexe {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #ecf0f1;
+        }
+
+        body.mode-sombre .btn-sexe.actif {
+            background: var(--couleur-primaire);
+            border-color: var(--couleur-primaire);
         }
 
         /* MODE SOMBRE */
@@ -211,7 +279,7 @@
         }
 
         body.mode-sombre .ordre-item {
-            background: linear-gradient(135deg, #34495e, #2c3e50);
+            background: #2c3e50;
             color: #ecf0f1;
         }
 
@@ -237,7 +305,7 @@
         }
 
         body.mode-sombre .session-tir {
-            background: linear-gradient(135deg, #34495e, #2c3e50);
+            background: #2c3e50;
         }
 
         body.mode-sombre .session-tir h3 {
@@ -253,7 +321,7 @@
         }
 
         body.mode-sombre .resultats {
-            background: linear-gradient(135deg, #34495e, #2c3e50);
+            background: #2c3e50;
         }
 
         body.mode-sombre .resultats h3 {
@@ -273,19 +341,19 @@
         }
 
         /* Score total en mode sombre */
-        body.mode-sombre .resultats[style*="linear-gradient(135deg, #FFD89B, #19547B)"] {
-            background: linear-gradient(135deg, #2c3e50, #34495e) !important;
+        body.mode-sombre .resultats[style*="background: #19547B"] {
+            background: #2c3e50 !important;
         }
 
-        body.mode-sombre .resultats[style*="linear-gradient(135deg, #FFD89B, #19547B)"] h3 {
+        body.mode-sombre .resultats[style*="background: #19547B"] h3 {
             color: #3498db !important;
         }
 
-        body.mode-sombre .resultats[style*="linear-gradient(135deg, #FFD89B, #19547B)"] .resultat-label {
+        body.mode-sombre .resultats[style*="background: #19547B"] .resultat-label {
             color: #ecf0f1 !important;
         }
 
-        body.mode-sombre .resultats[style*="linear-gradient(135deg, #FFD89B, #19547B)"] .resultat-valeur {
+        body.mode-sombre .resultats[style*="background: #19547B"] .resultat-valeur {
             color: #3498db !important;
         }
 
@@ -467,7 +535,7 @@
             content: '';
             width: 8px;
             height: 30px;
-            background: linear-gradient(to bottom, var(--couleur-primaire), var(--couleur-secondaire));
+            background: var(--couleur-primaire);
             border-radius: 4px;
         }
 
@@ -560,7 +628,7 @@
         }
 
         .bouton-demarrer {
-            background: linear-gradient(135deg, #11998e, #38ef7d);
+            background: #11998e;
             color: var(--couleur-blanc);
         }
 
@@ -575,28 +643,28 @@
         }
 
         .bouton-stop {
-            background: linear-gradient(135deg, #ee0979, #ff6a00);
+            background: #ee0979;
             color: var(--couleur-blanc);
         }
 
         .bouton-primaire {
-            background: linear-gradient(135deg, var(--couleur-primaire), #C44569);
+            background: var(--couleur-primaire);
             color: var(--couleur-blanc);
         }
 
         .bouton-secondaire {
-            background: linear-gradient(135deg, var(--couleur-secondaire), #0F9D8A);
+            background: var(--couleur-secondaire);
             color: var(--couleur-blanc);
         }
 
         .bouton-danger {
-            background: linear-gradient(135deg, #FC466B, #3F5EFB);
+            background: #FC466B;
             color: var(--couleur-blanc);
         }
 
         /* CHRONOMÈTRE DANS CARTE */
         .mini-chrono {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: var(--couleur-blanc);
             padding: 15px;
             border-radius: 10px;
@@ -660,10 +728,11 @@
             box-shadow: none;
         }
 
-        /* Boutons secondaires (Pause / Reset) : petits cercles */
+        /* Boutons secondaires (Pause / Reset) : petits cercles.
+           48px (pas 40px) : cliqués pendant l'effort physique, où un clic raté coûte cher. */
         .mini-chrono .bouton-secondaire-chrono {
-            width: 40px;
-            height: 40px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             padding: 0;
             font-size: 1em;
@@ -719,7 +788,7 @@
         }
 
         .barre-quitter-seance .bouton-quitter {
-            background: linear-gradient(135deg, #eb3349, #f45c43);
+            background: #eb3349;
             color: #fff;
             border: none;
             padding: 10px 18px;
@@ -745,7 +814,7 @@
         }
 
         .carte-course {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            background: #a8edea;
             border-radius: 15px;
             padding: 20px;
             box-shadow: var(--ombre-douce);
@@ -787,7 +856,7 @@
             width: 70px;
             height: 70px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #11998e, #38ef7d);
+            background: #11998e;
             color: var(--couleur-blanc);
             font-size: 2.5em;
             font-weight: 700;
@@ -874,10 +943,10 @@
         }
 
         .btn-reorg {
-            width: 40px;
-            height: 40px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #667eea;
             color: white;
             border: none;
             cursor: pointer;
@@ -908,7 +977,7 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            background: linear-gradient(135deg, #FFE66D, #FFD93D);
+            background: #FFE66D;
             color: #2C3E50;
             width: 35px;
             height: 35px;
@@ -936,7 +1005,7 @@
 
         /* CARTES D'ORDRE DANS LE RÉCAPITULATIF */
         .ordre-item {
-            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            background: #f5f7fa;
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 15px;
@@ -953,17 +1022,17 @@
         }
 
         .ordre-item.course-item {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            background: #a8edea;
             border-left: 5px solid var(--couleur-course);
         }
 
         .ordre-item.tir-ordre {
-            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            background: #ffeaa7;
             border-left: 5px solid var(--couleur-tir);
         }
 
         .ordre-item .numero {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: #667eea;
             color: white;
             width: 50px;
             height: 50px;
@@ -1000,8 +1069,8 @@
         }
 
         .ordre-item .btn-reorg {
-            width: 45px;
-            height: 45px;
+            width: 48px;
+            height: 48px;
             font-size: 1.4em;
         }
 
@@ -1011,7 +1080,7 @@
         }
 
         .session-tir {
-            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            background: #ffeaa7;
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 20px;
@@ -1060,7 +1129,7 @@
 
         /* RÉSULTATS */
         .resultats {
-            background: linear-gradient(135deg, #FFF9F0, #FFE66D);
+            background: #FFF9F0;
             padding: 20px;
             border-radius: 12px;
             margin-top: 20px;
@@ -1111,7 +1180,7 @@
 
         /* MESSAGES */
         .message-succes {
-            background: linear-gradient(135deg, #84fab0, #8fd3f4);
+            background: #84fab0;
             color: #0d47a1;
             padding: 15px 20px;
             border-radius: 10px;
@@ -1133,6 +1202,11 @@
 
             .en-tete h1 {
                 font-size: 2em;
+            }
+
+            .pied-page-logo {
+                width: 30px;
+                height: 30px;
             }
 
             .grille-2col, .grille-3col {
@@ -1170,6 +1244,7 @@
 
         /* Bouton paramètres dans le header */
         .header-btn-params {
+            position: relative;
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -1183,14 +1258,48 @@
             font-size: 1.3em;
             transition: all 0.3s ease;
         }
-        
+
         .header-btn-params:hover {
             background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* La rotation s'applique seulement à l'icône, jamais au bouton lui-même :
+           sinon le tooltip ci-dessous (pseudo-élément du bouton) tournerait avec lui. */
+        .header-btn-params-icon {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .header-btn-params:hover .header-btn-params-icon {
             transform: rotate(90deg) scale(1.1);
         }
-        
-        .header-btn-params:active {
+
+        .header-btn-params:active .header-btn-params-icon {
             transform: rotate(180deg) scale(0.95);
+        }
+
+        .header-btn-params::after {
+            content: 'Paramètres';
+            position: absolute;
+            top: 110%;
+            right: 0;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: none;
+            letter-spacing: normal;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .header-btn-params:hover::after,
+        .header-btn-params:focus-visible::after {
+            opacity: 1;
         }
 
 </style>
@@ -1208,11 +1317,11 @@
         </div>
         <div style="display: flex; align-items: center; gap: 12px;">
             <div style="color: white; font-size: 0.9em; font-weight: 600; background: rgba(255, 255, 255, 0.25); padding: 5px 15px; border-radius: 15px;" id="etapePourcent">0%</div>
-            <button onclick="afficherParametres()" class="header-btn-params" title="Paramètres">⚙️</button>
+            <button onclick="afficherParametres()" class="header-btn-params" aria-label="Paramètres"><span class="header-btn-params-icon">⚙️</span></button>
         </div>
     </div>
     <div style="max-width: 900px; margin: 0 auto; height: 6px; background: rgba(255, 255, 255, 0.3); border-radius: 10px; overflow: hidden;">
-        <div id="barreFill" style="height: 100%; background: linear-gradient(90deg, #52C41A, #95DE64); border-radius: 10px; width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 8px rgba(82, 196, 26, 0.6);"></div>
+        <div id="barreFill" style="height: 100%; background: #52C41A; border-radius: 10px; width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 8px rgba(82, 196, 26, 0.6);"></div>
     </div>
 </div>
 
@@ -1220,7 +1329,7 @@
         <!-- EN-TÊTE -->
         <div class="en-tete">
             <h1>🏃‍♂️ Biathlon VMA 🎯</h1>
-            <p>Collège Mont Saint Jean - Antibes</p>
+            <p>Version 1.1</p>
             <!-- Bouton paramètres déplacé dans le header fixe -->
         </div>
 
@@ -1228,14 +1337,19 @@
         <div class="section">
             <h2>📋 Informations</h2>
             
-            <div class="groupe-champ">
-                <label for="nomCoureur">Prénom du coureur :</label>
-                <input type="text" id="nomCoureur" placeholder="Entrez le prénom du coureur" autocomplete="off">
-            </div>
+            <div class="grille-2col">
+                <div class="groupe-champ">
+                    <label for="nomCoureur">Prénom du coureur :</label>
+                    <input type="text" id="nomCoureur" placeholder="Entrez le prénom du coureur" autocomplete="off">
+                </div>
 
-            <div class="groupe-champ">
-                <label for="nomObservateur">Prénom de l'observateur :</label>
-                <input type="text" id="nomObservateur" placeholder="Entrez votre prénom" autocomplete="off">
+                <div class="groupe-champ">
+                    <label>Sexe du coureur :</label>
+                    <div class="toggle-sexe">
+                        <span class="btn-sexe" id="btnSexeF" onclick="choisirSexe('F')">F</span>
+                        <span class="btn-sexe actif" id="btnSexeG" onclick="choisirSexe('G')">G</span>
+                    </div>
+                </div>
             </div>
 
             <div class="grille-2col">
@@ -1245,15 +1359,20 @@
                 </div>
 
                 <div class="groupe-champ">
-                    <label for="classe">Classe :</label>
-                    <input type="text" id="classe" placeholder="Ex: 5ème A" autocomplete="off">
+                    <label for="nomObservateur">Prénom de l'observateur :</label>
+                    <input type="text" id="nomObservateur" placeholder="Entrez votre prénom" autocomplete="off">
                 </div>
+            </div>
+
+            <div class="groupe-champ">
+                <label for="classe">Classe :</label>
+                <input type="text" id="classe" placeholder="Ex: 5ème A" autocomplete="off">
             </div>
         </div>
 
         <!-- SECTION CONFIGURATION DE SÉANCE -->
         <div class="section" id="sectionConfiguration">
-            <h2>⚙️ Configuration de la séance</h2>
+            <h2><svg width="26" height="26" viewBox="0 0 24 24" fill="#FF6B9D" style="flex-shrink: 0;" aria-hidden="true"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg> Configuration de la séance</h2>
 
             <div class="toggle-mode-course">
                 <span class="label-toggle actif" id="labelModeDuree" onclick="changerModeCourse('duree')">⏱️ Durée</span>
@@ -1271,12 +1390,12 @@
                 </div>
 
                 <div class="groupe-champ">
-                    <label for="nombreSessions">Sessions de tir :</label>
+                    <label for="nombreSessions">Sessions de lancer :</label>
                     <input type="number" id="nombreSessions" min="1" max="5" value="2">
                 </div>
 
                 <div class="groupe-champ">
-                    <label for="tirsParSession">Tirs par session :</label>
+                    <label for="tirsParSession">Lancers par session :</label>
                     <input type="number" id="tirsParSession" min="1" max="10" value="2">
                 </div>
             </div>
@@ -1294,7 +1413,7 @@
             
 
             
-            <div style="background: linear-gradient(135deg, #84fab0, #8fd3f4); 
+            <div style="background: #84fab0;
 padding: 20px; border-radius: 12px; margin-bottom: 25px;">
                 <h3 style="margin-bottom: 15px; color: #0d47a1;">ℹ️ Informations</h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
@@ -1367,7 +1486,7 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
                     </div>
                 </div>
                 <div class="resultat-item">
-                    <span class="resultat-label">Total des points de tir :</span>
+                    <span class="resultat-label">Total des points de lancer :</span>
                     <span class="resultat-valeur" id="totalPoints">0</span>
                 </div>
             </div>
@@ -1378,14 +1497,14 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
             <h2>💾 Enregistrement</h2>
             
             <!-- Score total -->
-            <div class="resultats" style="margin-bottom: 25px; background: linear-gradient(135deg, #FFD89B, #19547B); border: 3px solid #19547B;">
+            <div class="resultats" style="margin-bottom: 25px; background: #19547B; border: 3px solid #19547B;">
                 <h3 style="margin-bottom: 15px; color: white; text-align: center; font-size: 1.5em;">🏆 SCORE TOTAL</h3>
                 <div class="resultat-item" style="border-bottom: 2px solid rgba(255,255,255,0.3);">
                     <span class="resultat-label" style="color: white;">Points courses :</span>
                     <span class="resultat-valeur" id="pointsCourse" style="color: #FFE66D;">0</span>
                 </div>
                 <div class="resultat-item" style="border-bottom: 2px solid rgba(255,255,255,0.3);">
-                    <span class="resultat-label" style="color: white;">Points tirs :</span>
+                    <span class="resultat-label" style="color: white;">Points lancers :</span>
                     <span class="resultat-valeur" id="pointsTir" style="color: #FFE66D;">0</span>
                 </div>
                 <div class="resultat-item" style="border-bottom: none;">
@@ -1394,10 +1513,7 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
                 </div>
             </div>
             
-            <div class="grille-2col">
-                <button class="bouton bouton-primaire" onclick="enregistrerSeance()">💾 Enregistrer</button>
-                <button class="bouton bouton-danger" onclick="nouvelleSeance()">🆕 Nouvelle séance</button>
-            </div>
+            <button class="bouton bouton-primaire" onclick="enregistrerSeance()" style="width: 100%;">💾 Enregistrer</button>
 
             <div id="messageSucces" class="message-succes cache">
                 ✅ Séance enregistrée avec succès !
@@ -1408,6 +1524,17 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
                 <p style="color: #666; margin: 10px 0;">Scannez ce code pour récupérer les données en CSV</p>
                 <div id="qrcode"></div>
             </div>
+
+            <div class="grille-2col cache" id="blocApresEnregistrement" style="margin-top: 15px;">
+                <button class="bouton bouton-secondaire" onclick="nouvelleObservation()">👤 Nouvelle observation</button>
+                <button class="bouton bouton-danger" onclick="nouvelleSeance()">🆕 Nouvelle séance</button>
+            </div>
+        </div>
+
+        <!-- PIED DE PAGE -->
+        <div class="pied-page">
+            <img src="logo-outils-eps.png" alt="Logo outils-eps.fr" class="pied-page-logo">
+            <p>https://outils-eps.fr par Nathalie Prenois</p>
         </div>
     </div>
 
@@ -1422,6 +1549,7 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
                 <label for="motDePasse">Mot de passe :</label>
                 <input type="password" id="motDePasse" placeholder="Entrez le mot de passe">
             </div>
+            <p style="font-size: 0.9em; opacity: 0.85; margin-bottom: 15px;">Vous trouverez le mot de passe dans le guide professeur, sur la page de l'application du site <code>outils-eps.fr</code>.</p>
             <button class="bouton bouton-primaire" onclick="verifierMotDePasse()">Valider</button>
             <div id="erreurMdp" style="color: red; margin-top: 10px; display: none;">
                 ❌ Mot de passe incorrect
@@ -1473,10 +1601,10 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
             <div class="bareme-section">
                 <h3>🔒 Accès professeur</h3>
                 <p style="color: #666; font-size: 0.95em; margin-bottom: 15px;">
-                    Configuration des barèmes d'évaluation (courses durée, courses distance et tirs)
+                    Configuration des barèmes d'évaluation (courses durée, courses distance et lancers)
                 </p>
                 <button class="bouton bouton-secondaire" onclick="fermerModale('modaleParametres'); afficherAccesProf();" style="width: 100%;">
-                    🔑 Accéder à la configuration des barèmes (durée / distance / tirs)
+                    🔑 Configuration des barèmes
                 </button>
             </div>
 
@@ -1507,105 +1635,196 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
             <!-- Barème courses durée (écart en plots) -->
             <div class="bareme-section">
                 <h3>🏃‍♀️ Barème courses durée (écart en plots)</h3>
+                <div class="bareme-ligne" style="margin-bottom: 15px;">
+                    <label>Distance d'un plot (m) :</label>
+                    <input type="number" id="distancePlot" step="1" min="1" max="50" value="10">
+                </div>
                 <div class="bareme-ligne" style="margin-bottom: 5px;">
                     <label></label>
                     <strong style="text-align: center; text-transform: uppercase; font-size: 0.85em; opacity: 0.8;">Points attribués</strong>
                 </div>
                 <div class="bareme-ligne">
                     <label>Moins de 1 plot d'écart :</label>
-                    <input type="number" id="bareme_course_0" step="0.5" min="0" max="20" value="4">
+                    <input type="number" id="bareme_course_0" step="0.5" min="0" max="100" value="50">
                 </div>
                 <div class="bareme-ligne">
                     <label>±1 plot d'écart :</label>
-                    <input type="number" id="bareme_course_1" step="0.5" min="0" max="20" value="3">
+                    <input type="number" id="bareme_course_1" step="0.5" min="0" max="100" value="40">
                 </div>
                 <div class="bareme-ligne">
                     <label>±2 plots d'écart :</label>
-                    <input type="number" id="bareme_course_2" step="0.5" min="0" max="20" value="2">
+                    <input type="number" id="bareme_course_2" step="0.5" min="0" max="100" value="30">
                 </div>
                 <div class="bareme-ligne">
                     <label>±3 plots d'écart :</label>
-                    <input type="number" id="bareme_course_3" step="0.5" min="0" max="20" value="1">
+                    <input type="number" id="bareme_course_3" step="0.5" min="0" max="100" value="20">
                 </div>
                 <div class="bareme-ligne">
                     <label>4 plots et + d'écart :</label>
-                    <input type="number" id="bareme_course_4" step="0.5" min="0" max="20" value="0.5">
+                    <input type="number" id="bareme_course_4" step="0.5" min="0" max="100" value="10">
                 </div>
             </div>
 
             <!-- Barème courses distance (écart en km/h) - F et G identiques -->
             <div class="bareme-section">
-                <h3>📏 Barème courses distance (écart en km/h) — F et G identiques</h3>
+                <h3>📏 Barème courses distance (écart en km/h) - F et G identiques</h3>
                 <div class="bareme-ligne" style="margin-bottom: 5px;">
                     <label></label>
                     <strong style="text-align: center; text-transform: uppercase; font-size: 0.85em; opacity: 0.8;">Points attribués</strong>
                 </div>
                 <div class="bareme-ligne">
                     <label>Moins de 0,5 km/h d'écart :</label>
-                    <input type="number" id="bareme_dist_0" step="0.5" min="0" max="20" value="4">
+                    <input type="number" id="bareme_dist_0" step="0.5" min="0" max="100" value="50">
                 </div>
                 <div class="bareme-ligne">
                     <label>± 0,5 km/h d'écart :</label>
-                    <input type="number" id="bareme_dist_1" step="0.5" min="0" max="20" value="3">
+                    <input type="number" id="bareme_dist_1" step="0.5" min="0" max="100" value="40">
                 </div>
                 <div class="bareme-ligne">
                     <label>± 1 km/h d'écart :</label>
-                    <input type="number" id="bareme_dist_2" step="0.5" min="0" max="20" value="2">
+                    <input type="number" id="bareme_dist_2" step="0.5" min="0" max="100" value="30">
                 </div>
                 <div class="bareme-ligne">
                     <label>± 1,5 km/h d'écart :</label>
-                    <input type="number" id="bareme_dist_3" step="0.5" min="0" max="20" value="1">
+                    <input type="number" id="bareme_dist_3" step="0.5" min="0" max="100" value="20">
                 </div>
                 <div class="bareme-ligne">
                     <label>± 2 km/h et + d'écart :</label>
-                    <input type="number" id="bareme_dist_4" step="0.5" min="0" max="20" value="0.5">
+                    <input type="number" id="bareme_dist_4" step="0.5" min="0" max="100" value="10">
                 </div>
             </div>
 
             <!-- Barème tirs -->
             <div class="bareme-section">
-                <h3>🎯 Points des tirs</h3>
+                <h3>🎯 Points des lancers</h3>
+                <p style="margin-bottom: 12px; font-size: 0.9em; opacity: 0.85;">Barème distinct pour les filles (F) et les garçons (G).</p>
+
+                <h4 style="margin: 0 0 8px;">♀️ Filles</h4>
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
                     <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
-                        <label>Tir zone 1 :</label>
-                        <input type="number" id="bareme_tir_1" min="0" max="20" value="1">
+                        <label>Lancer zone 1 :</label>
+                        <input type="number" id="bareme_tir_F_1" min="0" max="20" value="2">
                     </div>
                     <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
-                        <label>Tir zone 2 :</label>
-                        <input type="number" id="bareme_tir_2" min="0" max="20" value="2">
+                        <label>Lancer zone 2 :</label>
+                        <input type="number" id="bareme_tir_F_2" min="0" max="20" value="3">
                     </div>
                     <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
-                        <label>Tir zone 3 :</label>
-                        <input type="number" id="bareme_tir_3" min="0" max="20" value="3">
+                        <label>Lancer zone 3 :</label>
+                        <input type="number" id="bareme_tir_F_3" min="0" max="20" value="4">
                     </div>
                     <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
-                        <label>Tir zone 4 :</label>
-                        <input type="number" id="bareme_tir_4" min="0" max="20" value="4">
+                        <label>Lancer zone 4 :</label>
+                        <input type="number" id="bareme_tir_F_4" min="0" max="20" value="5">
                     </div>
                     <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
-                        <label>Tir zone 5 :</label>
-                        <input type="number" id="bareme_tir_5" min="0" max="20" value="5">
+                        <label>Lancer zone 5 :</label>
+                        <input type="number" id="bareme_tir_F_5" min="0" max="20" value="6">
                     </div>
                     <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
-                        <label>Tir zone 6 :</label>
-                        <input type="number" id="bareme_tir_6" min="0" max="20" value="6">
+                        <label>Lancer zone 6 :</label>
+                        <input type="number" id="bareme_tir_F_6" min="0" max="20" value="7">
                     </div>
                     <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
-                        <label>Tir zone 7 :</label>
-                        <input type="number" id="bareme_tir_7" min="0" max="20" value="7">
+                        <label>Lancer zone 7 :</label>
+                        <input type="number" id="bareme_tir_F_7" min="0" max="20" value="8">
                     </div>
                     <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
-                        <label>Tir zone 8 :</label>
-                        <input type="number" id="bareme_tir_8" min="0" max="20" value="8">
+                        <label>Lancer zone 8 :</label>
+                        <input type="number" id="bareme_tir_F_8" min="0" max="20" value="9">
                     </div>
                     <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
-                        <label>Tir zone 9 :</label>
-                        <input type="number" id="bareme_tir_9" min="0" max="20" value="9">
+                        <label>Lancer zone 9 :</label>
+                        <input type="number" id="bareme_tir_F_9" min="0" max="20" value="10">
                     </div>
                     <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
-                        <label>Tir zone 10 :</label>
-                        <input type="number" id="bareme_tir_10" min="0" max="20" value="10">
+                        <label>Lancer zone 10 :</label>
+                        <input type="number" id="bareme_tir_F_10" min="0" max="20" value="11">
                     </div>
+                </div>
+
+                <h4 style="margin: 18px 0 8px;">♂️ Garçons</h4>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Lancer zone 1 :</label>
+                        <input type="number" id="bareme_tir_G_1" min="0" max="20" value="1">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Lancer zone 2 :</label>
+                        <input type="number" id="bareme_tir_G_2" min="0" max="20" value="2">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Lancer zone 3 :</label>
+                        <input type="number" id="bareme_tir_G_3" min="0" max="20" value="3">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Lancer zone 4 :</label>
+                        <input type="number" id="bareme_tir_G_4" min="0" max="20" value="4">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Lancer zone 5 :</label>
+                        <input type="number" id="bareme_tir_G_5" min="0" max="20" value="5">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Lancer zone 6 :</label>
+                        <input type="number" id="bareme_tir_G_6" min="0" max="20" value="6">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Lancer zone 7 :</label>
+                        <input type="number" id="bareme_tir_G_7" min="0" max="20" value="7">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Lancer zone 8 :</label>
+                        <input type="number" id="bareme_tir_G_8" min="0" max="20" value="8">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Lancer zone 9 :</label>
+                        <input type="number" id="bareme_tir_G_9" min="0" max="20" value="9">
+                    </div>
+                    <div class="bareme-ligne" style="grid-template-columns: 1fr 1fr;">
+                        <label>Lancer zone 10 :</label>
+                        <input type="number" id="bareme_tir_G_10" min="0" max="20" value="10">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mode de calcul des points de tir -->
+            <div class="bareme-section">
+                <h3>🧮 Mode de calcul des points de lancer</h3>
+                <p style="margin-bottom: 12px; font-size: 0.9em; opacity: 0.85;">Comment agréger les différents lancers pour obtenir le score de lancer final.</p>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <label style="display: flex; align-items: center; gap: 10px; font-weight: normal; cursor: pointer;">
+                        <input type="radio" name="modeCalculTirs" value="somme" style="width: 22px; height: 22px;">
+                        <span>Somme de tous les lancers (100% des lancers)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; font-weight: normal; cursor: pointer;">
+                        <input type="radio" name="modeCalculTirs" value="moyenne" style="width: 22px; height: 22px;">
+                        <span>Moyenne de tous les lancers</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; font-weight: normal; cursor: pointer;">
+                        <input type="radio" name="modeCalculTirs" value="demi" style="width: 22px; height: 22px;">
+                        <span>Moyenne des 50% meilleurs lancers</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; font-weight: normal; cursor: pointer;">
+                        <input type="radio" name="modeCalculTirs" value="meilleur" style="width: 22px; height: 22px;">
+                        <span>Meilleur lancer uniquement</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Contenu du CSV exporté -->
+            <div class="bareme-section">
+                <h3>📄 Détail exporté dans le CSV</h3>
+                <p style="margin-bottom: 12px; font-size: 0.9em; opacity: 0.85;">Les totaux (score course, score lancers) sont toujours exportés. Décoche pour alléger le CSV si tu n'as pas besoin du détail.</p>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <label style="display: flex; align-items: center; gap: 10px; font-weight: normal; cursor: pointer;">
+                        <input type="checkbox" id="csvDetailCourses" style="width: 22px; height: 22px;" checked>
+                        <span>Détail des courses (durée/distance, intensité, écart, points par course)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; font-weight: normal; cursor: pointer;">
+                        <input type="checkbox" id="csvDetailTirs" style="width: 22px; height: 22px;" checked>
+                        <span>Détail des lancers (zones touchées par session)</span>
+                    </label>
                 </div>
             </div>
 
@@ -1624,7 +1843,7 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
     <div id="modaleAide" class="modale">
         <div class="modale-contenu" style="max-width: 650px;">
             <div class="modale-header">
-                <h2>📖 Aide — Biathlon VMA</h2>
+                <h2>📖 Aide - Biathlon VMA</h2>
                 <button class="btn-fermer" onclick="fermerModale('modaleAide')">&times;</button>
             </div>
 
@@ -1632,21 +1851,27 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
 
                 <div class="bareme-section">
                     <h3>🎯 Qu'est-ce que Biathlon VMA ?</h3>
-                    <p>Application d'observation pour les séances de <strong>biathlon</strong> en EPS. Un observateur utilise la tablette pour chronométrer les courses et noter les tirs d'un coureur pendant la séance.</p>
+                    <p>Application d'observation pour les séances de <strong>biathlon</strong> en EPS. Un observateur utilise la tablette pour chronométrer les courses et noter l'impact des lancers (zones) d'un élève pendant la séance.</p>
                     <p style="margin-top: 8px;">L'application fonctionne <strong>entièrement hors-ligne</strong>, aucune connexion internet n'est nécessaire.</p>
                 </div>
 
                 <div class="bareme-section">
                     <h3>⚙️ Configuration d'une séance</h3>
                     <ol style="padding-left: 20px;">
-                        <li><strong>Renseigner</strong> le prénom du coureur, de l'observateur, la VMA et la classe.</li>
+                        <li><strong>Renseigner</strong> le prénom du coureur, son <strong>sexe (F/G)</strong> - utilisé pour appliquer le bon barème de lancers -, la VMA, le prénom de l'observateur et la classe.</li>
                         <li><strong>Choisir le mode</strong> :
-                            <ul style="padding-left: 16px; margin-top: 4px;">
-                                <li><strong>Durée</strong> : on configure une durée de course (ex : 3 min). Le chrono s'arrête automatiquement. L'observateur compte les plots parcourus avec le bouton <strong>+</strong>.</li>
-                                <li><strong>Distance</strong> : on configure une distance (ex : 600 m). Le chrono tourne librement et l'observateur l'arrête quand le coureur franchit la ligne. L'écart est calculé en km/h par rapport à la vitesse théorique.</li>
+                            <ul style="padding-left: 16px; margin-top: 6px;">
+                                <li style="margin-bottom: 10px;">
+                                    <strong>Durée</strong> : on saisit une durée de course en secondes (ex : 180 sec). Le chrono s'arrête automatiquement. L'observateur valide les plots franchis avec le bouton <strong>+</strong> (plots par défaut tous les 10 m, configurable par l'enseignant).
+                                    <p style="margin-top: 6px; padding-left: 10px; border-left: 3px solid var(--couleur-secondaire); font-size: 0.92em; opacity: 0.9;">→ L'application calcule l'écart en plots par rapport au nombre de plots théoriques et la vitesse en km/h, puis attribue les points configurés en fonction de l'écart.</p>
+                                </li>
+                                <li>
+                                    <strong>Distance</strong> : on saisit une distance (ex : 600 m). Le chrono tourne librement et l'observateur l'arrête quand le coureur franchit la ligne. L'écart et la vitesse réelle sont calculés en km/h.
+                                    <p style="margin-top: 6px; padding-left: 10px; border-left: 3px solid var(--couleur-secondaire); font-size: 0.92em; opacity: 0.9;">→ L'application calcule les points en fonction de l'écart.</p>
+                                </li>
                             </ul>
                         </li>
-                        <li><strong>Configurer</strong> le nombre de courses, de sessions de tir et de tirs par session.</li>
+                        <li><strong>Configurer</strong> le nombre de courses, de sessions de lancer et le nombre de lancers prévus par session.</li>
                         <li>Pour chaque course, régler la <strong>durée</strong> (ou la <strong>distance</strong>) et l'<strong>intensité</strong> (% de VMA).</li>
                         <li>Cliquer sur <strong>Démarrer la séance</strong>.</li>
                     </ol>
@@ -1654,7 +1879,7 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
 
                 <div class="bareme-section">
                     <h3>🔄 Récapitulatif et ordre du parcours</h3>
-                    <p>Avant de lancer la séance, un récapitulatif s'affiche. Vous pouvez <strong>réorganiser l'ordre</strong> des courses et des tirs avec les flèches ↑ ↓, puis confirmer.</p>
+                    <p>Avant de lancer la séance, à l'écran suivant, un récapitulatif s'affiche. Vous pouvez <strong>réorganiser l'ordre</strong> des courses et des lancers avec les flèches ↑ ↓, puis confirmer.</p>
                 </div>
 
                 <div class="bareme-section">
@@ -1674,39 +1899,65 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
                 </div>
 
                 <div class="bareme-section">
-                    <h3>🎯 Sessions de tir</h3>
-                    <p>Pour chaque tir, sélectionner la <strong>zone atteinte</strong> (1 à 10). Les points sont calculés selon le barème configuré.</p>
+                    <h3>🎯 Sessions de lancers</h3>
+                    <p>Pour chaque lancer, sélectionner la <strong>zone atteinte</strong> (de 1 à 10). Les points sont calculés selon le barème configuré dans Paramètres (distincts filles / garçons).</p>
+                    <p style="margin-top: 8px;">Si l'élève dépasse la ligne ou lance hors zone, sélectionner <strong>❌ Invalide (0 pt)</strong> plutôt que de laisser le lancer vide : il comptera pour 0 point mais sera bien pris en compte comme un lancer effectué (utile pour les modes de calcul moyenne / 50% meilleurs).</p>
                 </div>
 
                 <div class="bareme-section">
                     <h3>📊 Barèmes et points</h3>
-                    <p>Les barèmes sont configurables dans <strong>Paramètres → Accéder à la configuration des barèmes</strong> (accès protégé par mot de passe).</p>
-                    <p style="margin-top: 8px;"><strong>Barème courses durée</strong> (écart en plots) :</p>
+                    <p>Les barèmes sont configurables dans <strong>Paramètres → Configuration des barèmes</strong> (accès protégé par mot de passe).</p>
+                    <p style="margin-top: 8px;">La distance des plots par défaut est réglée à <strong>10 m</strong>, mais peut être ajustée également dans les Paramètres en accès protégé.</p>
+
+                    <p style="margin-top: 12px;"><strong>Barème courses durée</strong> (écart en plots - F et G identiques) :</p>
                     <table style="width: 100%; margin: 8px 0; border-collapse: collapse; font-size: 0.9em;">
-                        <tr style="border-bottom: 1px solid rgba(128,128,128,0.3);"><td style="padding: 4px 0;">Moins de 1 plot d'écart</td><td style="text-align: right; padding: 4px 0;"><strong>4 pts</strong></td></tr>
-                        <tr style="border-bottom: 1px solid rgba(128,128,128,0.3);"><td style="padding: 4px 0;">± 1 plot</td><td style="text-align: right; padding: 4px 0;"><strong>3 pts</strong></td></tr>
-                        <tr style="border-bottom: 1px solid rgba(128,128,128,0.3);"><td style="padding: 4px 0;">± 2 plots</td><td style="text-align: right; padding: 4px 0;"><strong>2 pts</strong></td></tr>
-                        <tr style="border-bottom: 1px solid rgba(128,128,128,0.3);"><td style="padding: 4px 0;">± 3 plots</td><td style="text-align: right; padding: 4px 0;"><strong>1 pt</strong></td></tr>
-                        <tr><td style="padding: 4px 0;">4 plots et +</td><td style="text-align: right; padding: 4px 0;"><strong>0,5 pt</strong></td></tr>
+                        <tr style="border-bottom: 1px solid rgba(128,128,128,0.3);"><td style="padding: 4px 0;">Moins de 1 plot d'écart</td><td style="text-align: right; padding: 4px 0;"><strong>50 pts</strong></td></tr>
+                        <tr style="border-bottom: 1px solid rgba(128,128,128,0.3);"><td style="padding: 4px 0;">± 1 plot</td><td style="text-align: right; padding: 4px 0;"><strong>40 pts</strong></td></tr>
+                        <tr style="border-bottom: 1px solid rgba(128,128,128,0.3);"><td style="padding: 4px 0;">± 2 plots</td><td style="text-align: right; padding: 4px 0;"><strong>30 pts</strong></td></tr>
+                        <tr style="border-bottom: 1px solid rgba(128,128,128,0.3);"><td style="padding: 4px 0;">± 3 plots</td><td style="text-align: right; padding: 4px 0;"><strong>20 pts</strong></td></tr>
+                        <tr><td style="padding: 4px 0;">4 plots et +</td><td style="text-align: right; padding: 4px 0;"><strong>10 pts</strong></td></tr>
                     </table>
-                    <p style="margin-top: 10px;"><strong>Barème courses distance</strong> (écart en km/h — F et G identiques) :</p>
+
+                    <p style="margin-top: 10px;"><strong>Barème courses distance</strong> (écart en km/h - F et G identiques) :</p>
                     <table style="width: 100%; margin: 8px 0; border-collapse: collapse; font-size: 0.9em;">
-                        <tr style="border-bottom: 1px solid rgba(128,128,128,0.3);"><td style="padding: 4px 0;">Moins de 0,5 km/h d'écart</td><td style="text-align: right; padding: 4px 0;"><strong>4 pts</strong></td></tr>
-                        <tr style="border-bottom: 1px solid rgba(128,128,128,0.3);"><td style="padding: 4px 0;">± 0,5 km/h</td><td style="text-align: right; padding: 4px 0;"><strong>3 pts</strong></td></tr>
-                        <tr style="border-bottom: 1px solid rgba(128,128,128,0.3);"><td style="padding: 4px 0;">± 1 km/h</td><td style="text-align: right; padding: 4px 0;"><strong>2 pts</strong></td></tr>
-                        <tr style="border-bottom: 1px solid rgba(128,128,128,0.3);"><td style="padding: 4px 0;">± 1,5 km/h</td><td style="text-align: right; padding: 4px 0;"><strong>1 pt</strong></td></tr>
-                        <tr><td style="padding: 4px 0;">± 2 km/h et +</td><td style="text-align: right; padding: 4px 0;"><strong>0,5 pt</strong></td></tr>
+                        <tr style="border-bottom: 1px solid rgba(128,128,128,0.3);"><td style="padding: 4px 0;">Moins de 0,5 km/h d'écart</td><td style="text-align: right; padding: 4px 0;"><strong>50 pts</strong></td></tr>
+                        <tr style="border-bottom: 1px solid rgba(128,128,128,0.3);"><td style="padding: 4px 0;">± 0,5 km/h</td><td style="text-align: right; padding: 4px 0;"><strong>40 pts</strong></td></tr>
+                        <tr style="border-bottom: 1px solid rgba(128,128,128,0.3);"><td style="padding: 4px 0;">± 1 km/h</td><td style="text-align: right; padding: 4px 0;"><strong>30 pts</strong></td></tr>
+                        <tr style="border-bottom: 1px solid rgba(128,128,128,0.3);"><td style="padding: 4px 0;">± 1,5 km/h</td><td style="text-align: right; padding: 4px 0;"><strong>20 pts</strong></td></tr>
+                        <tr><td style="padding: 4px 0;">± 2 km/h et +</td><td style="text-align: right; padding: 4px 0;"><strong>10 pts</strong></td></tr>
                     </table>
-                    <p style="margin-top: 8px;">Le <strong>score total</strong> = points des courses + points des tirs.</p>
+
+                    <p style="margin-top: 10px;"><strong>Barème lancers</strong> (points par zone atteinte, 1 à 10) :</p>
+                    <table style="width: 100%; margin: 8px 0; border-collapse: collapse; font-size: 0.9em;">
+                        <tr style="border-bottom: 1px solid rgba(128,128,128,0.3);"><td style="padding: 4px 0;">Filles</td><td style="text-align: right; padding: 4px 0;"><strong>2 à 11 pts</strong></td></tr>
+                        <tr><td style="padding: 4px 0;">Garçons</td><td style="text-align: right; padding: 4px 0;"><strong>1 à 10 pts</strong></td></tr>
+                    </table>
+
+                    <p style="margin-top: 10px;">Les <strong>points de lancer</strong> sont agrégés selon le mode choisi dans la configuration des barèmes : par défaut et sans modification, ils sont calculés sur la <strong>somme totale</strong> des points de tous les lancers. Il est également possible d'agir sur le mode de calcul en sélectionnant :</p>
+                    <ul style="padding-left: 20px; margin-top: 6px;">
+                        <li>la <strong>moyenne</strong> de tous les lancers enregistrés,</li>
+                        <li>la <strong>moyenne des 50% meilleurs</strong> lancers,</li>
+                        <li>le <strong>meilleur lancer</strong> uniquement.</li>
+                    </ul>
+                    <p style="margin-top: 10px;">Le <strong>score total</strong> = points des courses + points des lancers.</p>
                 </div>
 
                 <div class="bareme-section">
                     <h3>💾 Enregistrement des résultats</h3>
                     <p>Une fois la séance terminée, deux options pour récupérer les données :</p>
                     <ul style="padding-left: 20px; margin-top: 8px;">
-                        <li><strong>Télécharger le CSV</strong> : enregistre un fichier <code>.csv</code> (format français, séparateur <code>;</code>) dans le dossier Téléchargements de la tablette. Ce fichier s'ouvre directement dans Excel ou Google Sheets.</li>
-                        <li><strong>QR Code</strong> : un QR code contenant les résultats compacts est généré. Le professeur peut le scanner depuis une autre tablette ou un téléphone pour récupérer les données instantanément, sans connexion réseau.</li>
+                        <li><strong>Télécharger le CSV</strong> : enregistre un fichier <code>.csv</code> dans le dossier Téléchargements de la tablette. Ce fichier s'ouvre directement dans Excel (ou Numbers) ou Google Sheets.</li>
+                        <li>
+                            <strong>QR Code</strong> : un QR code contenant les résultats compacts est généré. Le professeur peut le scanner depuis une autre tablette ou un téléphone pour récupérer les données instantanément, sans connexion réseau.
+                            <p style="margin-top: 6px; font-size: 0.9em; opacity: 0.85;">L'utilisation de l'application <strong>Scan EPS</strong> (<code>outils-eps.fr/scan-eps</code>) est recommandée : elle permet d'enregistrer plusieurs élèves dans le même tableau de données.</p>
+                        </li>
                         <li><strong>Copier le CSV</strong> : copie les données dans le presse-papier pour les coller directement.</li>
+                    </ul>
+                    <p style="margin-top: 8px; font-size: 0.9em; opacity: 0.85;">💡 Dans <strong>Paramètres → configuration des barèmes</strong>, les cases <strong>« Détail des courses »</strong> et <strong>« Détail des lancers »</strong> permettent d'alléger le CSV exporté : décochées, seuls les scores totaux sont exportés (sans le détail course par course ou lancer par lancer).</p>
+                    <p style="margin-top: 12px;">Après l'enregistrement, deux boutons permettent de continuer :</p>
+                    <ul style="padding-left: 20px; margin-top: 8px;">
+                        <li><strong>👤 Nouvelle observation</strong> : conserve la configuration de la séance (courses, sessions de lancer) et réinitialise seulement le coureur (prénom, sexe, VMA, classe) - pratique pour enchaîner plusieurs coureurs avec le même protocole. Le prénom de l'observateur reste renseigné mais peut être modifié.</li>
+                        <li><strong>🆕 Nouvelle séance</strong> : efface toute la configuration pour repartir de zéro.</li>
                     </ul>
                 </div>
 
@@ -1716,12 +1967,17 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
                         <li>Le <strong>mode sombre</strong> est recommandé en extérieur pour une meilleure lisibilité.</li>
                         <li>L'écran reste <strong>toujours allumé</strong> pendant la séance (pas besoin de toucher la tablette pour la réveiller).</li>
                         <li>En cas de fermeture accidentelle, la séance est <strong>automatiquement sauvegardée</strong> et restaurée au relancement.</li>
-                        <li>Pour <strong>recommencer</strong>, appuyez sur « Nouvelle séance ».</li>
+                        <li>Pour observer un autre coureur avec le même protocole, utilisez <strong>« Nouvelle observation »</strong> ; pour repartir de zéro, <strong>« Nouvelle séance »</strong>.</li>
                     </ul>
                 </div>
 
                 <div style="text-align: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(128,128,128,0.3);">
-                    <p style="font-size: 0.85em; opacity: 0.7;">Biathlon VMA — Application EPS<br>Nathalie Prenois — Collège Mont Saint Jean</p>
+                    <p style="font-size: 0.85em; opacity: 0.7;">
+                        Biathlon VMA - version 1.1<br>
+                        <code>outils-eps.fr</code><br>
+                        Vérifiez régulièrement les mises à jour pour bénéficier des dernières améliorations.<br>
+                        Développée par Nathalie Prenois
+                    </p>
                 </div>
 
             </div>
@@ -2033,6 +2289,7 @@ function qrPenalty(mod){
            ======================================== */
         
         let modeCourse = 'duree'; // 'duree' ou 'distance'
+        let sexeCoureur = 'G'; // 'F' ou 'G'
         let configurationCourses = [];
         let plotsReelsCourses = [];
         let chronometres = []; // Un chrono par course
@@ -2069,28 +2326,70 @@ function qrPenalty(mod){
             document.getElementById('barreFill').style.width = info.pourcent + '%';
         }
         
+        // Distance d'un plot en mètres (mode durée uniquement)
+        let distancePlot = 10;
+
         // Barèmes configurables
         let baremeCourses = {
-            0: 4,    // < 1 plot
-            1: 3,    // ±1 plot
-            2: 2,    // ±2 plots
-            3: 1,    // ±3 plots
-            4: 0.5   // 4+ plots
+            0: 50,   // < 1 plot
+            1: 40,   // ±1 plot
+            2: 30,   // ±2 plots
+            3: 20,   // ±3 plots
+            4: 10    // 4+ plots
         };
 
         // Barème courses distance (écart en km/h) - F et G identiques
         let baremeCoursesDistance = {
-            0: 4,    // < 0.5 km/h d'écart
-            1: 3,    // ± 0.5 km/h
-            2: 2,    // ± 1 km/h
-            3: 1,    // ± 1.5 km/h
-            4: 0.5   // ± 2 km/h et +
+            0: 50,   // < 0.5 km/h d'écart
+            1: 40,   // ± 0.5 km/h
+            2: 30,   // ± 1 km/h
+            3: 20,   // ± 1.5 km/h
+            4: 10    // ± 2 km/h et +
         };
-        
-        let baremeTirs = {
+
+        // Barème tirs - distinct filles (F) / garçons (G)
+        let baremeTirsF = {
+            1: 2, 2: 3, 3: 4, 4: 5, 5: 6,
+            6: 7, 7: 8, 8: 9, 9: 10, 10: 11
+        };
+        let baremeTirsG = {
             1: 1, 2: 2, 3: 3, 4: 4, 5: 5,
             6: 6, 7: 7, 8: 8, 9: 9, 10: 10
         };
+
+        function baremeTirsActuel() {
+            return sexeCoureur === 'F' ? baremeTirsF : baremeTirsG;
+        }
+
+        // Mode de calcul des points de tir : 'somme' | 'moyenne' | 'demi' | 'meilleur'
+        let modeCalculTirs = 'somme';
+
+        // Détail exporté dans le CSV — les totaux restent toujours exportés,
+        // ces réglages contrôlent seulement le détail par course / par tir.
+        let csvDetailCourses = true;
+        let csvDetailTirs = true;
+
+        // Agrège une liste de points de tir déjà convertis via le barème,
+        // selon le mode configuré par le professeur.
+        function agregerPointsTirs(pointsTirs) {
+            if (!pointsTirs || pointsTirs.length === 0) return 0;
+
+            switch (modeCalculTirs) {
+                case 'moyenne':
+                    return pointsTirs.reduce((a, b) => a + b, 0) / pointsTirs.length;
+                case 'meilleur':
+                    return Math.max(...pointsTirs);
+                case 'demi': {
+                    const tries = [...pointsTirs].sort((a, b) => b - a);
+                    const n = Math.max(1, Math.ceil(tries.length / 2));
+                    const meilleurs = tries.slice(0, n);
+                    return meilleurs.reduce((a, b) => a + b, 0) / meilleurs.length;
+                }
+                case 'somme':
+                default:
+                    return pointsTirs.reduce((a, b) => a + b, 0);
+            }
+        }
 
         // Paramètres utilisateur
         let parametres = {
@@ -2113,6 +2412,14 @@ function qrPenalty(mod){
 
             // Attacher l'auto-save sur tous les champs
             attacherAutoSave();
+
+            // Filets de sécurité supplémentaires (en plus de la sauvegarde sur chaque saisie) :
+            // convention imposée par le CLAUDE.md commun aux apps EPS terrain/tablette.
+            window.addEventListener('beforeunload', () => sauvegarderSession(true));
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'hidden') sauvegarderSession(true);
+            });
+            setInterval(() => sauvegarderSession(true), 15000);
 
             // Si une session a été restaurée, ne pas réinitialiser la progression
             if (!sessionRestauree) {
@@ -2175,10 +2482,22 @@ function qrPenalty(mod){
             }
         }
         
+        // Écriture localStorage protégée (quota plein, mode privé, etc.) : ne jamais laisser
+        // une exception ici interrompre le CSV/QR ou le reste d'un flux d'enregistrement.
+        function sauvegarderLocalStorage(cle, valeur) {
+            try {
+                localStorage.setItem(cle, valeur);
+                return true;
+            } catch (e) {
+                console.error('Échec localStorage.setItem(' + cle + ') :', e);
+                return false;
+            }
+        }
+
         /* ========================================
            PARAMÈTRES
            ======================================== */
-        
+
         function afficherParametres() {
             // Charger l'état actuel des paramètres
             document.getElementById('paramBipChrono').checked = parametres.bipChrono;
@@ -2193,7 +2512,7 @@ function qrPenalty(mod){
             parametres.vibration = document.getElementById('paramVibration').checked;
             
             // Sauvegarder dans localStorage
-            localStorage.setItem('parametres', JSON.stringify(parametres));
+            sauvegarderLocalStorage('parametres', JSON.stringify(parametres));
             
             // Afficher message de confirmation
             const message = document.getElementById('messageParametres');
@@ -2213,7 +2532,7 @@ function qrPenalty(mod){
             }
             
             // Sauvegarder
-            localStorage.setItem('parametres', JSON.stringify(parametres));
+            sauvegarderLocalStorage('parametres', JSON.stringify(parametres));
             
             // Afficher message de confirmation
             const message = document.getElementById('messageParametres');
@@ -2228,7 +2547,11 @@ function qrPenalty(mod){
             const parametresStr = localStorage.getItem('parametres');
 
             if (parametresStr) {
-                parametres = JSON.parse(parametresStr);
+                try {
+                    parametres = JSON.parse(parametresStr);
+                } catch (e) {
+                    console.error('Paramètres localStorage corrompus, valeurs par défaut conservées :', e);
+                }
             }
 
             // Appliquer le mode sombre si activé
@@ -2243,13 +2566,15 @@ function qrPenalty(mod){
 
         let autoSaveTimeout = null;
 
-        function sauvegarderSession() {
-            // Débounce: attendre 500ms avant de sauvegarder
+        // immediat=true : sauvegarde synchrone sans débounce (utilisé par beforeunload/
+        // visibilitychange, où un setTimeout de 500ms n'aurait pas le temps de s'exécuter).
+        function sauvegarderSession(immediat) {
             if (autoSaveTimeout) {
                 clearTimeout(autoSaveTimeout);
+                autoSaveTimeout = null;
             }
 
-            autoSaveTimeout = setTimeout(() => {
+            const executerSauvegarde = () => {
                 try {
                     // Déterminer l'étape actuelle basée sur les sections visibles
                     let etapeActuelle = 0;
@@ -2265,6 +2590,7 @@ function qrPenalty(mod){
                         // Informations du coureur
                         nomCoureur: document.getElementById('nomCoureur')?.value || '',
                         nomObservateur: document.getElementById('nomObservateur')?.value || '',
+                        sexeCoureur: sexeCoureur,
                         classe: document.getElementById('classe')?.value || '',
                         vma: document.getElementById('vma')?.value || '',
 
@@ -2324,7 +2650,14 @@ function qrPenalty(mod){
                 } catch(e) {
                     console.error('Erreur lors de la sauvegarde de la session:', e);
                 }
-            }, 500);
+            };
+
+            if (immediat) {
+                executerSauvegarde();
+            } else {
+                // Débounce: attendre 500ms avant de sauvegarder
+                autoSaveTimeout = setTimeout(executerSauvegarde, 500);
+            }
         }
 
         function restaurerSession() {
@@ -2344,6 +2677,11 @@ function qrPenalty(mod){
                 if (sessionData.nomObservateur) {
                     const el = document.getElementById('nomObservateur');
                     if (el) el.value = sessionData.nomObservateur;
+                }
+                if (sessionData.sexeCoureur) {
+                    sexeCoureur = sessionData.sexeCoureur;
+                    document.getElementById('btnSexeF')?.classList.toggle('actif', sexeCoureur === 'F');
+                    document.getElementById('btnSexeG')?.classList.toggle('actif', sexeCoureur === 'G');
                 }
                 if (sessionData.classe) {
                     const el = document.getElementById('classe');
@@ -2607,7 +2945,7 @@ function qrPenalty(mod){
                 if (plotsReelsCourses && plotsReelsCourses.length > 0) {
                     plotsReelsCourses.forEach((plots, index) => {
                         if (plots > 0) {
-                            const distanceReelle = plots * 10; // chaque plot = 10m
+                            const distanceReelle = plots * distancePlot;
                             const distanceEl = document.getElementById('distance' + index);
                             if (distanceEl) {
                                 distanceEl.textContent = distanceReelle + ' m';
@@ -2688,6 +3026,9 @@ function qrPenalty(mod){
                     ajouterBoutonCopier(blocQR, csv);
                 }
 
+                // Afficher "Nouvelle observation" / "Nouvelle séance" (séance déjà enregistrée)
+                document.getElementById('blocApresEnregistrement')?.classList.remove('cache');
+
                 console.log('Séance terminée restaurée avec QR code');
             } catch(e) {
                 console.error('Erreur lors de la restauration de la séance terminée:', e);
@@ -2744,6 +3085,15 @@ function qrPenalty(mod){
            ======================================== */
         
         function afficherAccesProf() {
+            // Empêcher la modification des barèmes (notamment distancePlot) pendant une séance
+            // en cours : ça recalculerait silencieusement les mesures déjà prises.
+            const deroulementDiv = document.getElementById('sectionDeroulement');
+            const enDeroulement = deroulementDiv && !deroulementDiv.classList.contains('cache');
+            if (enDeroulement) {
+                alert('⚠️ Impossible de modifier les barèmes pendant une séance en cours : les mesures déjà prises seraient faussées. Terminez ou quittez la séance actuelle (bouton "Quitter la séance") avant d\'accéder à la configuration.');
+                return;
+            }
+
             document.getElementById('modaleAccesProf').style.display = 'block';
             document.getElementById('motDePasse').value = '';
             document.getElementById('erreurMdp').style.display = 'none';
@@ -2760,6 +3110,9 @@ function qrPenalty(mod){
         }
         
         function ouvrirConfigurationBaremes() {
+            // Charger la distance d'un plot
+            document.getElementById('distancePlot').value = distancePlot;
+
             // Charger les valeurs actuelles - barème durée
             document.getElementById('bareme_course_0').value = baremeCourses[0];
             document.getElementById('bareme_course_1').value = baremeCourses[1];
@@ -2775,8 +3128,17 @@ function qrPenalty(mod){
             document.getElementById('bareme_dist_4').value = baremeCoursesDistance[4];
 
             for (let i = 1; i <= 10; i++) {
-                document.getElementById('bareme_tir_' + i).value = baremeTirs[i];
+                document.getElementById('bareme_tir_F_' + i).value = baremeTirsF[i];
+                document.getElementById('bareme_tir_G_' + i).value = baremeTirsG[i];
             }
+
+            // Charger le mode de calcul des tirs
+            const radioMode = document.querySelector(`input[name="modeCalculTirs"][value="${modeCalculTirs}"]`);
+            if (radioMode) radioMode.checked = true;
+
+            // Charger le détail exporté dans le CSV
+            document.getElementById('csvDetailCourses').checked = csvDetailCourses;
+            document.getElementById('csvDetailTirs').checked = csvDetailTirs;
 
             document.getElementById('modaleBaremes').style.display = 'block';
         }
@@ -2786,6 +3148,10 @@ function qrPenalty(mod){
         }
         
         function sauvegarderBaremes() {
+            // Sauvegarder la distance d'un plot (jamais 0 ou négative, sous peine de division par zéro)
+            const distancePlotSaisie = parseFloat(document.getElementById('distancePlot').value);
+            distancePlot = (distancePlotSaisie > 0) ? distancePlotSaisie : distancePlot;
+
             // Sauvegarder barème courses durée
             baremeCourses[0] = parseFloat(document.getElementById('bareme_course_0').value);
             baremeCourses[1] = parseFloat(document.getElementById('bareme_course_1').value);
@@ -2800,16 +3166,48 @@ function qrPenalty(mod){
             baremeCoursesDistance[3] = parseFloat(document.getElementById('bareme_dist_3').value);
             baremeCoursesDistance[4] = parseFloat(document.getElementById('bareme_dist_4').value);
 
-            // Sauvegarder barème tirs
+            // Sauvegarder barème tirs (distinct F / G) — un champ vide/non numérique garde l'ancienne valeur
             for (let i = 1; i <= 10; i++) {
-                baremeTirs[i] = parseInt(document.getElementById('bareme_tir_' + i).value);
+                const saisieF = parseInt(document.getElementById('bareme_tir_F_' + i).value);
+                const saisieG = parseInt(document.getElementById('bareme_tir_G_' + i).value);
+                baremeTirsF[i] = isNaN(saisieF) ? baremeTirsF[i] : saisieF;
+                baremeTirsG[i] = isNaN(saisieG) ? baremeTirsG[i] : saisieG;
             }
 
+            // Sauvegarder le mode de calcul des tirs
+            const radioModeCoche = document.querySelector('input[name="modeCalculTirs"]:checked');
+            if (radioModeCoche) modeCalculTirs = radioModeCoche.value;
+
+            // Sauvegarder le détail exporté dans le CSV
+            csvDetailCourses = document.getElementById('csvDetailCourses').checked;
+            csvDetailTirs = document.getElementById('csvDetailTirs').checked;
+
             // Enregistrer dans localStorage
-            localStorage.setItem('baremeCourses', JSON.stringify(baremeCourses));
-            localStorage.setItem('baremeCoursesDistance', JSON.stringify(baremeCoursesDistance));
-            localStorage.setItem('baremeTirs', JSON.stringify(baremeTirs));
-            
+            const resultatsSauvegarde = [
+                sauvegarderLocalStorage('distancePlot', distancePlot),
+                sauvegarderLocalStorage('baremeCourses', JSON.stringify(baremeCourses)),
+                sauvegarderLocalStorage('baremeCoursesDistance', JSON.stringify(baremeCoursesDistance)),
+                sauvegarderLocalStorage('baremeTirsF', JSON.stringify(baremeTirsF)),
+                sauvegarderLocalStorage('baremeTirsG', JSON.stringify(baremeTirsG)),
+                sauvegarderLocalStorage('modeCalculTirs', modeCalculTirs),
+                sauvegarderLocalStorage('csvDetailCourses', csvDetailCourses),
+                sauvegarderLocalStorage('csvDetailTirs', csvDetailTirs)
+            ];
+            const sauvegardeReussie = resultatsSauvegarde.every(ok => ok);
+
+            // Recalculer les résultats affichés (barème et/ou distance de plot modifiés)
+            if (typeof calculerDistanceTotale === 'function') {
+                calculerDistanceTotale();
+            }
+            if (typeof calculerTotalPoints === 'function') {
+                calculerTotalPoints();
+            }
+
+            if (!sauvegardeReussie) {
+                alert('⚠️ Les barèmes sont actifs pour cette séance mais n\'ont pas pu être sauvegardés durablement (stockage plein ?). Ils seront perdus au redémarrage de l\'application.');
+                return;
+            }
+
             // Afficher message de confirmation
             const message = document.getElementById('messageBareme');
             message.classList.remove('cache');
@@ -2820,36 +3218,104 @@ function qrPenalty(mod){
         
         function reinitialiserBaremes() {
             if (confirm('Voulez-vous vraiment réinitialiser les barèmes aux valeurs par défaut ?')) {
-                baremeCourses = { 0: 4, 1: 3, 2: 2, 3: 1, 4: 0.5 };
-                baremeCoursesDistance = { 0: 4, 1: 3, 2: 2, 3: 1, 4: 0.5 };
-                baremeTirs = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10 };
+                distancePlot = 10;
+                baremeCourses = { 0: 50, 1: 40, 2: 30, 3: 20, 4: 10 };
+                baremeCoursesDistance = { 0: 50, 1: 40, 2: 30, 3: 20, 4: 10 };
+                baremeTirsF = { 1: 2, 2: 3, 3: 4, 4: 5, 5: 6, 6: 7, 7: 8, 8: 9, 9: 10, 10: 11 };
+                baremeTirsG = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10 };
+                modeCalculTirs = 'somme';
+                csvDetailCourses = true;
+                csvDetailTirs = true;
 
-                localStorage.setItem('baremeCourses', JSON.stringify(baremeCourses));
-                localStorage.setItem('baremeCoursesDistance', JSON.stringify(baremeCoursesDistance));
-                localStorage.setItem('baremeTirs', JSON.stringify(baremeTirs));
+                const resultatsSauvegarde = [
+                    sauvegarderLocalStorage('distancePlot', distancePlot),
+                    sauvegarderLocalStorage('baremeCourses', JSON.stringify(baremeCourses)),
+                    sauvegarderLocalStorage('baremeCoursesDistance', JSON.stringify(baremeCoursesDistance)),
+                    sauvegarderLocalStorage('baremeTirsF', JSON.stringify(baremeTirsF)),
+                    sauvegarderLocalStorage('baremeTirsG', JSON.stringify(baremeTirsG)),
+                    sauvegarderLocalStorage('modeCalculTirs', modeCalculTirs),
+                    sauvegarderLocalStorage('csvDetailCourses', csvDetailCourses),
+                    sauvegarderLocalStorage('csvDetailTirs', csvDetailTirs)
+                ];
+                try { localStorage.removeItem('baremeTirs'); } catch (e) {}
 
                 ouvrirConfigurationBaremes();
 
-                alert('✅ Barèmes réinitialisés aux valeurs par défaut');
+                if (resultatsSauvegarde.every(ok => ok)) {
+                    alert('✅ Barèmes réinitialisés aux valeurs par défaut');
+                } else {
+                    alert('⚠️ Barèmes réinitialisés pour cette séance mais non sauvegardés durablement (stockage plein ?). Ils seront perdus au redémarrage de l\'application.');
+                }
+            }
+        }
+
+        // Parse JSON protégé : une clé localStorage corrompue ne doit jamais bloquer
+        // le chargement des autres réglages (ni, en aval, attacherAutoSave()).
+        function parseJSONSecurise(str, nomCle) {
+            try {
+                return JSON.parse(str);
+            } catch (e) {
+                console.error('Valeur localStorage corrompue pour "' + nomCle + '", ignorée :', e);
+                return undefined;
             }
         }
 
         function chargerBaremes() {
+            // Charger la distance d'un plot
+            const distancePlotStr = localStorage.getItem('distancePlot');
+            if (distancePlotStr) {
+                const valeur = parseFloat(distancePlotStr);
+                if (valeur > 0) distancePlot = valeur;
+            }
+
             // Charger les barèmes depuis localStorage si disponibles
             const baremeCoursesStr = localStorage.getItem('baremeCourses');
             const baremeCoursesDistanceStr = localStorage.getItem('baremeCoursesDistance');
-            const baremeTirsStr = localStorage.getItem('baremeTirs');
+            const baremeTirsFStr = localStorage.getItem('baremeTirsF');
+            const baremeTirsGStr = localStorage.getItem('baremeTirsG');
+            // Ancienne clé (avant la séparation F/G) - utilisée comme valeur de migration
+            const ancienBaremeTirsStr = localStorage.getItem('baremeTirs');
 
             if (baremeCoursesStr) {
-                baremeCourses = JSON.parse(baremeCoursesStr);
+                const valeur = parseJSONSecurise(baremeCoursesStr, 'baremeCourses');
+                if (valeur !== undefined) baremeCourses = valeur;
             }
 
             if (baremeCoursesDistanceStr) {
-                baremeCoursesDistance = JSON.parse(baremeCoursesDistanceStr);
+                const valeur = parseJSONSecurise(baremeCoursesDistanceStr, 'baremeCoursesDistance');
+                if (valeur !== undefined) baremeCoursesDistance = valeur;
             }
 
-            if (baremeTirsStr) {
-                baremeTirs = JSON.parse(baremeTirsStr);
+            if (baremeTirsFStr) {
+                const valeur = parseJSONSecurise(baremeTirsFStr, 'baremeTirsF');
+                if (valeur !== undefined) baremeTirsF = valeur;
+            } else if (ancienBaremeTirsStr) {
+                const valeur = parseJSONSecurise(ancienBaremeTirsStr, 'baremeTirs');
+                if (valeur !== undefined) baremeTirsF = valeur;
+            }
+
+            if (baremeTirsGStr) {
+                const valeur = parseJSONSecurise(baremeTirsGStr, 'baremeTirsG');
+                if (valeur !== undefined) baremeTirsG = valeur;
+            } else if (ancienBaremeTirsStr) {
+                const valeur = parseJSONSecurise(ancienBaremeTirsStr, 'baremeTirs');
+                if (valeur !== undefined) baremeTirsG = valeur;
+            }
+
+            const modeCalculTirsStr = localStorage.getItem('modeCalculTirs');
+            if (modeCalculTirsStr) {
+                modeCalculTirs = modeCalculTirsStr;
+            }
+
+            // Détail exporté dans le CSV — absent en localStorage = valeur par défaut (true),
+            // pour ne rien changer sur les tablettes déjà en service avant ce réglage.
+            const csvDetailCoursesStr = localStorage.getItem('csvDetailCourses');
+            if (csvDetailCoursesStr !== null) {
+                csvDetailCourses = csvDetailCoursesStr === 'true';
+            }
+            const csvDetailTirsStr = localStorage.getItem('csvDetailTirs');
+            if (csvDetailTirsStr !== null) {
+                csvDetailTirs = csvDetailTirsStr === 'true';
             }
         }
         
@@ -2900,8 +3366,9 @@ function qrPenalty(mod){
                         detailsHtml = `${config.distance}m à ${config.intensite}% VMA • ${vitesseTheo.toFixed(1)} km/h (${tempsTheoMin}min ${tempsTheoSec}s)`;
                     } else {
                         const distanceTheo = calculerDistanceTheorique(vma, config.intensite, config.duree);
-                        const plotsTheo = Math.round(distanceTheo / 10);
-                        detailsHtml = `${config.duree}s à ${config.intensite}% VMA • ${distanceTheo}m (${plotsTheo} plots)`;
+                        const plotsTheo = Math.floor(distanceTheo / distancePlot);
+                        const resteTheo = distanceTheo - plotsTheo * distancePlot;
+                        detailsHtml = `${config.duree}s à ${config.intensite}% VMA • ${distanceTheo}m (${plotsTheo} plots + ${resteTheo}m)`;
                     }
 
                     item.className = 'ordre-item course-item';
@@ -2925,9 +3392,9 @@ function qrPenalty(mod){
                     item.innerHTML = `
                         <div class="numero">${position + 1}</div>
                         <div class="contenu">
-                            <div class="titre-element">🎯 Session de tir ${element.index + 1}</div>
+                            <div class="titre-element">🎯 Session de lancer ${element.index + 1}</div>
                             <div class="details-element">
-                                ${tirsParSession} tirs • ${tirsParSession * 10} points max
+                                ${tirsParSession} lancers • ${tirsParSession * Math.max(...Object.values(baremeTirsActuel()))} points max
                             </div>
                         </div>
                         <div class="controles-ordre">
@@ -2987,6 +3454,14 @@ function qrPenalty(mod){
            GÉNÉRATION DE LA CONFIGURATION
            ======================================== */
         
+        function choisirSexe(sexe) {
+            sexeCoureur = sexe;
+            document.getElementById('btnSexeF').classList.toggle('actif', sexe === 'F');
+            document.getElementById('btnSexeG').classList.toggle('actif', sexe === 'G');
+            calculerTotalPoints();
+            sauvegarderSession();
+        }
+
         function changerModeCourse(mode) {
             modeCourse = mode;
             document.getElementById('toggleModeCourse').checked = (mode === 'distance');
@@ -3311,7 +3786,7 @@ function genererDeroulement() {
                 // Mettre à jour l'affichage des distances
                 plotsReelsCourses.forEach((plots, index) => {
                     if (plots > 0) {
-                        const distanceReelle = plots * 10;
+                        const distanceReelle = plots * distancePlot;
                         const distanceEl = document.getElementById('distance' + index);
                         if (distanceEl) {
                             distanceEl.textContent = distanceReelle + ' m';
@@ -3404,6 +3879,9 @@ function genererDeroulement() {
 
         function creerCarteCourse(index, numeroOrdre, container) {
             const vma = parseFloat(document.getElementById('vma').value);
+            // VMA pas encore saisie (ex: juste après "Nouvelle observation") : éviter d'afficher
+            // des "NaN" dans les valeurs théoriques, le temps que l'observateur la renseigne.
+            const vmaValide = !isNaN(vma) && vma > 0;
             const config = configurationCourses[index];
 
             const carte = document.createElement('div');
@@ -3411,10 +3889,12 @@ function genererDeroulement() {
 
             if (modeCourse === 'distance') {
                 // Mode distance : afficher distance, vitesse théorique, temps théorique
-                const vitesseTheo = calculerVitesseTheorique(vma, config.intensite);
-                const tempsTheo = calculerTempsTheorique(vma, config.intensite, config.distance);
+                const vitesseTheo = vmaValide ? calculerVitesseTheorique(vma, config.intensite) : NaN;
+                const tempsTheo = vmaValide ? calculerTempsTheorique(vma, config.intensite, config.distance) : NaN;
                 const tempsTheoMin = Math.floor(tempsTheo / 60);
                 const tempsTheoSec = Math.round(tempsTheo % 60);
+                const vitesseTheoTexte = vmaValide ? `${vitesseTheo.toFixed(1)} km/h` : '- (VMA à saisir)';
+                const tempsTheoTexte = vmaValide ? `${tempsTheoMin}min ${tempsTheoSec}s` : '-';
 
                 carte.innerHTML = `
                     <div class="ordre-numero">${numeroOrdre}</div>
@@ -3438,8 +3918,8 @@ function genererDeroulement() {
                     <div class="info-theorique">
                         <p><strong>Distance:</strong> ${config.distance}m</p>
                         <p><strong>Intensité:</strong> ${config.intensite}% VMA</p>
-                        <p><strong>Vitesse théorique:</strong> ${vitesseTheo.toFixed(1)} km/h</p>
-                        <p><strong>Temps théorique:</strong> ${tempsTheoMin}min ${tempsTheoSec}s</p>
+                        <p><strong>Vitesse théorique:</strong> ${vitesseTheoTexte}</p>
+                        <p><strong>Temps théorique:</strong> ${tempsTheoTexte}</p>
                     </div>
 
                     <div class="ecart-info cache" id="ecart${index}">
@@ -3453,8 +3933,11 @@ function genererDeroulement() {
                 `;
             } else {
                 // Mode durée (existant)
-                const distanceTheorique = calculerDistanceTheorique(vma, config.intensite, config.duree);
-                const plotsTheoriques = Math.round(distanceTheorique / 10);
+                const distanceTheorique = vmaValide ? calculerDistanceTheorique(vma, config.intensite, config.duree) : NaN;
+                const plotsTheoriques = Math.floor(distanceTheorique / distancePlot);
+                const resteTheorique = distanceTheorique - plotsTheoriques * distancePlot;
+                const distanceTheoriqueTexte = vmaValide ? `${distanceTheorique}m` : '- (VMA à saisir)';
+                const plotsTheoriquesTexte = vmaValide ? `${plotsTheoriques} (+${resteTheorique}m)` : '-';
 
                 carte.innerHTML = `
                     <div class="ordre-numero">${numeroOrdre}</div>
@@ -3478,8 +3961,8 @@ function genererDeroulement() {
                     <div class="info-theorique">
                         <p><strong>Durée:</strong> ${config.duree}s (${Math.floor(config.duree/60)}min ${config.duree%60}s)</p>
                         <p><strong>Intensité:</strong> ${config.intensite}% VMA</p>
-                        <p><strong>Distance théorique:</strong> ${distanceTheorique}m</p>
-                        <p><strong>Plots théoriques:</strong> ${plotsTheoriques}</p>
+                        <p><strong>Distance théorique:</strong> ${distanceTheoriqueTexte}</p>
+                        <p><strong>Plots théoriques:</strong> ${plotsTheoriquesTexte}</p>
                     </div>
 
                     <button class="bouton-plus" id="btnPlus${index}" onclick="ajouterPlot(${index})" disabled>+</button>
@@ -3505,8 +3988,8 @@ function genererDeroulement() {
             sessionDiv.innerHTML = `
                 <div class="ordre-numero">${numeroOrdre}</div>
                 <div class="session-tir-header">
-                    <h3>🎯 Session de tir ${index + 1}</h3>
-                    <p class="session-tir-info">${tirsParSession} tirs • ${tirsParSession * 10} points max</p>
+                    <h3>🎯 Session de lancer ${index + 1}</h3>
+                    <p class="session-tir-info">${tirsParSession} lancers • ${tirsParSession * Math.max(...Object.values(baremeTirsActuel()))} points max</p>
                 </div>
                 <div class="tirs-grille" id="tirsGrille${index}">
                     <!-- Tirs générés ci-dessous -->
@@ -3522,9 +4005,10 @@ function genererDeroulement() {
                 tirDiv.className = 'tir-item';
                 
                 tirDiv.innerHTML = `
-                    <label>Tir ${t + 1}</label>
+                    <label>Lancer ${t + 1}</label>
                     <select id="tir_s${index}_t${t}" onchange="calculerTotalPoints(); verifierFinTir(${index})">
                         <option value="">--</option>
+                        <option value="0">❌ Invalide (0 pt)</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
@@ -3646,7 +4130,7 @@ function genererDeroulement() {
             if (tempsPause > 0) {
                 const secondes = Math.round(tempsPause / 1000);
                 const label = c.enPause ? '⏸ en pause' : '⏸ pause';
-                badge.textContent = label + ' — ' + secondes + 's';
+                badge.textContent = label + ' - ' + secondes + 's';
                 badge.classList.remove('cache');
             } else {
                 badge.textContent = '⏸ pause';
@@ -3656,7 +4140,7 @@ function genererDeroulement() {
 
         function resetChrono(index) {
             if (!chronometres[index]) return;
-            if (!confirm("Remettre la course " + (index + 1) + " à zéro ?\n\n✅ Le reste de la séance (noms, VMA, autres courses, tirs) est préservé.\n❌ Seules les mesures de cette course seront perdues.")) return;
+            if (!confirm("Remettre la course " + (index + 1) + " à zéro ?\n\n✅ Le reste de la séance (noms, VMA, autres courses, lancers) est préservé.\n❌ Seules les mesures de cette course seront perdues.")) return;
 
             const c = chronometres[index];
 
@@ -3830,9 +4314,9 @@ function genererDeroulement() {
             } else {
                 // Mode durée : écart en plots
                 const distanceTheorique = calculerDistanceTheorique(vma, config.intensite, config.duree);
-                const plotsTheoriques = Math.round(distanceTheorique / 10);
+                const plotsTheoriques = Math.floor(distanceTheorique / distancePlot);
                 const plotsReels = plotsReelsCourses[index];
-                const distanceReelle = plotsReels * 10;
+                const distanceReelle = plotsReels * distancePlot;
                 const ecartPlots = plotsReels - plotsTheoriques;
                 const ecartMetres = distanceReelle - distanceTheorique;
 
@@ -4014,7 +4498,7 @@ function genererDeroulement() {
         function ajouterPlot(indexCourse) {
             plotsReelsCourses[indexCourse]++;
 
-            const distanceReelle = plotsReelsCourses[indexCourse] * 10;
+            const distanceReelle = plotsReelsCourses[indexCourse] * distancePlot;
             // Afficher uniquement la distance parcourue en temps réel
             document.getElementById('distance' + indexCourse).textContent = distanceReelle + ' m';
 
@@ -4032,7 +4516,7 @@ function genererDeroulement() {
 
             if (donnees.temps.length > 0) {
                 // Calculer la vitesse instantanée
-                const deltaDistance = (plotsReelsCourses[indexCourse] - donnees.plotsPrecedent) * 10; // en mètres
+                const deltaDistance = (plotsReelsCourses[indexCourse] - donnees.plotsPrecedent) * distancePlot; // en mètres
                 const deltaTemps = tempsActuel - donnees.tempsPrecedent; // en secondes
 
                 if (deltaTemps > 0) {
@@ -4043,7 +4527,7 @@ function genererDeroulement() {
             } else {
                 // Premier plot
                 if (tempsActuel > 0) {
-                    const vitesseKmH = (10 / tempsActuel) * 3.6;
+                    const vitesseKmH = (distancePlot / tempsActuel) * 3.6;
                     donnees.vitesses.push(vitesseKmH);
                     donnees.temps.push(tempsActuel);
                 }
@@ -4065,6 +4549,7 @@ function genererDeroulement() {
         
         function calculerDistanceTotale() {
             const vma = parseFloat(document.getElementById('vma').value);
+            const vmaValide = !isNaN(vma) && vma > 0;
             const conteneur = document.getElementById('resultatsGlobauxContenu');
 
             if (modeCourse === 'distance') {
@@ -4089,13 +4574,13 @@ function genererDeroulement() {
                         const sign = ecartKmH >= 0 ? '+' : '';
                         const couleur = Math.abs(ecartKmH) < 0.5 ? '#11998e' : (ecartKmH < -0.5 ? '#ee0979' : '#e67e22');
                         html += `<div class="resultat-item">
-                            <span class="resultat-label">Course ${i + 1} — écart vitesse :</span>
+                            <span class="resultat-label">Course ${i + 1} - écart vitesse :</span>
                             <span class="resultat-valeur" style="color: ${couleur};">${sign}${ecartKmH.toFixed(1)} km/h (${pointsCourse} pt${pointsCourse > 1 ? 's' : ''})</span>
                         </div>`;
                     } else {
                         html += `<div class="resultat-item">
-                            <span class="resultat-label">Course ${i + 1} — écart vitesse :</span>
-                            <span class="resultat-valeur" style="opacity: 0.5;">—</span>
+                            <span class="resultat-label">Course ${i + 1} - écart vitesse :</span>
+                            <span class="resultat-valeur" style="opacity: 0.5;">-</span>
                         </div>`;
                     }
                 }
@@ -4112,7 +4597,7 @@ function genererDeroulement() {
                 } else {
                     html += `<div class="resultat-item" style="border-top: 2px solid rgba(255,255,255,0.2); padding-top: 8px; margin-top: 4px;">
                         <span class="resultat-label"><strong>Écart moyen :</strong></span>
-                        <span class="resultat-valeur" style="opacity: 0.5;">—</span>
+                        <span class="resultat-valeur" style="opacity: 0.5;">-</span>
                     </div>`;
                 }
 
@@ -4123,6 +4608,21 @@ function genererDeroulement() {
                 </div>`;
 
                 conteneur.innerHTML = html;
+            } else if (!vmaValide) {
+                // VMA pas encore saisie : éviter d'afficher des totaux "NaN m"
+                conteneur.innerHTML = `
+                    <div class="resultat-item">
+                        <span class="resultat-label">Distance théorique totale :</span>
+                        <span class="resultat-valeur" style="opacity: 0.5;">- (VMA à saisir)</span>
+                    </div>
+                    <div class="resultat-item">
+                        <span class="resultat-label">Distance réelle totale :</span>
+                        <span class="resultat-valeur" style="opacity: 0.5;">-</span>
+                    </div>
+                    <div class="resultat-item">
+                        <span class="resultat-label">Écart total :</span>
+                        <span class="resultat-valeur" style="opacity: 0.5;">-</span>
+                    </div>`;
             } else {
                 // Mode durée (existant)
                 let distanceTheoriqueTotale = 0;
@@ -4131,11 +4631,11 @@ function genererDeroulement() {
                 for (let i = 0; i < configurationCourses.length; i++) {
                     const config = configurationCourses[i];
                     distanceTheoriqueTotale += calculerDistanceTheorique(vma, config.intensite, config.duree);
-                    distanceReelleTotale += plotsReelsCourses[i] * 10;
+                    distanceReelleTotale += plotsReelsCourses[i] * distancePlot;
                 }
 
                 const ecartMetres = distanceReelleTotale - distanceTheoriqueTotale;
-                const ecartPlots = ecartMetres / 10;
+                const ecartPlots = ecartMetres / distancePlot;
 
                 let ecartText, ecartColor;
                 if (ecartPlots > 0) {
@@ -4186,7 +4686,7 @@ function genererDeroulement() {
                 sessionDiv.appendChild(ordreNum);
                 
                 const titre = document.createElement('h3');
-                titre.textContent = `Session de tir ${s + 1}`;
+                titre.textContent = `Session de lancer ${s + 1}`;
                 sessionDiv.appendChild(titre);
                 
                 const grilleDiv = document.createElement('div');
@@ -4197,7 +4697,7 @@ function genererDeroulement() {
                     tirDiv.className = 'tir-item';
                     
                     tirDiv.innerHTML = `
-                        <label>Tir ${t + 1}</label>
+                        <label>Lancer ${t + 1}</label>
                         <select id="tir_s${s}_t${t}" onchange="calculerTotalPoints(); verifierFinTir(${s})">
                             <option value="">--</option>
                             <option value="1">1</option>
@@ -4236,24 +4736,34 @@ function genererDeroulement() {
         /* ========================================
            CALCUL TOTAL POINTS TIR
            ======================================== */
-        
+
+        // Points d'un lancer à partir de la valeur brute du <select> (zone 1-10 ou "0" = invalide).
+        // Utilisée par calculerTotalPoints() (affichage en direct) et enregistrerSeance() (export),
+        // pour ne pas dupliquer la même logique à deux endroits.
+        // Attention : ne pas utiliser "||" ici, une zone peut valoir 0 point (configuré par le prof).
+        function pointsPourUnTir(valeurSelect) {
+            const valeurOriginale = parseInt(valeurSelect);
+            const pointsBareme = baremeTirsActuel()[valeurOriginale];
+            return pointsBareme !== undefined ? pointsBareme : valeurOriginale;
+        }
+
         function calculerTotalPoints() {
-            let total = 0;
-            
+            let pointsTirs = [];
+
             for (let s = 0; s < nombreSessions; s++) {
                 for (let t = 0; t < tirsParSession; t++) {
                     const select = document.getElementById(`tir_s${s}_t${t}`);
                     if (select && select.value !== '') {
-                        const valeurOriginale = parseInt(select.value);
-                        // Utiliser le barème configurable
-                        total += baremeTirs[valeurOriginale] || valeurOriginale;
-                   
-            // Mettre à jour les verrouillages si besoin
-            mettreAJourVerrouillages();
-        }
+                        pointsTirs.push(pointsPourUnTir(select.value));
+                    }
                 }
             }
-            
+
+            // Mettre à jour les verrouillages (recalcul global, une seule fois suffit)
+            mettreAJourVerrouillages();
+
+            // Agréger selon le mode configuré (somme / moyenne / 50% meilleurs / meilleur)
+            const total = Math.round(agregerPointsTirs(pointsTirs) * 10) / 10;
             document.getElementById('totalPoints').textContent = total;
             calculerScoreTotal();
         }
@@ -4278,10 +4788,11 @@ function genererDeroulement() {
                         const ecartKmH = vitesseReelle - vitesseTheo;
                         pointsCourse = calculerPointsDistance(ecartKmH);
                     }
-                } else {
-                    // Mode durée : scoring basé sur l'écart en plots
+                } else if (tempsCourses[i] > 0) {
+                    // Mode durée : scoring basé sur l'écart en plots (course terminée uniquement,
+                    // sinon une course pas encore commencée serait notée avec le pire barème)
                     const distanceTheorique = calculerDistanceTheorique(vma, config.intensite, config.duree);
-                    const plotsTheoriques = Math.round(distanceTheorique / 10);
+                    const plotsTheoriques = Math.floor(distanceTheorique / distancePlot);
                     const plotsReels = plotsReelsCourses[i];
                     const ecartPlots = Math.abs(plotsReels - plotsTheoriques);
 
@@ -4301,11 +4812,12 @@ function genererDeroulement() {
                 pointsCourseTotal += pointsCourse;
             }
 
-            const pointsTir = parseInt(document.getElementById('totalPoints').textContent) || 0;
+            // parseFloat (et non parseInt) car les modes moyenne/50% meilleurs peuvent produire des décimales
+            const pointsTir = parseFloat(document.getElementById('totalPoints').textContent) || 0;
             const scoreTotal = pointsCourseTotal + pointsTir;
 
             document.getElementById('pointsCourse').textContent = pointsCourseTotal.toFixed(1);
-            document.getElementById('pointsTir').textContent = pointsTir;
+            document.getElementById('pointsTir').textContent = pointsTir.toFixed(1);
             document.getElementById('scoreTotal').textContent = scoreTotal.toFixed(1);
         }
         
@@ -4353,23 +4865,27 @@ function genererDeroulement() {
                 } else {
                     // Mode durée
                     const distanceTheo = calculerDistanceTheorique(vma, config.intensite, config.duree);
-                    const plotsTheoriques = Math.round(distanceTheo / 10);
+                    const plotsTheoriques = Math.floor(distanceTheo / distancePlot);
                     const plotsReels = plotsReelsCourses[i];
-                    const distanceReelle = plotsReels * 10;
+                    const distanceReelle = plotsReels * distancePlot;
                     const ecartPlots = plotsReels - plotsTheoriques;
                     const ecartMetres = distanceReelle - distanceTheo;
 
-                    const ecartPlotsAbsolu = Math.abs(ecartPlots);
-                    if (ecartPlotsAbsolu < 1) {
-                        pointsCourse = baremeCourses[0];
-                    } else if (ecartPlotsAbsolu === 1) {
-                        pointsCourse = baremeCourses[1];
-                    } else if (ecartPlotsAbsolu === 2) {
-                        pointsCourse = baremeCourses[2];
-                    } else if (ecartPlotsAbsolu === 3) {
-                        pointsCourse = baremeCourses[3];
-                    } else {
-                        pointsCourse = baremeCourses[4];
+                    // Course terminée uniquement : sinon une course pas encore commencée
+                    // serait notée avec le pire barème au lieu de 0 (pointsCourse déjà initialisé à 0)
+                    if (tempsCourses[i] > 0) {
+                        const ecartPlotsAbsolu = Math.abs(ecartPlots);
+                        if (ecartPlotsAbsolu < 1) {
+                            pointsCourse = baremeCourses[0];
+                        } else if (ecartPlotsAbsolu === 1) {
+                            pointsCourse = baremeCourses[1];
+                        } else if (ecartPlotsAbsolu === 2) {
+                            pointsCourse = baremeCourses[2];
+                        } else if (ecartPlotsAbsolu === 3) {
+                            pointsCourse = baremeCourses[3];
+                        } else {
+                            pointsCourse = baremeCourses[4];
+                        }
                     }
 
                     distanceTheoriqueTotale += distanceTheo;
@@ -4395,29 +4911,34 @@ function genererDeroulement() {
             
             // Collecter les scores de tir
             let detailsTirs = [];
-            let totalTir = 0;
-            
+            let pointsTirs = [];
+
             for (let s = 0; s < nombreSessions; s++) {
                 let sessionScores = [];
                 for (let t = 0; t < tirsParSession; t++) {
                     const select = document.getElementById(`tir_s${s}_t${t}`);
-                    const valeur = select ? (select.value || '0') : '0';
+                    // "-" = tir non rempli (exclu du calcul), à ne pas confondre avec "0" = tir invalidé (0 pt, compté)
+                    const valeur = (select && select.value !== '') ? select.value : '-';
                     sessionScores.push(valeur);
-                    const valeurOriginale = parseInt(valeur);
-                    // Utiliser le barème configurable
-                    totalTir += baremeTirs[valeurOriginale] || valeurOriginale;
+                    if (select && select.value !== '') {
+                        pointsTirs.push(pointsPourUnTir(valeur));
+                    }
                 }
                 detailsTirs.push({
                     session: s + 1,
                     scores: sessionScores.join(';')
                 });
             }
-            
+
+            // Agréger selon le mode configuré (somme / moyenne / 50% meilleurs / meilleur)
+            const totalTir = Math.round(agregerPointsTirs(pointsTirs) * 10) / 10;
+
             const scoreTotal = pointsCourseTotal + totalTir;
             
             const donnees = {
                 nomCoureur: nomCoureur,
                 nomObservateur: nomObservateur,
+                sexeCoureur: sexeCoureur,
                 vma: vma,
                 classe: classe,
                 modeCourse: modeCourse,
@@ -4429,15 +4950,20 @@ function genererDeroulement() {
                 tirsParSession: tirsParSession,
                 detailsTirs: detailsTirs,
                 totalTir: totalTir,
+                modeCalculTirs: modeCalculTirs,
+                csvDetailCourses: csvDetailCourses,
+                csvDetailTirs: csvDetailTirs,
                 scoreTotal: scoreTotal,
                 ordreElements: ordreElements,
                 dateSeance: new Date().toLocaleString('fr-FR')
             };
             
-            localStorage.setItem('derniereSeance', JSON.stringify(donnees));
+            // Ne jamais laisser un échec de sauvegarde bloquer le CSV/QR ci-dessous :
+            // c'est le seul moyen pour l'observateur de récupérer les résultats.
+            const derniereSeanceSauvegardee = sauvegarderLocalStorage('derniereSeance', JSON.stringify(donnees));
 
             // La session est terminée, supprimer la session en cours
-            localStorage.removeItem('sessionEnCours');
+            try { localStorage.removeItem('sessionEnCours'); } catch (e) {}
 
             const csv = genererCSV(donnees);
 
@@ -4456,14 +4982,21 @@ function genererDeroulement() {
                 ajouterBoutonTelechargement(blocQR, csv, donnees);
                 ajouterBoutonCopier(blocQR, csv);
             }
-            
+
+            // Afficher "Nouvelle observation" / "Nouvelle séance", maintenant que c'est enregistré
+            document.getElementById('blocApresEnregistrement')?.classList.remove('cache');
+
             mettreAJourProgression(4); // Étape Terminé
-            
+
             const messageSucces = document.getElementById('messageSucces');
             messageSucces.classList.remove('cache');
             setTimeout(() => {
                 messageSucces.classList.add('cache');
             }, 3000);
+
+            if (!derniereSeanceSauvegardee) {
+                alert('⚠️ Le CSV et le QR code ci-dessous sont bien générés, mais le stockage de la tablette semble plein : téléchargez ou copiez le CSV MAINTENANT, les résultats ne survivront pas à une fermeture de l\'application.');
+            }
         }
         
         /* ========================================
@@ -4472,91 +5005,124 @@ function genererDeroulement() {
         
         
 
+const LABELS_MODE_CALCUL_TIRS = {
+    somme: 'Somme de tous les lancers',
+    moyenne: 'Moyenne de tous les lancers',
+    demi: 'Moyenne des 50% meilleurs lancers',
+    meilleur: 'Meilleur lancer uniquement'
+};
+
 function genererCSV(donnees) {
     const SEP = ';';
     const isDistance = donnees.modeCourse === 'distance';
+    // Absent (ancien enregistrement restauré, etc.) = comportement historique, détail exporté
+    const detailCourses = donnees.csvDetailCourses !== false;
+    const detailTirs = donnees.csvDetailTirs !== false;
 
     const entetes = [
         'Prénom coureur',
-        'Prénom observateur',
+        'Sexe',
         'VMA saisie (km/h)',
+        'Prénom observateur',
+        'Classe',
         'Mode',
         'Distance théorique totale (m)',
         'Distance réelle totale (m)'
     ];
 
     const nbCourses = (donnees.detailsCourses || []).length;
-    for (let i = 0; i < nbCourses; i++) {
-        if (isDistance) {
-            entetes.push(
-                `Course ${i+1} distance (m)`,
-                `Course ${i+1} intensité (%)`,
-                `Course ${i+1} vit. théo (km/h)`,
-                `Course ${i+1} vit. réelle (km/h)`,
-                `Course ${i+1} écart (km/h)`,
-                `Course ${i+1} temps`,
-                `Course ${i+1} points`
-            );
-        } else {
-            entetes.push(
-                `Course ${i+1} durée (s)`,
-                `Course ${i+1} intensité (%)`,
-                `Course ${i+1} dist. théo (m)`,
-                `Course ${i+1} dist. réelle (m)`,
-                `Course ${i+1} écart (m)`,
-                `Course ${i+1} points`
-            );
+    if (detailCourses) {
+        for (let i = 0; i < nbCourses; i++) {
+            if (isDistance) {
+                entetes.push(
+                    `Course ${i+1} distance (m)`,
+                    `Course ${i+1} intensité (%)`,
+                    `Course ${i+1} vit. théo (km/h)`,
+                    `Course ${i+1} vit. réelle (km/h)`,
+                    `Course ${i+1} écart (km/h)`,
+                    `Course ${i+1} temps`,
+                    `Course ${i+1} points`
+                );
+            } else {
+                entetes.push(
+                    `Course ${i+1} durée (s)`,
+                    `Course ${i+1} intensité (%)`,
+                    `Course ${i+1} dist. théo (m)`,
+                    `Course ${i+1} dist. réelle (m)`,
+                    `Course ${i+1} écart (m)`,
+                    `Course ${i+1} points`
+                );
+            }
         }
     }
     entetes.push('Score course');
 
     const nbSessions = (donnees.detailsTirs || []).length;
-    for (let s = 0; s < nbSessions; s++) {
-        entetes.push(`Session ${s+1} scores`);
+    if (detailTirs) {
+        for (let s = 0; s < nbSessions; s++) {
+            entetes.push(`Session ${s+1} scores`);
+        }
     }
-    entetes.push('Score tirs');
+    entetes.push('Score lancers', 'Mode calcul lancers');
 
     const valeurs = [
         donnees.nomCoureur || '',
-        donnees.nomObservateur || '',
+        donnees.sexeCoureur || '',
         donnees.vma || '',
+        donnees.nomObservateur || '',
+        donnees.classe || '',
         isDistance ? 'distance' : 'durée',
         donnees.distanceTheoriqueTotale || 0,
         donnees.distanceReelleTotale || 0
     ];
 
-    for (let i = 0; i < nbCourses; i++) {
-        const c = donnees.detailsCourses[i] || {};
-        if (isDistance) {
-            valeurs.push(
-                c.distance ?? '',
-                c.intensite ?? '',
-                c.vitesseTheorique ?? '',
-                c.vitesseReelle ?? '',
-                c.ecartKmH ?? '',
-                c.temps ?? '',
-                c.points ?? ''
-            );
-        } else {
-            valeurs.push(
-                c.duree ?? '',
-                c.intensite ?? '',
-                c.distanceTheorique ?? '',
-                c.distanceReelle ?? '',
-                c.ecartMetres ?? '',
-                c.points ?? ''
-            );
+    if (detailCourses) {
+        for (let i = 0; i < nbCourses; i++) {
+            const c = donnees.detailsCourses[i] || {};
+            if (isDistance) {
+                valeurs.push(
+                    c.distance ?? '',
+                    c.intensite ?? '',
+                    c.vitesseTheorique ?? '',
+                    c.vitesseReelle ?? '',
+                    c.ecartKmH ?? '',
+                    c.temps ?? '',
+                    c.points ?? ''
+                );
+            } else {
+                valeurs.push(
+                    c.duree ?? '',
+                    c.intensite ?? '',
+                    c.distanceTheorique ?? '',
+                    c.distanceReelle ?? '',
+                    c.ecartMetres ?? '',
+                    c.points ?? ''
+                );
+            }
         }
     }
     valeurs.push(donnees.pointsCourse != null ? Number(donnees.pointsCourse).toFixed(1) : '');
 
-    for (let s = 0; s < nbSessions; s++) {
-        const t = donnees.detailsTirs[s] || {};
-        valeurs.push('"' + (t.scores || '') + '"');
+    if (detailTirs) {
+        for (let s = 0; s < nbSessions; s++) {
+            const t = donnees.detailsTirs[s] || {};
+            valeurs.push(t.scores || '');
+        }
     }
     valeurs.push(donnees.totalTir != null ? Number(donnees.totalTir).toFixed(1) : '');
+    valeurs.push(LABELS_MODE_CALCUL_TIRS[donnees.modeCalculTirs] || donnees.modeCalculTirs || '');
 
-    const safe = (v) => String(v).split('\n').join(' ').split('\r').join(' ');
+    // Échappement CSV standard : un champ contenant le séparateur ou un guillemet
+    // est entouré de guillemets (les guillemets internes sont doublés). Nécessaire
+    // à la fois pour les scores de tir ("3;5;7") et pour tout texte libre
+    // (prénom, classe) qui contiendrait accidentellement un ';'.
+    const safe = (v) => {
+        let s = String(v).split('\n').join(' ').split('\r').join(' ');
+        if (s.includes(SEP) || s.includes('"')) {
+            s = '"' + s.split('"').join('""') + '"';
+        }
+        return s;
+    };
     return entetes.map(safe).join(SEP) + '\n' + valeurs.map(safe).join(SEP);
 }
 
@@ -4590,6 +5156,7 @@ function genererPayloadQRUltraCompact(donnees){
         v: 2,
         m: isDistance ? 'd' : 't',
         c: donnees.nomCoureur || "",
+        sx: donnees.sexeCoureur || "",
         o: donnees.nomObservateur || "",
         vm: donnees.vma || "",
         dt: +(donnees.distanceTheoriqueTotale || 0),
@@ -4597,7 +5164,8 @@ function genererPayloadQRUltraCompact(donnees){
         cs: cs,
         sc: (donnees.pointsCourse != null ? +Number(donnees.pointsCourse).toFixed(1) : ""),
         ts: ts,
-        st: (donnees.totalTir != null ? +Number(donnees.totalTir).toFixed(1) : "")
+        st: (donnees.totalTir != null ? +Number(donnees.totalTir).toFixed(1) : ""),
+        mc: donnees.modeCalculTirs || ""
     };
 
     // Préfixe très court pour identifier le format
@@ -4697,7 +5265,7 @@ function genererQRCode(csvData) {
 function ajouterBoutonTelechargement(conteneur, csvData, donnees) {
             const classe = (donnees && donnees.classe || 'classe').replace(/[^a-zA-Z0-9_-]/g, '_');
             const dateStr = (donnees && donnees.dateSeance || '').replace(/[/:]/g, '-').replace(/ /g, '_') || new Date().toISOString().slice(0,10);
-            const fileName = 'biathlon_vma_' + classe + '_' + dateStr + '.csv';
+            const fileName = 'BiathlonVMA_' + classe + '_' + dateStr + '.csv';
 
             const btnTelecharger = document.createElement('button');
             btnTelecharger.className = 'bouton bouton-primaire';
@@ -4707,10 +5275,14 @@ function ajouterBoutonTelechargement(conteneur, csvData, donnees) {
             btnTelecharger.style.cursor = 'pointer';
 
             btnTelecharger.onclick = function() {
+                // BOM UTF-8 requis pour qu'Excel FR affiche correctement les accents
+                // (ajouté uniquement ici, pas dans csvData, pour ne pas polluer le copier-coller)
+                var csvAvecBom = '\ufeff' + csvData;
+
                 // APK Android : utilise l'interface Kotlin pour sauvegarder
                 if (typeof AndroidDownload !== 'undefined' && AndroidDownload.saveFile) {
                     try {
-                        var base64 = btoa(unescape(encodeURIComponent(csvData)));
+                        var base64 = btoa(unescape(encodeURIComponent(csvAvecBom)));
                         AndroidDownload.saveFile(base64, fileName, 'text/csv');
                         btnTelecharger.textContent = '✅ Fichier sauvegardé !';
                         setTimeout(function(){ btnTelecharger.textContent = '⬇️ TÉLÉCHARGER LE CSV'; }, 2500);
@@ -4721,7 +5293,7 @@ function ajouterBoutonTelechargement(conteneur, csvData, donnees) {
                 }
                 // Fallback navigateur classique (web / hors APK)
                 try {
-                    var blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+                    var blob = new Blob([csvAvecBom], { type: 'text/csv;charset=utf-8;' });
                     var url = URL.createObjectURL(blob);
                     var a = document.createElement('a');
                     a.href = url;
@@ -4741,6 +5313,21 @@ function ajouterBoutonTelechargement(conteneur, csvData, donnees) {
         }
 
         
+// Textarea de secours pour le fallback clipboard (document.execCommand('copy')) :
+// gardé en permanence dans le DOM plutôt que recréé à chaque clic, pour la robustesse
+// recommandée par le CLAUDE.md du projet sur ce piège WebView connu.
+let textareaClipboardFallback = null;
+function obtenirTextareaClipboardFallback() {
+    if (!textareaClipboardFallback) {
+        textareaClipboardFallback = document.createElement('textarea');
+        textareaClipboardFallback.style.position = 'fixed';
+        textareaClipboardFallback.style.left = '-9999px';
+        textareaClipboardFallback.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(textareaClipboardFallback);
+    }
+    return textareaClipboardFallback;
+}
+
 function ajouterBoutonCopier(conteneur, csvData) {
             const btnCopier = document.createElement('button');
             btnCopier.className = 'bouton bouton-secondaire';
@@ -4752,15 +5339,12 @@ function ajouterBoutonCopier(conteneur, csvData) {
                         await navigator.clipboard.writeText(csvData);
                     }else{
                         // fallback
-                        const ta = document.createElement('textarea');
+                        const ta = obtenirTextareaClipboardFallback();
                         ta.value = csvData;
-                        ta.style.position = 'fixed';
-                        ta.style.left = '-9999px';
-                        document.body.appendChild(ta);
                         ta.focus();
                         ta.select();
                         document.execCommand('copy');
-                        document.body.removeChild(ta);
+                        ta.value = '';
                     }
                     btnCopier.textContent = '✅ Copié !';
                     setTimeout(()=>btnCopier.textContent='📋 Copier le CSV', 1800);
@@ -4777,10 +5361,100 @@ function ajouterBoutonCopier(conteneur, csvData) {
 
         
         /* ========================================
+           NOUVELLE OBSERVATION (même configuration de séance, nouveau coureur)
+           ======================================== */
+
+// Contrairement à nouvelleSeance(), garde la configuration des courses et des lancers
+// (nombre, durée/distance, intensité, sessions, lancers par session) : utile quand
+// le même observateur enchaîne plusieurs coureurs avec le même protocole.
+// Le prénom de l'observateur est conservé (souvent la même personne enchaîne),
+// mais reste modifiable si les élèves inversent les rôles entre deux observations.
+function nouvelleObservation() {
+    if (!confirm("Nouvelle observation avec la même configuration de séance ?\n\n✅ Configuration des courses et des lancers conservée. Le prénom de l'observateur est conservé.\n❌ Prénom du coureur, sexe, VMA et classe seront réinitialisés, et les mesures en cours seront remises à zéro.")) return;
+
+    // Arrêter tous les chronos et intervalles en cours (comme quitterSeance())
+    try {
+        if (Array.isArray(chronometres)) {
+            chronometres.forEach(function(c) {
+                if (!c) return;
+                if (c.interval) { try { clearInterval(c.interval); } catch(e){} }
+                if (c.intervalBadge) { try { clearInterval(c.intervalBadge); } catch(e){} }
+            });
+        }
+    } catch(e) {}
+
+    // Réinitialiser les informations d'identité du coureur (observateur conservé)
+    document.getElementById('nomCoureur').value = '';
+    document.getElementById('vma').value = '';
+    document.getElementById('classe').value = '';
+
+    // Réinitialiser les mesures à zéro AVANT de régénérer le déroulement : genererDeroulement()
+    // restaure automatiquement les valeurs existantes (pensé pour survivre à un rechargement
+    // de page), ce qui réafficherait sinon les mesures du coureur précédent.
+    try {
+        const nbCourses = Array.isArray(configurationCourses) ? configurationCourses.length : 0;
+        plotsReelsCourses = new Array(nbCourses).fill(0);
+        tempsCourses = new Array(nbCourses).fill(0);
+        coursesFinies = new Array(nbCourses).fill(false);
+        chronometres = [];
+        donneesVitesse = [];
+        if (typeof graphiquesVitesse !== 'undefined' && Array.isArray(graphiquesVitesse)) {
+            graphiquesVitesse.forEach(function(g) {
+                if (g && typeof g.destroy === 'function') { try { g.destroy(); } catch(e){} }
+            });
+            graphiquesVitesse = new Array(nbCourses).fill(null);
+        }
+        tirsFinis = new Array(nombreSessions).fill(false);
+        etapesTerminees = {};
+    } catch(e) {}
+
+    // Effacer la séance précédente (pas de restauration croisée avec la nouvelle observation)
+    try {
+        localStorage.removeItem('sessionEnCours');
+        localStorage.removeItem('derniereSeance');
+    } catch(e) {}
+
+    // Masquer le QR/CSV, le message de succès et les boutons de fin du coureur précédent
+    const blocQR = document.getElementById('qrContainer');
+    if (blocQR) {
+        blocQR.classList.add('cache');
+        blocQR.querySelectorAll('a.bouton, button.bouton-secondaire').forEach(el => el.remove());
+    }
+    document.getElementById('messageSucces')?.classList.add('cache');
+    document.getElementById('blocApresEnregistrement')?.classList.add('cache');
+
+    // Régénérer le déroulement avec la même config de courses/lancers (mesures à zéro)
+    genererDeroulement();
+
+    // Remettre le sexe par défaut et recalculer l'affichage (tirs + score) sur les mesures à zéro
+    choisirSexe('G');
+
+    mettreAJourProgression(3); // Étape En cours
+
+    // La VMA vient d'être vidée : les cartes de course affichent "— (VMA à saisir)" en attendant.
+    // Dès que l'observateur saisit la VMA du nouveau coureur, régénérer une fois pour afficher
+    // les vraies valeurs théoriques. Sans danger ici : aucune course n'a encore démarré (mesures
+    // à zéro), donc régénérer ne peut pas interrompre un chrono en cours.
+    const vmaInput = document.getElementById('vma');
+    const rafraichirApresSaisieVma = function() {
+        const aucuneCourseDemarree = !Array.isArray(chronometres) || !chronometres.some(c => c && (c.actif || c.tempsEcoule > 0));
+        if (aucuneCourseDemarree) {
+            genererDeroulement();
+        }
+        vmaInput.removeEventListener('input', rafraichirApresSaisieVma);
+        vmaInput.removeEventListener('change', rafraichirApresSaisieVma);
+    };
+    vmaInput.addEventListener('input', rafraichirApresSaisieVma);
+    vmaInput.addEventListener('change', rafraichirApresSaisieVma);
+
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+        /* ========================================
            NOUVELLE SÉANCE
            ======================================== */
-        
-        
+
+
 function nouvelleSeance() {
     // Supprimer UNIQUEMENT les données de session en cours
     // Ne PAS toucher aux parametres et barèmes
@@ -4811,7 +5485,7 @@ function nouvelleSeance() {
 }
 
 function quitterSeance() {
-    if (!confirm("Quitter la séance en cours et revenir à la configuration ?\n\n✅ Noms, classe, VMA et configuration (courses, tirs) seront conservés.\n❌ Les mesures en cours (chronos, plots, tirs) seront perdues.")) return;
+    if (!confirm("Quitter la séance en cours et revenir à la configuration ?\n\n✅ Noms, classe, VMA et configuration (courses, lancers) seront conservés.\n❌ Les mesures en cours (chronos, plots, lancers) seront perdues.")) return;
 
     // Arrêter tous les chronos et intervalles en cours
     try {
@@ -4868,6 +5542,23 @@ function quitterSeance() {
     }
 
     window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// Appelée par MainActivity.kt (onBackPressed) avant de fermer l'app.
+// Retourne false pour empêcher la fermeture directe (on gère nous-même le retour),
+// true pour laisser Android fermer l'app normalement.
+function onAndroidBackPressed() {
+    const deroulementDiv = document.getElementById('sectionDeroulement');
+    const enDeroulement = deroulementDiv && !deroulementDiv.classList.contains('cache');
+
+    if (enDeroulement) {
+        // quitterSeance() gère déjà sa propre confirmation et le retour à la config.
+        // Que l'observateur confirme ou annule, l'app ne doit jamais se fermer directement ici.
+        quitterSeance();
+        return false;
+    }
+
+    return true;
 }
 
 function retourConfiguration(){
