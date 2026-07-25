@@ -1460,7 +1460,7 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
         <!-- SECTION DÉROULEMENT CHRONOLOGIQUE (cachée initialement) -->
         <div class="section cache" id="sectionDeroulement">
             <div class="barre-quitter-seance">
-                <button type="button" class="bouton-quitter" onclick="quitterSeance()" title="Quitter la séance en cours (la configuration sera conservée)">❌ Quitter la séance</button>
+                <button type="button" class="bouton-quitter" onclick="quitterSeance()" title="Recommence la séance en cours (la configuration sera conservée)">🔄 Recommence la séance</button>
             </div>
             <h2>📋 Déroulement de la séance</h2>
 
@@ -3097,7 +3097,7 @@ function qrPenalty(mod){
             const deroulementDiv = document.getElementById('sectionDeroulement');
             const enDeroulement = deroulementDiv && !deroulementDiv.classList.contains('cache');
             if (enDeroulement) {
-                alert('⚠️ Impossible de modifier les barèmes pendant une séance en cours : les mesures déjà prises seraient faussées. Terminez ou quittez la séance actuelle (bouton "Quitter la séance") avant d\'accéder à la configuration.');
+                alert('⚠️ Impossible de modifier les barèmes pendant une séance en cours : les mesures déjà prises seraient faussées. Terminez ou recommencez la séance actuelle (bouton "Recommence la séance") avant d\'accéder à la configuration.');
                 return;
             }
 
@@ -5497,7 +5497,7 @@ function nouvelleSeance() {
 }
 
 function quitterSeance() {
-    if (!confirm("Quitter la séance en cours et revenir à la configuration ?\n\n✅ Noms, classe, VMA et configuration (courses, lancers) seront conservés.\n❌ Les mesures en cours (chronos, plots, lancers) seront perdues.")) return;
+    if (!confirm("Recommencer la séance en cours et revenir à la configuration ?\n\n✅ Noms, classe, VMA et configuration (courses, lancers) seront conservés.\n❌ Les mesures en cours (chronos, plots, lancers) seront perdues.")) return;
 
     // Arrêter tous les chronos et intervalles en cours
     try {
@@ -5536,6 +5536,14 @@ function quitterSeance() {
     try {
         const cont = document.getElementById('deroulementContainer');
         if (cont) cont.innerHTML = '';
+    } catch(e) {}
+
+    // Rafraîchir "Résultats globaux" et "SCORE TOTAL" : ces blocs ne sont pas dans
+    // deroulementContainer, donc le vider ne les remet pas à zéro tout seul. Sans cet
+    // appel, ils continuent d'afficher les chiffres de la mesure qu'on vient de perdre.
+    try {
+        calculerDistanceTotale();
+        calculerTotalPoints(); // appelle aussi calculerScoreTotal()
     } catch(e) {}
 
     // Retour à la configuration sans reload (les champs du form restent intacts)
