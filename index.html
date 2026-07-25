@@ -580,6 +580,50 @@
             background: #FAFAFA;
         }
 
+        /* Stepper +/- : sur mobile, les flèches natives de input[type=number] ne
+           s'affichent pas (comportement du navigateur, pas un bug) - ces boutons
+           donnent un contrôle tactile identique sur tous les appareils. */
+        .stepper-nombre {
+            display: flex;
+            align-items: stretch;
+            gap: 8px;
+        }
+
+        .stepper-nombre input[type="number"] {
+            text-align: center;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .stepper-btn {
+            flex-shrink: 0;
+            width: 44px;
+            min-height: 44px;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            background: #FAFAFA;
+            color: var(--couleur-texte);
+            font-size: 1.3em;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .stepper-btn:hover,
+        .stepper-btn:active {
+            background: var(--couleur-primaire);
+            color: white;
+            border-color: var(--couleur-primaire);
+        }
+
+        body.mode-sombre .stepper-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
         input[type="text"]:focus,
         input[type="number"]:focus,
         select:focus {
@@ -1386,17 +1430,29 @@
             <div class="grille-3col">
                 <div class="groupe-champ">
                     <label for="nombreCourses">Nombre de courses :</label>
-                    <input type="number" id="nombreCourses" min="1" max="5" value="2">
+                    <div class="stepper-nombre">
+                        <button type="button" class="stepper-btn" onclick="ajusterNombre('nombreCourses', -1)" aria-label="Diminuer le nombre de courses">−</button>
+                        <input type="number" id="nombreCourses" min="1" max="5" value="2">
+                        <button type="button" class="stepper-btn" onclick="ajusterNombre('nombreCourses', 1)" aria-label="Augmenter le nombre de courses">+</button>
+                    </div>
                 </div>
 
                 <div class="groupe-champ">
                     <label for="nombreSessions">Sessions de lancer :</label>
-                    <input type="number" id="nombreSessions" min="1" max="5" value="2">
+                    <div class="stepper-nombre">
+                        <button type="button" class="stepper-btn" onclick="ajusterNombre('nombreSessions', -1)" aria-label="Diminuer le nombre de sessions de lancer">−</button>
+                        <input type="number" id="nombreSessions" min="1" max="5" value="2">
+                        <button type="button" class="stepper-btn" onclick="ajusterNombre('nombreSessions', 1)" aria-label="Augmenter le nombre de sessions de lancer">+</button>
+                    </div>
                 </div>
 
                 <div class="groupe-champ">
                     <label for="tirsParSession">Lancers par session :</label>
-                    <input type="number" id="tirsParSession" min="1" max="10" value="2">
+                    <div class="stepper-nombre">
+                        <button type="button" class="stepper-btn" onclick="ajusterNombre('tirsParSession', -1)" aria-label="Diminuer le nombre de lancers par session">−</button>
+                        <input type="number" id="tirsParSession" min="1" max="10" value="2">
+                        <button type="button" class="stepper-btn" onclick="ajusterNombre('tirsParSession', 1)" aria-label="Augmenter le nombre de lancers par session">+</button>
+                    </div>
                 </div>
             </div>
 
@@ -3467,6 +3523,23 @@ function qrPenalty(mod){
             document.getElementById('btnSexeG').classList.toggle('actif', sexe === 'G');
             calculerTotalPoints();
             sauvegarderSession();
+        }
+
+        // Boutons +/- des compteurs (nombreCourses, nombreSessions, tirsParSession) : sur mobile,
+        // les flèches natives de input[type=number] ne s'affichent pas, ces boutons les remplacent.
+        function ajusterNombre(id, delta) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const min = parseInt(el.min);
+            const max = parseInt(el.max);
+            let valeur = parseInt(el.value);
+            if (isNaN(valeur)) valeur = !isNaN(min) ? min : 1;
+            valeur += delta;
+            if (!isNaN(min)) valeur = Math.max(min, valeur);
+            if (!isNaN(max)) valeur = Math.min(max, valeur);
+            el.value = valeur;
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            el.dispatchEvent(new Event('change', { bubbles: true }));
         }
 
         function changerModeCourse(mode) {
