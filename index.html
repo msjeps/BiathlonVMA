@@ -2566,9 +2566,16 @@ function qrPenalty(mod){
 
         let autoSaveTimeout = null;
 
+        // Mis à true par nouvelleSeance() juste avant d'effacer la session et de recharger
+        // la page : empêche le beforeunload (déclenché par ce rechargement volontaire) de
+        // recréer sessionEnCours avec les valeurs encore présentes dans le formulaire.
+        let sessionEnCoursEffacementVolontaire = false;
+
         // immediat=true : sauvegarde synchrone sans débounce (utilisé par beforeunload/
         // visibilitychange, où un setTimeout de 500ms n'aurait pas le temps de s'exécuter).
         function sauvegarderSession(immediat) {
+            if (sessionEnCoursEffacementVolontaire) return;
+
             if (autoSaveTimeout) {
                 clearTimeout(autoSaveTimeout);
                 autoSaveTimeout = null;
@@ -5456,6 +5463,11 @@ function nouvelleObservation() {
 
 
 function nouvelleSeance() {
+    // Empêche le beforeunload/l'intervalle d'auto-save de recréer sessionEnCours pendant
+    // le rechargement ci-dessous, avec les valeurs encore présentes dans le formulaire
+    // (les champs ne sont vidés que par le rechargement lui-même, pas ici).
+    sessionEnCoursEffacementVolontaire = true;
+
     // Supprimer UNIQUEMENT les données de session en cours
     // Ne PAS toucher aux parametres et barèmes
     try {
