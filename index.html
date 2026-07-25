@@ -1373,7 +1373,7 @@
         <!-- EN-TÊTE -->
         <div class="en-tete">
             <h1>🏃‍♂️ Biathlon VMA 🎯</h1>
-            <p>Version 1.1</p>
+            <p>Version 1.2</p>
             <!-- Bouton paramètres déplacé dans le header fixe -->
         </div>
 
@@ -1609,6 +1609,10 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
             <button class="bouton bouton-primaire" onclick="verifierMotDePasse()">Valider</button>
             <div id="erreurMdp" style="color: red; margin-top: 10px; display: none;">
                 ❌ Mot de passe incorrect
+            </div>
+            <div id="proposReinitMdp" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.15);">
+                <p style="font-size: 0.85em; opacity: 0.85; margin-bottom: 8px;">Mot de passe personnalisé oublié ?</p>
+                <button type="button" class="bouton bouton-secondaire" style="width: 100%;" onclick="reinitialiserMdpProfDepuisConnexion()">🔄 Réinitialiser au mot de passe par défaut</button>
             </div>
         </div>
     </div>
@@ -1884,6 +1888,21 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
                 </div>
             </div>
 
+            <!-- Mot de passe personnalisé -->
+            <div class="bareme-section">
+                <h3>🔑 Mot de passe personnalisé (optionnel)</h3>
+                <p style="margin-bottom: 12px; font-size: 0.9em; opacity: 0.85;">Par défaut, cet accès est protégé par <code>ADMINPROF</code> (voir le guide professeur). Vous pouvez définir ici un mot de passe qui vous est propre - une fois personnalisé, <code>ADMINPROF</code> ne fonctionne plus directement (pour empêcher un élève qui le connaîtrait de contourner votre mot de passe). En cas d'oubli, 3 tentatives incorrectes sur l'écran de connexion font apparaître un bouton pour réinitialiser au mot de passe par défaut.</p>
+                <div class="groupe-champ" style="margin-bottom: 10px;">
+                    <label for="nouveauMdpProf">Nouveau mot de passe :</label>
+                    <input type="password" id="nouveauMdpProf" placeholder="Laisser vide pour ne rien changer" autocomplete="off">
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" class="bouton bouton-secondaire" onclick="definirMotDePasseProf()">💾 Enregistrer ce mot de passe</button>
+                    <button type="button" class="bouton bouton-secondaire" onclick="supprimerMotDePasseProf()">🔄 Revenir au mot de passe par défaut</button>
+                </div>
+                <div id="messageMdpProf" class="message-succes cache"></div>
+            </div>
+
             <div style="display: flex; gap: 15px; justify-content: center;">
                 <button class="bouton bouton-primaire" onclick="sauvegarderBaremes()">💾 Sauvegarder</button>
                 <button class="bouton bouton-secondaire" onclick="reinitialiserBaremes()">🔄 Réinitialiser</button>
@@ -2029,7 +2048,7 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
 
                 <div style="text-align: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(128,128,128,0.3);">
                     <p style="font-size: 0.85em; opacity: 0.7;">
-                        Biathlon VMA - version 1.1<br>
+                        Biathlon VMA - version 1.2<br>
                         <code>outils-eps.fr</code><br>
                         Vérifiez régulièrement les mises à jour pour bénéficier des dernières améliorations.<br>
                         Développée par Nathalie Prenois
@@ -3147,6 +3166,11 @@ function qrPenalty(mod){
            ACCÈS PROFESSEUR
            ======================================== */
         
+        // Nombre d'essais de mot de passe échoués depuis l'ouverture de la modale (remis à zéro
+        // à chaque ouverture) : sert uniquement à faire apparaître la proposition de
+        // réinitialisation ci-dessous, pas à limiter réellement les tentatives.
+        let tentativesMdpEchouees = 0;
+
         function afficherAccesProf() {
             // Empêcher la modification des barèmes (notamment distancePlot) pendant une séance
             // en cours : ça recalculerait silencieusement les mesures déjà prises.
@@ -3160,16 +3184,79 @@ function qrPenalty(mod){
             document.getElementById('modaleAccesProf').style.display = 'block';
             document.getElementById('motDePasse').value = '';
             document.getElementById('erreurMdp').style.display = 'none';
+            document.getElementById('proposReinitMdp').style.display = 'none';
+            tentativesMdpEchouees = 0;
         }
-        
+
         function verifierMotDePasse() {
             const mdp = document.getElementById('motDePasse').value;
-            if (mdp === 'ADMINPROF') {
+            const mdpPersonnalise = localStorage.getItem('mdpProfPersonnalise');
+
+            // Si un mot de passe personnalisé est défini, ADMINPROF ne donne plus un accès
+            // direct : sinon un élève qui connaîtrait seulement ADMINPROF contournerait la
+            // personnalisation. Sans mot de passe personnalisé, ADMINPROF reste le seul mot
+            // de passe (comportement d'origine).
+            const mdpValide = mdpPersonnalise ? (mdp === mdpPersonnalise) : (mdp === 'ADMINPROF');
+
+            if (mdpValide) {
                 fermerModale('modaleAccesProf');
                 ouvrirConfigurationBaremes();
-            } else {
-                document.getElementById('erreurMdp').style.display = 'block';
+                return;
             }
+
+            document.getElementById('erreurMdp').style.display = 'block';
+            tentativesMdpEchouees++;
+
+            // Après 3 échecs, proposer de réinitialiser au mot de passe par défaut - utile
+            // uniquement s'il y a un mot de passe personnalisé (sinon ADMINPROF est déjà le
+            // mot de passe testé, le proposer en réinitialisation n'aiderait pas).
+            if (tentativesMdpEchouees >= 3 && mdpPersonnalise) {
+                document.getElementById('proposReinitMdp').style.display = 'block';
+            }
+        }
+
+        function reinitialiserMdpProfDepuisConnexion() {
+            if (!confirm('Réinitialiser le mot de passe personnalisé et revenir à ADMINPROF ?')) return;
+            try { localStorage.removeItem('mdpProfPersonnalise'); } catch (e) {}
+            tentativesMdpEchouees = 0;
+            document.getElementById('erreurMdp').style.display = 'none';
+            document.getElementById('proposReinitMdp').style.display = 'none';
+            document.getElementById('motDePasse').value = '';
+            alert('Mot de passe personnalisé supprimé. Vous pouvez maintenant vous connecter avec ADMINPROF.');
+        }
+
+        function definirMotDePasseProf() {
+            const nouveau = document.getElementById('nouveauMdpProf').value.trim();
+            const message = document.getElementById('messageMdpProf');
+            if (!nouveau) {
+                alert('Saisissez un nouveau mot de passe, ou utilisez "Revenir au mot de passe par défaut" pour le supprimer.');
+                return;
+            }
+            if (nouveau === 'ADMINPROF') {
+                alert('Ce mot de passe est déjà celui par défaut. Choisissez-en un autre pour renforcer la protection.');
+                return;
+            }
+            const ok = sauvegarderLocalStorage('mdpProfPersonnalise', nouveau);
+            document.getElementById('nouveauMdpProf').value = '';
+            message.textContent = ok
+                ? '✅ Mot de passe personnalisé enregistré. ADMINPROF ne fonctionnera plus tant que ce mot de passe est actif.'
+                : '⚠️ Mot de passe actif pour cette séance mais non sauvegardé durablement (stockage plein ?).';
+            message.classList.remove('cache');
+            setTimeout(() => message.classList.add('cache'), 3500);
+        }
+
+        function supprimerMotDePasseProf() {
+            if (!localStorage.getItem('mdpProfPersonnalise')) {
+                alert('Aucun mot de passe personnalisé n\'est actuellement défini.');
+                return;
+            }
+            if (!confirm('Revenir au mot de passe par défaut (ADMINPROF) et supprimer le mot de passe personnalisé ?')) return;
+            try { localStorage.removeItem('mdpProfPersonnalise'); } catch (e) {}
+            document.getElementById('nouveauMdpProf').value = '';
+            const message = document.getElementById('messageMdpProf');
+            message.textContent = '✅ Mot de passe personnalisé supprimé - ADMINPROF est de nouveau le seul mot de passe.';
+            message.classList.remove('cache');
+            setTimeout(() => message.classList.add('cache'), 3500);
         }
         
         function ouvrirConfigurationBaremes() {
