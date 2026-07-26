@@ -260,9 +260,17 @@
         }
 
         body.mode-sombre .section h2,
-        body.mode-sombre .titre-course,
         body.mode-sombre .session-tir h3 {
             color: #ecf0f1;
+        }
+
+        /* .titre-course exclu de la règle ci-dessus : contrairement à .section/.session-tir,
+           .carte-course garde toujours un fond clair (couleur thématique course/tir, voir
+           DESIGN-SYSTEM-EPS.md) - un texte clair y reste illisible en mode sombre. Sélecteur
+           renforcé (.carte-course .titre-course) pour battre en spécificité une éventuelle
+           règle générique, plutôt que de dépendre de l'ordre d'apparition dans le fichier. */
+        body.mode-sombre .carte-course .titre-course {
+            color: var(--couleur-texte);
         }
 
         body.mode-sombre .info-theorique,
@@ -919,6 +927,70 @@
             box-shadow: var(--ombre-forte);
         }
 
+        /* Couleur fixe (pas de variante mode sombre) : ce texte est posé sur le fond de
+           .carte-course, qui reste toujours clair (#a8edea) dans les deux modes - un texte
+           blanc y serait illisible. Même raisonnement que le bloc "Informations" du
+           récapitulatif (voir MEMORY.md, 2026-07-20). */
+        .aide-plus-metres {
+            text-align: center;
+            font-size: 0.85em;
+            color: #0d47a1;
+            margin: 0 0 10px;
+        }
+
+        .bloc-metres-supp {
+            text-align: center;
+            margin: 0 0 15px;
+        }
+
+        /* Une seule ligne pleine largeur (label + boutons +/- + champ) au lieu d'un empilement
+           vertical - réduit fortement la hauteur du bloc. flex-wrap en secours uniquement pour
+           les tout petits écrans où tout ne tiendrait vraiment pas. */
+        .stepper-metres-supp {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .stepper-metres-supp input[type="number"] {
+            /* Largeur explicite : sans elle, flex-basis:auto retombe sur la taille par défaut
+               (très large) d'un <input type="number"> non stylé, qui prend alors toute la ligne
+               à lui seul. */
+            width: 48px;
+            flex: 0 0 auto;
+            /* Le padding horizontal générique des champs (15px de chaque côté) ne laisse presque
+               plus de place au chiffre dans une case aussi étroite - réduit ici spécifiquement. */
+            padding: 12px 4px;
+            /* Case trop étroite pour laisser de la place aux flèches natives du navigateur en
+               plus du chiffre - masquées ici, les boutons −/+ du stepper les remplacent déjà. */
+            -moz-appearance: textfield;
+        }
+
+        .stepper-metres-supp input[type="number"]::-webkit-outer-spin-button,
+        .stepper-metres-supp input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Couleur fixe pour la même raison que .aide-plus-metres ci-dessus : posé sur le fond
+           toujours clair de .carte-course, jamais sur un fond sombre. */
+        .stepper-metres-supp label {
+            margin: 0;
+            font-size: 0.8em;
+            color: #0d47a1;
+            white-space: nowrap;
+        }
+
+        /* Nécessaire malgré la couleur fixe ci-dessus : la règle générique "body.mode-sombre
+           label" (plus spécifique - 2 classes+élément contre 1 classe+élément) l'écraserait
+           sinon en mode sombre et redonnerait un texte blanc illisible sur ce fond clair. */
+        body.mode-sombre .stepper-metres-supp label {
+            color: #0d47a1;
+        }
+
         .affichage-distance {
             text-align: center;
             font-size: 1.5em;
@@ -1384,7 +1456,7 @@
         <!-- EN-TÊTE -->
         <div class="en-tete">
             <h1>🏃‍♂️ Biathlon VMA 🎯</h1>
-            <p>Version 1.6</p>
+            <p>Version 1.11</p>
             <!-- Bouton paramètres déplacé dans le header fixe -->
         </div>
 
@@ -1982,6 +2054,7 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
                     <ul style="padding-left: 20px;">
                         <li>Appuyer sur <strong>▶</strong> pour lancer le chrono (arrêt automatique à la durée configurée).</li>
                         <li>Appuyer sur <strong>+</strong> à chaque plot franchi par le coureur.</li>
+                        <li>Une fois la course arrêtée, si le coureur s'est arrêté entre deux plots, préciser les <strong>mètres parcourus après le dernier plot</strong> avec le petit compteur qui apparaît alors sous la distance - elle devient ainsi plus précise qu'un simple compte de plots entiers.</li>
                         <li>L'écart en plots et en mètres s'affiche à la fin.</li>
                     </ul>
                     <p style="margin-top: 10px;"><strong>Mode distance :</strong></p>
@@ -2070,7 +2143,7 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
 
                 <div style="text-align: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(128,128,128,0.3);">
                     <p style="font-size: 0.85em; opacity: 0.7;">
-                        Biathlon VMA - version 1.6<br>
+                        Biathlon VMA - version 1.11<br>
                         <code>outils-eps.fr</code><br>
                         Vérifiez régulièrement les mises à jour pour bénéficier des dernières améliorations.<br>
                         Développée par Nathalie Prenois
@@ -2389,6 +2462,9 @@ function qrPenalty(mod){
         let sexeCoureur = 'G'; // 'F' ou 'G'
         let configurationCourses = [];
         let plotsReelsCourses = [];
+        // Mètres parcourus après le dernier plot compté (0 à distancePlot-1) - saisis manuellement
+        // par l'observateur, en complément des plots entiers comptés via le bouton (+).
+        let metresSupplementairesCourses = [];
         let chronometres = []; // Un chrono par course
         let tempsCourses = []; // Temps finaux de chaque course
         let donneesVitesse = []; // Données de vitesse pour chaque course
@@ -2739,6 +2815,7 @@ function qrPenalty(mod){
                         informationsVisibles: !document.getElementById('sectionInformations')?.classList.contains('cache'),
                         etapesTerminees: etapesTerminees,
                         plotsReelsCourses: plotsReelsCourses,
+                        metresSupplementairesCourses: metresSupplementairesCourses,
                         tempsCourses: tempsCourses,
                         coursesFinies: coursesFinies,
                         tirsFinis: tirsFinis,
@@ -2854,6 +2931,9 @@ function qrPenalty(mod){
                 if (sessionData.plotsReelsCourses) {
                     plotsReelsCourses = sessionData.plotsReelsCourses;
                 }
+                // Absent (ancienne session sauvegardée avant cette fonctionnalité) = 0 partout,
+                // rétrocompatible sans effort.
+                metresSupplementairesCourses = sessionData.metresSupplementairesCourses || new Array(plotsReelsCourses.length).fill(0);
                 if (sessionData.tempsCourses) {
                     tempsCourses = sessionData.tempsCourses;
                 }
@@ -3071,17 +3151,23 @@ function qrPenalty(mod){
                         if (btnPause) btnPause.disabled = false;
                         if (btnStop) btnStop.disabled = false;
                         if (btnPlus) btnPlus.disabled = false;
+                        // Le réglage "mètres après le dernier plot" reste caché tant que la
+                        // course n'est pas terminée (voir plus bas, restauration des courses
+                        // finies) - rien à faire ici pour une course encore en cours.
                     }
                 });
 
-                // Restaurer l'affichage des distances pour chaque course
+                // Restaurer l'affichage des distances pour chaque course (plots + mètres
+                // supplémentaires éventuels)
                 if (plotsReelsCourses && plotsReelsCourses.length > 0) {
                     plotsReelsCourses.forEach((plots, index) => {
-                        if (plots > 0) {
-                            const distanceReelle = plots * distancePlot;
+                        const metresSupp = metresSupplementairesCourses[index] || 0;
+                        const inputMetres = document.getElementById('metresSupp' + index);
+                        if (inputMetres) inputMetres.value = metresSupp;
+                        if (plots > 0 || metresSupp > 0) {
                             const distanceEl = document.getElementById('distance' + index);
                             if (distanceEl) {
-                                distanceEl.textContent = distanceReelle + ' m';
+                                distanceEl.textContent = distanceReelleCourse(index) + ' m';
                             }
                         }
                     });
@@ -3108,6 +3194,20 @@ function qrPenalty(mod){
                             if (btnPause) btnPause.disabled = true;
                             if (btnStop) btnStop.disabled = true;
                             if (btnPlus) btnPlus.disabled = true;
+
+                            // Course terminée : réafficher et réactiver le réglage "mètres
+                            // après le dernier plot" (visible uniquement une fois la course
+                            // finie, voir stopChrono)
+                            const blocMetresSupp = document.getElementById('blocMetresSupp' + index);
+                            if (blocMetresSupp) {
+                                blocMetresSupp.classList.remove('cache');
+                                const inputMetres = document.getElementById('metresSupp' + index);
+                                if (inputMetres) inputMetres.disabled = false;
+                                const btnMetresMoins = document.getElementById('btnMetresMoins' + index);
+                                if (btnMetresMoins) btnMetresMoins.disabled = false;
+                                const btnMetresPlus = document.getElementById('btnMetresPlus' + index);
+                                if (btnMetresPlus) btnMetresPlus.disabled = false;
+                            }
 
                             // Ré-afficher le badge de pause cumulée si présent
                             mettreAJourBadgePause(index);
@@ -3969,6 +4069,7 @@ function genererDeroulement() {
 
             // Sauvegarder les valeurs existantes avant de réinitialiser
             const plotsSauvegardes = plotsReelsCourses && plotsReelsCourses.length > 0 ? [...plotsReelsCourses] : null;
+            const metresSuppSauvegardes = metresSupplementairesCourses && metresSupplementairesCourses.length > 0 ? [...metresSupplementairesCourses] : null;
             const tempsSauvegardes = tempsCourses && tempsCourses.length > 0 ? [...tempsCourses] : null;
             const coursesFiniesSauvegardes = coursesFinies && coursesFinies.length > 0 ? [...coursesFinies] : null;
             const tirsFinisauvegardes = tirsFinis && tirsFinis.length > 0 ? [...tirsFinis] : null;
@@ -3976,6 +4077,7 @@ function genererDeroulement() {
 
             // Initialiser les tableaux
             plotsReelsCourses = new Array(configurationCourses.length).fill(0);
+            metresSupplementairesCourses = new Array(configurationCourses.length).fill(0);
             chronometres = new Array(configurationCourses.length).fill(null);
             tempsCourses = new Array(configurationCourses.length).fill(0);
             donneesVitesse = new Array(configurationCourses.length);
@@ -4016,15 +4118,21 @@ function genererDeroulement() {
             mettreAJourVerrouillages();
 
             // Restaurer les valeurs sauvegardées si elles existent
+            if (metresSuppSauvegardes && metresSuppSauvegardes.length === metresSupplementairesCourses.length) {
+                metresSupplementairesCourses = [...metresSuppSauvegardes];
+            }
             if (plotsSauvegardes && plotsSauvegardes.length === plotsReelsCourses.length) {
                 plotsReelsCourses = [...plotsSauvegardes];
-                // Mettre à jour l'affichage des distances
+                // Mettre à jour l'affichage des distances (plots + mètres supplémentaires) et
+                // le champ de saisie des mètres supplémentaires
                 plotsReelsCourses.forEach((plots, index) => {
-                    if (plots > 0) {
-                        const distanceReelle = plots * distancePlot;
+                    const metresSupp = metresSupplementairesCourses[index] || 0;
+                    const inputMetres = document.getElementById('metresSupp' + index);
+                    if (inputMetres) inputMetres.value = metresSupp;
+                    if (plots > 0 || metresSupp > 0) {
                         const distanceEl = document.getElementById('distance' + index);
                         if (distanceEl) {
-                            distanceEl.textContent = distanceReelle + ' m';
+                            distanceEl.textContent = distanceReelleCourse(index) + ' m';
                         }
                     }
                 });
@@ -4034,6 +4142,21 @@ function genererDeroulement() {
             }
             if (coursesFiniesSauvegardes && coursesFiniesSauvegardes.length === coursesFinies.length) {
                 coursesFinies = [...coursesFiniesSauvegardes];
+                // Réafficher et réactiver le réglage "mètres après le dernier plot" pour les
+                // courses déjà terminées (caché par défaut dans le template de la carte)
+                coursesFinies.forEach((finie, index) => {
+                    if (!finie) return;
+                    const blocMetresSupp = document.getElementById('blocMetresSupp' + index);
+                    if (blocMetresSupp) {
+                        blocMetresSupp.classList.remove('cache');
+                        const inputMetres = document.getElementById('metresSupp' + index);
+                        if (inputMetres) inputMetres.disabled = false;
+                        const btnMetresMoins = document.getElementById('btnMetresMoins' + index);
+                        if (btnMetresMoins) btnMetresMoins.disabled = false;
+                        const btnMetresPlus = document.getElementById('btnMetresPlus' + index);
+                        if (btnMetresPlus) btnMetresPlus.disabled = false;
+                    }
+                });
             }
             if (tirsFinisauvegardes && tirsFinisauvegardes.length === tirsFinis.length) {
                 tirsFinis = [...tirsFinisauvegardes];
@@ -4193,6 +4316,19 @@ function genererDeroulement() {
                         </div>
                     </div>
 
+                    <p class="aide-plus-metres">Appuie sur le <strong>(+)</strong> dès que le coureur a dépassé un plot : sa distance parcourue se calcule automatiquement.</p>
+                    <button class="bouton-plus" id="btnPlus${index}" onclick="ajouterPlot(${index})" disabled>+</button>
+                    <div class="affichage-distance" id="distance${index}">0 m</div>
+
+                    <div class="bloc-metres-supp cache" id="blocMetresSupp${index}">
+                        <div class="stepper-nombre stepper-metres-supp">
+                            <label for="metresSupp${index}">Mètres après le dernier plot :</label>
+                            <button type="button" class="stepper-btn" onclick="ajusterMetresSupplementaires(${index}, -1)" disabled id="btnMetresMoins${index}" aria-label="Diminuer les mètres après le dernier plot">−</button>
+                            <input type="number" id="metresSupp${index}" min="0" max="${Math.max(0, distancePlot - 1)}" value="0" disabled onchange="definirMetresSupplementaires(${index}, this.value)">
+                            <button type="button" class="stepper-btn" onclick="ajusterMetresSupplementaires(${index}, 1)" disabled id="btnMetresPlus${index}" aria-label="Augmenter les mètres après le dernier plot">+</button>
+                        </div>
+                    </div>
+
                     <div class="info-theorique">
                         <p><strong>Durée:</strong> ${config.duree}s (${Math.floor(config.duree/60)}min ${config.duree%60}s)</p>
                         <p><strong>Intensité:</strong> ${config.intensite}% VMA</p>
@@ -4200,8 +4336,6 @@ function genererDeroulement() {
                         <p><strong>Plots théoriques:</strong> ${plotsTheoriquesTexte}</p>
                     </div>
 
-                    <button class="bouton-plus" id="btnPlus${index}" onclick="ajouterPlot(${index})" disabled>+</button>
-                    <div class="affichage-distance" id="distance${index}">0 m</div>
                     <div class="ecart-info cache" id="ecart${index}">
                         <p style="font-size: 0.9em; margin: 5px 0;">Écart: <span class="ecart-valeur">0 plots (0m)</span></p>
                     </div>
@@ -4318,6 +4452,8 @@ function genererDeroulement() {
             // Activer le bouton + pendant la course (mode durée uniquement)
             const btnPlus = document.getElementById('btnPlus' + index);
             if (btnPlus) btnPlus.disabled = false;
+            // Le réglage "mètres après le dernier plot" n'apparaît qu'à la fin de la course
+            // (voir stopChrono) - rien à activer ici.
 
             // Sauvegarder la session automatiquement
             sauvegarderSession();
@@ -4396,6 +4532,7 @@ function genererDeroulement() {
 
             // Réinitialiser les données de course
             plotsReelsCourses[index] = 0;
+            metresSupplementairesCourses[index] = 0;
             tempsCourses[index] = 0;
             coursesFinies[index] = false;
             donneesVitesse[index] = {
@@ -4444,6 +4581,18 @@ function genererDeroulement() {
             const btnPlus = document.getElementById('btnPlus' + index);
             if (btnPlus) btnPlus.disabled = true;
 
+            // Remettre à zéro, redésactiver et recacher le réglage "mètres après le dernier
+            // plot" (retour à l'état initial - il ne réapparaît qu'à la fin de la prochaine
+            // course, voir stopChrono)
+            const blocMetresSupp = document.getElementById('blocMetresSupp' + index);
+            if (blocMetresSupp) blocMetresSupp.classList.add('cache');
+            const inputMetres = document.getElementById('metresSupp' + index);
+            if (inputMetres) { inputMetres.value = 0; inputMetres.disabled = true; }
+            const btnMetresMoins = document.getElementById('btnMetresMoins' + index);
+            if (btnMetresMoins) btnMetresMoins.disabled = true;
+            const btnMetresPlus = document.getElementById('btnMetresPlus' + index);
+            if (btnMetresPlus) btnMetresPlus.disabled = true;
+
             // Recalculer les résultats et verrouillages
             calculerDistanceTotale();
             if (typeof calculerTotalPoints === 'function') calculerTotalPoints();
@@ -4486,6 +4635,21 @@ function genererDeroulement() {
             // Désactiver le bouton + après la course (mode durée uniquement)
             const btnPlus = document.getElementById('btnPlus' + index);
             if (btnPlus) btnPlus.disabled = true;
+
+            // Le réglage "mètres après le dernier plot" n'apparaît qu'une fois la course
+            // terminée (mode durée uniquement - n'existe pas dans le DOM en mode distance) :
+            // c'est le moment où l'observateur précise la distance parcourue après le dernier
+            // plot compté, une fois le coureur arrêté.
+            const blocMetresSupp = document.getElementById('blocMetresSupp' + index);
+            if (blocMetresSupp) {
+                blocMetresSupp.classList.remove('cache');
+                const inputMetres = document.getElementById('metresSupp' + index);
+                if (inputMetres) inputMetres.disabled = false;
+                const btnMetresMoins = document.getElementById('btnMetresMoins' + index);
+                if (btnMetresMoins) btnMetresMoins.disabled = false;
+                const btnMetresPlus = document.getElementById('btnMetresPlus' + index);
+                if (btnMetresPlus) btnMetresPlus.disabled = false;
+            }
 
             // Afficher l'écart à la fin de la course
             afficherEcartFinal(index);
@@ -4551,7 +4715,7 @@ function genererDeroulement() {
                 const distanceTheorique = calculerDistanceTheorique(vma, config.intensite, config.duree);
                 const plotsTheoriques = Math.floor(distanceTheorique / distancePlot);
                 const plotsReels = plotsReelsCourses[index];
-                const distanceReelle = plotsReels * distancePlot;
+                const distanceReelle = distanceReelleCourse(index);
                 const ecartPlots = plotsReels - plotsTheoriques;
                 const ecartMetres = distanceReelle - distanceTheorique;
 
@@ -4730,12 +4894,25 @@ function genererDeroulement() {
            AJOUTER UN PLOT
            ======================================== */
         
+        // Distance réelle d'une course = plots entiers comptés + mètres supplémentaires saisis
+        // manuellement après le dernier plot (0 à distancePlot-1) - fonction centrale réutilisée
+        // partout où cette distance est affichée, exportée ou recalculée.
+        function distanceReelleCourse(index) {
+            return (plotsReelsCourses[index] || 0) * distancePlot + (metresSupplementairesCourses[index] || 0);
+        }
+
         function ajouterPlot(indexCourse) {
             plotsReelsCourses[indexCourse]++;
 
-            const distanceReelle = plotsReelsCourses[indexCourse] * distancePlot;
+            // Un plot entier vient d'être compté : toute valeur de "mètres après le dernier plot"
+            // saisie avant ce clic ne correspond plus à rien (le coureur est maintenant au-delà) -
+            // remise à zéro pour éviter un double comptage silencieux.
+            metresSupplementairesCourses[indexCourse] = 0;
+            const inputMetres = document.getElementById('metresSupp' + indexCourse);
+            if (inputMetres) inputMetres.value = 0;
+
             // Afficher uniquement la distance parcourue en temps réel
-            document.getElementById('distance' + indexCourse).textContent = distanceReelle + ' m';
+            document.getElementById('distance' + indexCourse).textContent = distanceReelleCourse(indexCourse) + ' m';
 
             // Vibration et animation
             vibrer();
@@ -4777,7 +4954,30 @@ function genererDeroulement() {
             // Sauvegarder la session automatiquement
             sauvegarderSession();
         }
-        
+
+        // Fixe la valeur de "mètres après le dernier plot" pour une course (saisie directe dans
+        // le champ ou via les boutons +/- du stepper), en la clampant à [0, distancePlot-1].
+        function definirMetresSupplementaires(index, valeurBrute) {
+            const max = Math.max(0, distancePlot - 1);
+            let valeur = parseInt(valeurBrute);
+            if (isNaN(valeur)) valeur = 0;
+            valeur = Math.max(0, Math.min(max, valeur));
+
+            metresSupplementairesCourses[index] = valeur;
+            const input = document.getElementById('metresSupp' + index);
+            if (input) input.value = valeur;
+
+            const distanceEl = document.getElementById('distance' + index);
+            if (distanceEl) distanceEl.textContent = distanceReelleCourse(index) + ' m';
+
+            calculerDistanceTotale();
+            sauvegarderSession();
+        }
+
+        function ajusterMetresSupplementaires(index, delta) {
+            definirMetresSupplementaires(index, (metresSupplementairesCourses[index] || 0) + delta);
+        }
+
         /* ========================================
            CALCUL DISTANCE TOTALE
            ======================================== */
@@ -4866,7 +5066,7 @@ function genererDeroulement() {
                 for (let i = 0; i < configurationCourses.length; i++) {
                     const config = configurationCourses[i];
                     distanceTheoriqueTotale += calculerDistanceTheorique(vma, config.intensite, config.duree);
-                    distanceReelleTotale += plotsReelsCourses[i] * distancePlot;
+                    distanceReelleTotale += distanceReelleCourse(i);
                 }
 
                 const ecartMetres = distanceReelleTotale - distanceTheoriqueTotale;
@@ -5102,7 +5302,7 @@ function genererDeroulement() {
                     const distanceTheo = calculerDistanceTheorique(vma, config.intensite, config.duree);
                     const plotsTheoriques = Math.floor(distanceTheo / distancePlot);
                     const plotsReels = plotsReelsCourses[i];
-                    const distanceReelle = plotsReels * distancePlot;
+                    const distanceReelle = distanceReelleCourse(i);
                     const ecartPlots = plotsReels - plotsTheoriques;
                     const ecartMetres = distanceReelle - distanceTheo;
 
@@ -5748,6 +5948,7 @@ function nouvelleObservation() {
     try {
         const nbCourses = Array.isArray(configurationCourses) ? configurationCourses.length : 0;
         plotsReelsCourses = new Array(nbCourses).fill(0);
+        metresSupplementairesCourses = new Array(nbCourses).fill(0);
         tempsCourses = new Array(nbCourses).fill(0);
         coursesFinies = new Array(nbCourses).fill(false);
         chronometres = [];
@@ -5840,6 +6041,7 @@ function nouvelleSeance() {
         etapesTerminees = {};
         configurationCourses = [];
         plotsReelsCourses = [];
+        metresSupplementairesCourses = [];
         chronometres = [];
         tempsCourses = [];
         donneesVitesse = [];
@@ -5870,6 +6072,7 @@ function quitterSeance() {
     try {
         const nbCourses = Array.isArray(configurationCourses) ? configurationCourses.length : 0;
         plotsReelsCourses = new Array(nbCourses).fill(0);
+        metresSupplementairesCourses = new Array(nbCourses).fill(0);
         tempsCourses = new Array(nbCourses).fill(0);
         coursesFinies = new Array(nbCourses).fill(false);
         chronometres = [];
