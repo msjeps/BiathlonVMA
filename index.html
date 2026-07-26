@@ -1234,6 +1234,17 @@
             box-shadow: var(--ombre-douce);
         }
 
+        .message-avertissement {
+            background: #ffe0b2;
+            color: #7a4a00;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: var(--ombre-douce);
+        }
+
         .cache {
             display: none;
         }
@@ -1373,7 +1384,7 @@
         <!-- EN-TÊTE -->
         <div class="en-tete">
             <h1>🏃‍♂️ Biathlon VMA 🎯</h1>
-            <p>Version 1.4</p>
+            <p>Version 1.6</p>
             <!-- Bouton paramètres déplacé dans le header fixe -->
         </div>
 
@@ -1584,6 +1595,8 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
             <div class="qr-container cache" id="qrContainerSeance" style="margin-top: 15px;">
                 <h3>📦 Toute la séance (<span id="nbEleveSeance">0</span> élève(s))</h3>
                 <p style="color: #666; margin: 10px 0;">QR code et CSV regroupant <strong>tous les élèves déjà enregistrés</strong> depuis la dernière "Nouvelle séance" - un seul scan/téléchargement pour tout récupérer.</p>
+                <p id="tailleQRSeance" style="color: #666; font-size: 0.85em; margin: 4px 0 10px;"></p>
+                <div id="avertissementQRSeance" class="message-avertissement cache"></div>
                 <div id="qrcodeSeance"></div>
             </div>
 
@@ -2029,7 +2042,7 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
                     <p>Après chaque enregistrement, deux blocs de récupération apparaissent :</p>
                     <ul style="padding-left: 20px; margin-top: 8px;">
                         <li><strong>📱 QR Code de ce coureur</strong> : CSV/QR pour <strong>ce coureur uniquement</strong>, à récupérer tout de suite.</li>
-                        <li><strong>📦 Toute la séance</strong> : CSV/QR regroupant <strong>tous les coureurs déjà enregistrés</strong> depuis la dernière « Nouvelle séance » - se met à jour à chaque « Nouvelle observation ». Pratique en fin de rotation d'un groupe : un seul scan ou téléchargement suffit pour récupérer tout le monde, plutôt qu'un fichier par élève.</li>
+                        <li><strong>📦 Toute la séance</strong> : CSV/QR regroupant <strong>tous les coureurs déjà enregistrés</strong> depuis la dernière « Nouvelle séance » - se met à jour à chaque « Nouvelle observation ». Pratique en fin de rotation d'un groupe : un seul scan ou téléchargement suffit pour récupérer tout le monde, plutôt qu'un fichier par élève. Un QR code a une capacité limitée : un compteur affiche sa taille actuelle, et un message d'avertissement apparaît quand elle approche de la limite - flashez-le à ce moment-là si vous voulez garder tout le monde en un seul scan (le CSV, lui, n'a aucune limite).</li>
                     </ul>
                     <p>Dans chaque bloc :</p>
                     <ul style="padding-left: 20px; margin-top: 8px;">
@@ -2057,7 +2070,7 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
 
                 <div style="text-align: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(128,128,128,0.3);">
                     <p style="font-size: 0.85em; opacity: 0.7;">
-                        Biathlon VMA - version 1.4<br>
+                        Biathlon VMA - version 1.6<br>
                         <code>outils-eps.fr</code><br>
                         Vérifiez régulièrement les mises à jour pour bénéficier des dernières améliorations.<br>
                         Développée par Nathalie Prenois
@@ -5407,10 +5420,11 @@ function construireRecordQRCompact(donnees) {
         dt: +(donnees.distanceTheoriqueTotale || 0),
         dr: +(donnees.distanceReelleTotale || 0),
         cs: cs,
-        sc: (donnees.pointsCourse != null ? +Number(donnees.pointsCourse).toFixed(1) : ""),
+        sc: (donnees.pointsCourse != null ? +Number(donnees.pointsCourse).toFixed(1) : ""),  // score course
         ts: ts,
-        st: (donnees.totalTir != null ? +Number(donnees.totalTir).toFixed(1) : ""),
-        mc: donnees.modeCalculTirs || ""
+        st: (donnees.totalTir != null ? +Number(donnees.totalTir).toFixed(1) : ""),           // score lancers
+        mc: donnees.modeCalculTirs || "",
+        sf: (donnees.scoreTotal != null ? +Number(donnees.scoreTotal).toFixed(1) : "")        // score final (course + lancers)
     };
 }
 
@@ -5436,9 +5450,18 @@ function genererPayloadQRSeanceCumule(observations) {
 /* ========================================
 QR CODE
            ======================================== */
-        
-        
 
+
+
+// Limite de lisibilité réelle d'un QR code scanné à la caméra (pas la capacité théorique de
+// la lib qrcode.min.js embarquée, qui monte jusqu'à v40/2953 caractères en niveau L : passé un
+// certain nombre de caractères, la lib produit un QR techniquement valide mais avec des modules
+// trop petits pour rester lisibles par une caméra de téléphone, surtout en scannant un écran de
+// tablette plutôt qu'un QR imprimé. Convention déjà utilisée ailleurs dans le workspace (voir
+// CLAUDE.md commun et TEN EPS, qui tronque au même seuil) - reprise ici plutôt qu'un nouveau
+// chiffre inventé pour cette fonctionnalité.
+const QR_CAPACITE_CARACTERES = 2000;
+const QR_SEUIL_AVERTISSEMENT = 0.85; // affiche l'avertissement dès 85% de la limite projetée
 
 function genererQRCode(csvData, idQrCode, idBloc) {
     const qrContainer = document.getElementById(idQrCode || 'qrcode');
@@ -5470,53 +5493,63 @@ function genererQRCode(csvData, idQrCode, idBloc) {
     const niveaux = [QRCode.CorrectLevel.L, QRCode.CorrectLevel.M];
     let success = false;
 
-    for (const niveau of niveaux) {
-        try {
-            qrContainer.innerHTML = '';
+    // Refuse de générer au-delà du seuil de lisibilité réelle (voir QR_CAPACITE_CARACTERES) :
+    // la lib accepterait techniquement bien plus (jusqu'à v40/2953 caractères en niveau L), mais
+    // produirait alors un QR trop dense pour rester scannable à la caméra - mieux vaut basculer
+    // tout de suite sur le CSV (sans limite de taille) que de générer un QR illisible en pratique.
+    const tropLongPourResterLisible = payload.length > QR_CAPACITE_CARACTERES;
 
-            const box = document.createElement('div');
-            box.style.width = '260px';
-            box.style.height = '260px';
-            box.style.margin = '0 auto';
-            box.style.background = '#fff';
-            box.style.borderRadius = '12px';
-            box.style.padding = '10px';
-            box.style.boxShadow = '0 2px 10px rgba(0,0,0,0.08)';
-            qrContainer.appendChild(box);
+    if (!tropLongPourResterLisible) {
+        for (const niveau of niveaux) {
+            try {
+                qrContainer.innerHTML = '';
 
-            new QRCode(box, {
-                text: payload,
-                width: 240,
-                height: 240,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: niveau
-            });
+                const box = document.createElement('div');
+                box.style.width = '260px';
+                box.style.height = '260px';
+                box.style.margin = '0 auto';
+                box.style.background = '#fff';
+                box.style.borderRadius = '12px';
+                box.style.padding = '10px';
+                box.style.boxShadow = '0 2px 10px rgba(0,0,0,0.08)';
+                qrContainer.appendChild(box);
 
-            const hint = document.createElement('div');
-            hint.style.marginTop = '10px';
-            hint.style.color = '#666';
-            hint.style.fontSize = '0.95em';
-            hint.style.textAlign = 'center';
-            hint.textContent = "✅ QR code généré. Scannez pour récupérer les résultats.";
-            qrContainer.appendChild(hint);
-            success = true;
-            break;
-        } catch (e) {
-            console.warn("QR level " + niveau + " failed (" + payload.length + " chars):", e.message);
+                new QRCode(box, {
+                    text: payload,
+                    width: 240,
+                    height: 240,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: niveau
+                });
+
+                const hint = document.createElement('div');
+                hint.style.marginTop = '10px';
+                hint.style.color = '#666';
+                hint.style.fontSize = '0.95em';
+                hint.style.textAlign = 'center';
+                hint.textContent = "✅ QR code généré. Scannez pour récupérer les résultats.";
+                qrContainer.appendChild(hint);
+                success = true;
+                break;
+            } catch (e) {
+                console.warn("QR level " + niveau + " failed (" + payload.length + " chars):", e.message);
+            }
         }
     }
 
     if (!success) {
         qrContainer.innerHTML = '';
-        console.warn("QR generation failed for all levels, payload length:", payload.length);
+        console.warn("QR non généré (" + (tropLongPourResterLisible ? "trop long pour rester lisible" : "échec lib pour tous les niveaux") + "), payload length:", payload.length);
         const msg = document.createElement('div');
         msg.style.padding = '12px';
         msg.style.borderRadius = '10px';
         msg.style.background = 'rgba(255,255,255,0.9)';
         msg.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
         msg.style.color = '#333';
-        msg.innerHTML = "⚠️ <strong>QR code impossible à générer</strong> (données trop longues : " + payload.length + " car.).<br>Utilisez plutôt <em>Télécharger le CSV</em> ou <em>Copier le CSV</em>.";
+        msg.innerHTML = tropLongPourResterLisible
+            ? "⚠️ <strong>QR code non généré</strong> : trop de données (" + payload.length + " car.) pour rester lisible à la caméra.<br>Utilisez plutôt <em>Télécharger le CSV</em> ou <em>Copier le CSV</em> (sans limite de taille)."
+            : "⚠️ <strong>QR code impossible à générer</strong> (données trop longues : " + payload.length + " car.).<br>Utilisez plutôt <em>Télécharger le CSV</em> ou <em>Copier le CSV</em>.";
         qrContainer.appendChild(msg);
     }
 }
@@ -5645,10 +5678,37 @@ function afficherBlocSeanceCumulee() {
     // du CSV individuel - même raison : ';' ne se découpe en colonnes qu'à l'ouverture du fichier).
     ajouterBoutonCopier(blocSeance, genererCSVSeance(seanceObservations, '\t'), '📋 Copier le CSV de la séance');
 
+    const payloadQR = genererPayloadQRSeanceCumule(seanceObservations);
+
+    // Avertissement proactif de capacité : la configuration (nombre de courses/sessions de
+    // lancers) reste identique pour toute la séance, donc la taille moyenne par élève déjà
+    // enregistré est un bon indicateur de la taille du PROCHAIN élève - permet de prévenir le
+    // professeur AVANT que la génération échoue réellement (sécurité demandée par Nathalie
+    // pour ne pas perdre le regroupement en un seul scan si elle enchaîne trop d'observations
+    // sans flasher le QR entre-temps).
+    const tailleActuelle = payloadQR.length;
+    const tailleMoyenneParEleve = tailleActuelle / seanceObservations.length;
+    const tailleProjeteeSuivante = tailleActuelle + tailleMoyenneParEleve;
+
+    const tailleTexte = document.getElementById('tailleQRSeance');
+    if (tailleTexte) {
+        tailleTexte.textContent = '📏 QR cumulé : ' + tailleActuelle + ' / ~' + QR_CAPACITE_CARACTERES + ' caractères';
+    }
+
+    const avertissement = document.getElementById('avertissementQRSeance');
+    if (avertissement) {
+        if (tailleProjeteeSuivante >= QR_SEUIL_AVERTISSEMENT * QR_CAPACITE_CARACTERES) {
+            avertissement.textContent = '⚠️ Le QR cumulé approche de sa limite : flashez-le maintenant avec Scan EPS avant la prochaine observation, sinon il risque de ne plus pouvoir regrouper tout le monde en un seul scan. Le CSV de la séance, lui, n\'a aucune limite de taille.';
+            avertissement.classList.remove('cache');
+        } else {
+            avertissement.classList.add('cache');
+        }
+    }
+
     // Réutilise le même mécanisme d'essai progressif L→M et de repli vers le CSV en cas
     // de dépassement de capacité QR (voir genererQRCode) - avec beaucoup d'élèves accumulés,
     // le CSV reste toujours disponible même si le QR cumulé devient trop volumineux.
-    genererQRCode(genererPayloadQRSeanceCumule(seanceObservations), 'qrcodeSeance', 'qrContainerSeance');
+    genererQRCode(payloadQR, 'qrcodeSeance', 'qrContainerSeance');
 }
 
 
