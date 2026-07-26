@@ -3483,8 +3483,9 @@ function qrPenalty(mod){
         
         function afficherRecapitulatif() {
             // Afficher les informations
-            document.getElementById('recapCoureur').textContent = 
-                document.getElementById('nomCoureur').value || 'Non renseigné';
+            const nomCoureurSaisi = document.getElementById('nomCoureur').value || 'Non renseigné';
+            document.getElementById('recapCoureur').textContent =
+                nomCoureurSaisi + ' (barème ' + sexeCoureur + ')';
             document.getElementById('recapObservateur').textContent = 
                 document.getElementById('nomObservateur').value || 'Non renseigné';
             document.getElementById('recapVMA').textContent = 
@@ -3599,6 +3600,9 @@ function qrPenalty(mod){
             // Sauvegarder la session automatiquement
             sauvegarderSession();
 
+            // Remonter en haut de l'écran Déroulement (sinon on reste au scroll du
+            // Récapitulatif, souvent tout en bas après avoir cliqué sur "Confirmer et démarrer").
+            window.scrollTo({top: 0, behavior: 'smooth'});
         }
         
         /* ========================================
@@ -3769,6 +3773,10 @@ function qrPenalty(mod){
 
             // Sauvegarder la session automatiquement
             sauvegarderSession();
+
+            // Remonter en haut de l'écran Récapitulatif (sinon on reste au scroll de la
+            // Configuration, souvent tout en bas après avoir cliqué sur "Démarrer la séance").
+            window.scrollTo({top: 0, behavior: 'smooth'});
         }
         
         /* ========================================
