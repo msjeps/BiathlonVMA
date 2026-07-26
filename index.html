@@ -1373,7 +1373,7 @@
         <!-- EN-TÊTE -->
         <div class="en-tete">
             <h1>🏃‍♂️ Biathlon VMA 🎯</h1>
-            <p>Version 1.3</p>
+            <p>Version 1.4</p>
             <!-- Bouton paramètres déplacé dans le header fixe -->
         </div>
 
@@ -1576,9 +1576,15 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
             </div>
 
             <div class="qr-container cache" id="qrContainer">
-                <h3>📱 QR Code pour le professeur</h3>
-                <p style="color: #666; margin: 10px 0;">Scannez ce code pour récupérer les données en CSV</p>
+                <h3>📱 QR Code de ce coureur</h3>
+                <p style="color: #666; margin: 10px 0;">Scannez ce code pour récupérer les données de <strong>ce coureur uniquement</strong> en CSV</p>
                 <div id="qrcode"></div>
+            </div>
+
+            <div class="qr-container cache" id="qrContainerSeance" style="margin-top: 15px;">
+                <h3>📦 Toute la séance (<span id="nbEleveSeance">0</span> élève(s))</h3>
+                <p style="color: #666; margin: 10px 0;">QR code et CSV regroupant <strong>tous les élèves déjà enregistrés</strong> depuis la dernière "Nouvelle séance" - un seul scan/téléchargement pour tout récupérer.</p>
+                <div id="qrcodeSeance"></div>
             </div>
 
             <div class="grille-2col cache" id="blocApresEnregistrement" style="margin-top: 15px;">
@@ -2020,14 +2026,16 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
 
                 <div class="bareme-section">
                     <h3>💾 Enregistrement des résultats</h3>
-                    <p>Une fois la séance terminée, deux options pour récupérer les données :</p>
+                    <p>Après chaque enregistrement, deux blocs de récupération apparaissent :</p>
+                    <ul style="padding-left: 20px; margin-top: 8px;">
+                        <li><strong>📱 QR Code de ce coureur</strong> : CSV/QR pour <strong>ce coureur uniquement</strong>, à récupérer tout de suite.</li>
+                        <li><strong>📦 Toute la séance</strong> : CSV/QR regroupant <strong>tous les coureurs déjà enregistrés</strong> depuis la dernière « Nouvelle séance » - se met à jour à chaque « Nouvelle observation ». Pratique en fin de rotation d'un groupe : un seul scan ou téléchargement suffit pour récupérer tout le monde, plutôt qu'un fichier par élève.</li>
+                    </ul>
+                    <p>Dans chaque bloc :</p>
                     <ul style="padding-left: 20px; margin-top: 8px;">
                         <li><strong>Télécharger le CSV</strong> : enregistre un fichier <code>.csv</code> dans le dossier Téléchargements de la tablette. Ce fichier s'ouvre directement dans Excel (ou Numbers) ou Google Sheets.</li>
-                        <li>
-                            <strong>QR Code</strong> : un QR code contenant les résultats compacts est généré. Le professeur peut le scanner depuis une autre tablette ou un téléphone pour récupérer les données instantanément, sans connexion réseau.
-                            <p style="margin-top: 6px; font-size: 0.9em; opacity: 0.85;">L'utilisation de l'application <strong>Scan EPS</strong> (<code>outils-eps.fr/scan-eps</code>) est recommandée : elle permet d'enregistrer plusieurs élèves dans le même tableau de données.</p>
-                        </li>
-                        <li><strong>Copier le CSV</strong> : copie les données dans le presse-papier pour les coller directement.</li>
+                        <li><strong>QR Code</strong> : le professeur peut le scanner depuis une autre tablette ou un téléphone (application <strong>Scan EPS</strong>, <code>outils-eps.fr/scan-eps</code>) pour récupérer les données instantanément, sans connexion réseau.</li>
+                        <li><strong>Copier le CSV</strong> : copie les données dans le presse-papier pour les coller directement dans un tableur.</li>
                     </ul>
                     <p style="margin-top: 8px; font-size: 0.9em; opacity: 0.85;">💡 Dans <strong>Paramètres → configuration des barèmes</strong>, les cases <strong>« Détail des courses »</strong> et <strong>« Détail des lancers »</strong> permettent d'alléger le CSV exporté : décochées, seuls les scores totaux sont exportés (sans le détail course par course ou lancer par lancer).</p>
                     <p style="margin-top: 12px;">Après l'enregistrement, deux boutons permettent de continuer :</p>
@@ -2049,7 +2057,7 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
 
                 <div style="text-align: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(128,128,128,0.3);">
                     <p style="font-size: 0.85em; opacity: 0.7;">
-                        Biathlon VMA - version 1.3<br>
+                        Biathlon VMA - version 1.4<br>
                         <code>outils-eps.fr</code><br>
                         Vérifiez régulièrement les mises à jour pour bénéficier des dernières améliorations.<br>
                         Développée par Nathalie Prenois
@@ -2445,6 +2453,11 @@ function qrPenalty(mod){
         let csvDetailCourses = true;
         let csvDetailTirs = true;
 
+        // Accumule chaque observation enregistrée (un objet "donnees" par élève) tant que la
+        // séance n'est pas explicitement recommencée via "Nouvelle séance" — permet de récupérer
+        // tous les élèves déjà passés en un seul CSV/QR, au lieu d'un fichier par élève.
+        let seanceObservations = [];
+
         // Agrège une liste de points de tir déjà convertis via le barème,
         // selon le mode configuré par le professeur.
         function agregerPointsTirs(pointsTirs) {
@@ -2482,6 +2495,7 @@ function qrPenalty(mod){
             genererConfigurationCourses();
             chargerBaremes();
             chargerParametres();
+            chargerSeanceObservations();
 
             // Restaurer la session si elle existe
             const sessionRestauree = restaurerSession();
@@ -2633,6 +2647,18 @@ function qrPenalty(mod){
             // Appliquer le mode sombre si activé
             if (parametres.modeSombre) {
                 document.body.classList.add('mode-sombre');
+            }
+        }
+
+        // Recharge les observations déjà enregistrées dans la séance en cours (persistées en
+        // continu par enregistrerSeance()), pour que la liste survive à un rechargement de page
+        // sans perdre les élèves déjà passés.
+        function chargerSeanceObservations() {
+            const str = localStorage.getItem('seanceObservations');
+            if (!str) return;
+            const valeur = parseJSONSecurise(str, 'seanceObservations');
+            if (Array.isArray(valeur)) {
+                seanceObservations = valeur;
             }
         }
 
@@ -3109,7 +3135,7 @@ function qrPenalty(mod){
                 if (blocQR) {
                     blocQR.classList.remove('cache');
                     // Nettoyer d'anciens boutons éventuels
-                    blocQR.querySelectorAll('a.bouton, button.bouton-secondaire').forEach(el => el.remove());
+                    blocQR.querySelectorAll('a.bouton, button.bouton-secondaire, button.bouton-primaire').forEach(el => el.remove());
                 }
 
                 // Générer le QR code
@@ -3120,6 +3146,12 @@ function qrPenalty(mod){
                     ajouterBoutonTelechargement(blocQR, csv, donnees);
                     ajouterBoutonCopier(blocQR, genererCSV(donnees, '\t'));
                 }
+
+                // Régénère aussi le bloc "Toute la séance" (seanceObservations est déjà rechargé
+                // depuis localStorage au démarrage, avant restaurerSession()) - sans ça, un
+                // rechargement de page ferait disparaître le QR/CSV cumulé jusqu'à la prochaine
+                // observation.
+                afficherBlocSeanceCumulee();
 
                 // Afficher "Nouvelle observation" / "Nouvelle séance" (séance déjà enregistrée)
                 document.getElementById('blocApresEnregistrement')?.classList.remove('cache');
@@ -5152,6 +5184,12 @@ function genererDeroulement() {
             // c'est le seul moyen pour l'observateur de récupérer les résultats.
             const derniereSeanceSauvegardee = sauvegarderLocalStorage('derniereSeance', JSON.stringify(donnees));
 
+            // Ajoute cette observation à l'historique de la séance (conservé tant que
+            // "Nouvelle séance" n'est pas explicitement demandé) - permet de récupérer tous
+            // les élèves déjà passés en un seul CSV/QR plutôt qu'un fichier par élève.
+            seanceObservations.push(donnees);
+            sauvegarderLocalStorage('seanceObservations', JSON.stringify(seanceObservations));
+
             // La session est terminée, supprimer la session en cours
             try { localStorage.removeItem('sessionEnCours'); } catch (e) {}
 
@@ -5162,7 +5200,7 @@ function genererDeroulement() {
             if(blocQR){
                 blocQR.classList.remove('cache');
                 // nettoie d'anciens boutons éventuels
-                blocQR.querySelectorAll('a.bouton, button.bouton-secondaire').forEach(el => el.remove());
+                blocQR.querySelectorAll('a.bouton, button.bouton-secondaire, button.bouton-primaire').forEach(el => el.remove());
             }
 
             genererQRCode(genererPayloadQRUltraCompact(donnees));
@@ -5175,6 +5213,8 @@ function genererDeroulement() {
                 // le point-virgule reste du texte brut dans une seule cellule.
                 ajouterBoutonCopier(blocQR, genererCSV(donnees, '\t'));
             }
+
+            afficherBlocSeanceCumulee();
 
             // Afficher "Nouvelle observation" / "Nouvelle séance", maintenant que c'est enregistré
             document.getElementById('blocApresEnregistrement')?.classList.remove('cache');
@@ -5320,9 +5360,22 @@ function genererCSV(donnees, separateur) {
     return entetes.map(safe).join(SEP) + '\n' + valeurs.map(safe).join(SEP);
 }
 
+// CSV combiné de tous les élèves déjà enregistrés dans la séance en cours (un fichier, une
+// ligne par élève) au lieu d'un fichier séparé par élève. Réutilise genererCSV() pour chaque
+// élève (mêmes en-têtes garanties, la config courses/tirs ne change pas entre observations
+// d'une même séance) et ne garde la ligne d'en-têtes qu'une seule fois.
+function genererCSVSeance(observations, separateur) {
+    if (!observations || !observations.length) return '';
+    const lignes = observations.map(o => genererCSV(o, separateur));
+    const entetes = lignes[0].split('\n')[0];
+    const valeurs = lignes.map(l => l.split('\n')[1]);
+    return [entetes, ...valeurs].join('\n');
+}
 
-
-function genererPayloadQRUltraCompact(donnees){
+// Construit l'enregistrement compact d'un seul élève (sans préfixe ni version) - réutilisé
+// à la fois par le QR individuel (BJ2) et par le QR cumulé de toute la séance (BJ3), pour ne
+// pas dupliquer le format entre les deux.
+function construireRecordQRCompact(donnees) {
     const isDistance = donnees.modeCourse === 'distance';
     const cs = (donnees.detailsCourses || []).map(c => {
         if (isDistance) {
@@ -5346,9 +5399,7 @@ function genererPayloadQRUltraCompact(donnees){
     });
     const ts = (donnees.detailsTirs || []).map(t => (t.scores || ""));
 
-    const obj = {
-        v: 2,
-        m: isDistance ? 'd' : 't',
+    return {
         c: donnees.nomCoureur || "",
         sx: donnees.sexeCoureur || "",
         o: donnees.nomObservateur || "",
@@ -5361,9 +5412,24 @@ function genererPayloadQRUltraCompact(donnees){
         st: (donnees.totalTir != null ? +Number(donnees.totalTir).toFixed(1) : ""),
         mc: donnees.modeCalculTirs || ""
     };
+}
+
+function genererPayloadQRUltraCompact(donnees){
+    const isDistance = donnees.modeCourse === 'distance';
+    const obj = Object.assign({ v: 2, m: isDistance ? 'd' : 't' }, construireRecordQRCompact(donnees));
 
     // Préfixe très court pour identifier le format
     return "BJ2|" + JSON.stringify(obj);
+}
+
+// QR cumulé de toute la séance (tous les élèves déjà enregistrés depuis "Nouvelle séance") -
+// un seul scan permet à Scan EPS de récupérer tout le monde d'un coup. Préfixe distinct "BJ3"
+// (et non BJ2) car la forme du payload change (tableau "r" de plusieurs élèves, pas un seul).
+function genererPayloadQRSeanceCumule(observations) {
+    const isDistance = observations.length > 0 && observations[0].modeCourse === 'distance';
+    const records = observations.map(construireRecordQRCompact);
+    const obj = { v: 3, m: isDistance ? 'd' : 't', r: records };
+    return "BJ3|" + JSON.stringify(obj);
 }
 
 
@@ -5374,9 +5440,9 @@ QR CODE
         
 
 
-function genererQRCode(csvData) {
-    const qrContainer = document.getElementById('qrcode');
-    const bloc = document.getElementById('qrContainer');
+function genererQRCode(csvData, idQrCode, idBloc) {
+    const qrContainer = document.getElementById(idQrCode || 'qrcode');
+    const bloc = document.getElementById(idBloc || 'qrContainer');
     if (bloc) bloc.classList.remove('cache');
     if (!qrContainer) return;
 
@@ -5456,14 +5522,16 @@ function genererQRCode(csvData) {
 }
 
 
-function ajouterBoutonTelechargement(conteneur, csvData, donnees) {
+function ajouterBoutonTelechargement(conteneur, csvData, donnees, options) {
+            options = options || {};
             const classe = (donnees && donnees.classe || 'classe').replace(/[^a-zA-Z0-9_-]/g, '_');
             const dateStr = (donnees && donnees.dateSeance || '').replace(/[/:]/g, '-').replace(/ /g, '_') || new Date().toISOString().slice(0,10);
-            const fileName = 'BiathlonVMA_' + classe + '_' + dateStr + '.csv';
+            const fileName = options.fileName || ('BiathlonVMA_' + classe + '_' + dateStr + '.csv');
+            const libelle = options.libelle || '⬇️ TÉLÉCHARGER LE CSV';
 
             const btnTelecharger = document.createElement('button');
             btnTelecharger.className = 'bouton bouton-primaire';
-            btnTelecharger.textContent = '⬇️ TÉLÉCHARGER LE CSV';
+            btnTelecharger.textContent = libelle;
             btnTelecharger.style.marginTop = '15px';
             btnTelecharger.style.display = 'inline-block';
             btnTelecharger.style.cursor = 'pointer';
@@ -5479,7 +5547,7 @@ function ajouterBoutonTelechargement(conteneur, csvData, donnees) {
                         var base64 = btoa(unescape(encodeURIComponent(csvAvecBom)));
                         AndroidDownload.saveFile(base64, fileName, 'text/csv');
                         btnTelecharger.textContent = '✅ Fichier sauvegardé !';
-                        setTimeout(function(){ btnTelecharger.textContent = '⬇️ TÉLÉCHARGER LE CSV'; }, 2500);
+                        setTimeout(function(){ btnTelecharger.textContent = libelle; }, 2500);
                         return;
                     } catch(e) {
                         console.warn('AndroidDownload failed, fallback to blob:', e);
@@ -5522,10 +5590,11 @@ function obtenirTextareaClipboardFallback() {
     return textareaClipboardFallback;
 }
 
-function ajouterBoutonCopier(conteneur, csvData) {
+function ajouterBoutonCopier(conteneur, csvData, libelle) {
+            libelle = libelle || '📋 Copier le CSV';
             const btnCopier = document.createElement('button');
             btnCopier.className = 'bouton bouton-secondaire';
-            btnCopier.textContent = '📋 Copier le CSV';
+            btnCopier.textContent = libelle;
             btnCopier.style.marginTop = '10px';
             btnCopier.onclick = async () => {
                 try{
@@ -5541,7 +5610,7 @@ function ajouterBoutonCopier(conteneur, csvData) {
                         ta.value = '';
                     }
                     btnCopier.textContent = '✅ Copié !';
-                    setTimeout(()=>btnCopier.textContent='📋 Copier le CSV', 1800);
+                    setTimeout(()=>btnCopier.textContent=libelle, 1800);
                 }catch(e){
                     alert("Impossible de copier automatiquement. Utilisez plutôt 'Télécharger le CSV'.");
                     console.warn(e);
@@ -5551,9 +5620,40 @@ function ajouterBoutonCopier(conteneur, csvData) {
             conteneur.appendChild(btnCopier);
         }
 
+// Génère/rafraîchit le bloc "Toute la séance" (CSV + QR regroupant tous les élèves déjà
+// enregistrés) - appelé après chaque enregistrerSeance() et à la restauration d'une séance
+// terminée après rechargement de page, pour rester synchronisé avec seanceObservations.
+function afficherBlocSeanceCumulee() {
+    const blocSeance = document.getElementById('qrContainerSeance');
+    if (!blocSeance || !seanceObservations.length) return;
+
+    blocSeance.classList.remove('cache');
+    blocSeance.querySelectorAll('a.bouton, button.bouton-secondaire, button.bouton-primaire').forEach(el => el.remove());
+
+    const nbSpan = document.getElementById('nbEleveSeance');
+    if (nbSpan) nbSpan.textContent = seanceObservations.length;
+
+    const derniere = seanceObservations[seanceObservations.length - 1];
+    const classe = (derniere.classe || 'classe').replace(/[^a-zA-Z0-9_-]/g, '_');
+    const dateStr = (derniere.dateSeance || '').replace(/[/:]/g, '-').replace(/ /g, '_') || new Date().toISOString().slice(0,10);
+
+    ajouterBoutonTelechargement(blocSeance, genererCSVSeance(seanceObservations), derniere, {
+        fileName: 'BiathlonVMA_' + classe + '_Groupe' + seanceObservations.length + '_' + dateStr + '.csv',
+        libelle: '⬇️ TÉLÉCHARGER LE CSV DE LA SÉANCE (' + seanceObservations.length + ')'
+    });
+    // Séparateur tabulation pour le collage Excel/Sheets (voir genererCSV/ajouterBoutonCopier
+    // du CSV individuel - même raison : ';' ne se découpe en colonnes qu'à l'ouverture du fichier).
+    ajouterBoutonCopier(blocSeance, genererCSVSeance(seanceObservations, '\t'), '📋 Copier le CSV de la séance');
+
+    // Réutilise le même mécanisme d'essai progressif L→M et de repli vers le CSV en cas
+    // de dépassement de capacité QR (voir genererQRCode) - avec beaucoup d'élèves accumulés,
+    // le CSV reste toujours disponible même si le QR cumulé devient trop volumineux.
+    genererQRCode(genererPayloadQRSeanceCumule(seanceObservations), 'qrcodeSeance', 'qrContainerSeance');
+}
 
 
-        
+
+
         /* ========================================
            NOUVELLE OBSERVATION (même configuration de séance, nouveau coureur)
            ======================================== */
@@ -5612,7 +5712,7 @@ function nouvelleObservation() {
     const blocQR = document.getElementById('qrContainer');
     if (blocQR) {
         blocQR.classList.add('cache');
-        blocQR.querySelectorAll('a.bouton, button.bouton-secondaire').forEach(el => el.remove());
+        blocQR.querySelectorAll('a.bouton, button.bouton-secondaire, button.bouton-primaire').forEach(el => el.remove());
     }
     document.getElementById('messageSucces')?.classList.add('cache');
     document.getElementById('blocApresEnregistrement')?.classList.add('cache');
@@ -5665,6 +5765,9 @@ function nouvelleSeance() {
     try {
         localStorage.removeItem('sessionEnCours');
         localStorage.removeItem('derniereSeance');
+        // "Nouvelle séance" est le seul point de remise à zéro de l'historique cumulé
+        // (nouvelleObservation() le conserve volontairement, c'est tout son intérêt).
+        localStorage.removeItem('seanceObservations');
     } catch(e){}
 
     try { sessionStorage.clear(); } catch(e){}
@@ -5681,6 +5784,7 @@ function nouvelleSeance() {
         tempsCourses = [];
         donneesVitesse = [];
         ordreElements = [];
+        seanceObservations = [];
     } catch(e){}
 
     // Forcer un vrai rechargement propre (important sur tablette / WebView)
