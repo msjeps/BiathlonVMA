@@ -1,6 +1,6 @@
 /* Service worker simple: met en cache l'app pour usage hors-ligne.
    Fonctionne seulement si l'app est servie via http(s) / localhost (pas via file://). */
-const CACHE = 'biathlon-vma-cache-v3';
+const CACHE = 'biathlon-vma-cache-v4';
 const ASSETS = [
   './',
   './index.html',
