@@ -1457,7 +1457,7 @@
         <!-- EN-TÊTE -->
         <div class="en-tete">
             <h1>🏃‍♂️ Biathlon VMA 🎯</h1>
-            <p>Version 1.12</p>
+            <p>Version 1.13</p>
             <!-- Bouton paramètres déplacé dans le header fixe -->
         </div>
 
@@ -1983,7 +1983,7 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
             <!-- Mot de passe personnalisé -->
             <div class="bareme-section">
                 <h3>🔑 Mot de passe personnalisé (optionnel)</h3>
-                <p style="margin-bottom: 12px; font-size: 0.9em; opacity: 0.85;">Par défaut, cet accès est protégé par <code>ADMINPROF</code> (voir le guide professeur). Vous pouvez définir ici un mot de passe qui vous est propre - une fois personnalisé, <code>ADMINPROF</code> ne fonctionne plus directement (pour empêcher un élève qui le connaîtrait de contourner votre mot de passe). En cas d'oubli, 3 tentatives incorrectes sur l'écran de connexion font apparaître un bouton pour réinitialiser au mot de passe par défaut.</p>
+                <p style="margin-bottom: 12px; font-size: 0.9em; opacity: 0.85;">Par défaut, cet accès est protégé par le mot de passe indiqué dans le guide professeur. Vous pouvez définir ici un mot de passe qui vous est propre - une fois personnalisé, le mot de passe par défaut ne fonctionne plus directement (pour empêcher un élève qui le connaîtrait de contourner votre mot de passe). En cas d'oubli, 3 tentatives incorrectes sur l'écran de connexion font apparaître un bouton pour réinitialiser au mot de passe par défaut.</p>
                 <div class="groupe-champ" style="margin-bottom: 10px;">
                     <label for="nouveauMdpProf">Nouveau mot de passe :</label>
                     <input type="password" id="nouveauMdpProf" placeholder="Laisser vide pour ne rien changer" autocomplete="off">
@@ -2144,7 +2144,7 @@ padding: 20px; border-radius: 12px; margin-bottom: 25px;">
 
                 <div style="text-align: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(128,128,128,0.3);">
                     <p style="font-size: 0.85em; opacity: 0.7;">
-                        Biathlon VMA - version 1.12<br>
+                        Biathlon VMA - version 1.13<br>
                         <code>outils-eps.fr</code><br>
                         Vérifiez régulièrement les mises à jour pour bénéficier des dernières améliorations.<br>
                         Développée par Nathalie Prenois
@@ -2673,6 +2673,18 @@ function qrPenalty(mod){
                 return false;
             }
         }
+
+        // Hachage SHA-256 (hex) utilisé pour l'accès professeur : ni le mot de passe par
+        // défaut ni un mot de passe personnalisé ne doivent être comparés ou stockés en clair
+        // dans le code/localStorage (corrigé suite à un audit de sécurité le 2026-10-24).
+        async function sha256Hex(texte) {
+            const octets = new TextEncoder().encode(texte);
+            const empreinte = await crypto.subtle.digest('SHA-256', octets);
+            return Array.from(new Uint8Array(empreinte)).map((o) => o.toString(16).padStart(2, '0')).join('');
+        }
+        // Empreinte SHA-256 du mot de passe par défaut (voir le guide professeur) : le mot de
+        // passe en clair n'est volontairement écrit nulle part dans ce fichier.
+        const HASH_MDP_PROF_DEFAUT = '8c0f9d9ffab0adfb9cd5ef847105b2ea80774169ef2ba93558b8899b3d5635e3';
 
         /* ========================================
            PARAMÈTRES
@@ -3347,15 +3359,29 @@ function qrPenalty(mod){
             tentativesMdpEchouees = 0;
         }
 
-        function verifierMotDePasse() {
+        async function verifierMotDePasse() {
             const mdp = document.getElementById('motDePasse').value;
-            const mdpPersonnalise = localStorage.getItem('mdpProfPersonnalise');
+            const mdpPersonnalise = localStorage.getItem('mdpProfPersonnalise'); // empreinte SHA-256, jamais en clair
+            const empreinteSaisie = await sha256Hex(mdp);
 
-            // Si un mot de passe personnalisé est défini, ADMINPROF ne donne plus un accès
-            // direct : sinon un élève qui connaîtrait seulement ADMINPROF contournerait la
-            // personnalisation. Sans mot de passe personnalisé, ADMINPROF reste le seul mot
-            // de passe (comportement d'origine).
-            const mdpValide = mdpPersonnalise ? (mdp === mdpPersonnalise) : (mdp === 'ADMINPROF');
+            // Migration : un mot de passe personnalisé enregistré par une version antérieure
+            // (avant le hachage) est stocké en clair, pas sous forme d'empreinte 64 caractères
+            // hexadécimaux. On le reconnaît à son format et on le compare en clair une seule
+            // fois, puis on le remplace immédiatement par son empreinte SHA-256.
+            let mdpPersonnaliseEstEnClair = mdpPersonnalise && !/^[0-9a-f]{64}$/.test(mdpPersonnalise);
+            if (mdpPersonnaliseEstEnClair && mdp === mdpPersonnalise) {
+                sauvegarderLocalStorage('mdpProfPersonnalise', empreinteSaisie);
+            }
+
+            // Si un mot de passe personnalisé est défini, le mot de passe par défaut ne donne
+            // plus un accès direct : sinon un élève qui le connaîtrait contournerait la
+            // personnalisation. Sans mot de passe personnalisé, le mot de passe par défaut
+            // reste le seul mot de passe (comportement d'origine). Comparaison par empreinte
+            // SHA-256 uniquement : aucun mot de passe n'est comparé ou stocké en clair (sauf,
+            // ci-dessus, le seul instant de la migration automatique d'un ancien mot de passe).
+            const mdpValide = mdpPersonnalise
+                ? (mdpPersonnaliseEstEnClair ? (mdp === mdpPersonnalise) : (empreinteSaisie === mdpPersonnalise))
+                : (empreinteSaisie === HASH_MDP_PROF_DEFAUT);
 
             if (mdpValide) {
                 fermerModale('modaleAccesProf');
@@ -3367,38 +3393,40 @@ function qrPenalty(mod){
             tentativesMdpEchouees++;
 
             // Après 3 échecs, proposer de réinitialiser au mot de passe par défaut - utile
-            // uniquement s'il y a un mot de passe personnalisé (sinon ADMINPROF est déjà le
-            // mot de passe testé, le proposer en réinitialisation n'aiderait pas).
+            // uniquement s'il y a un mot de passe personnalisé (sinon le mot de passe par
+            // défaut est déjà celui testé, le proposer en réinitialisation n'aiderait pas).
             if (tentativesMdpEchouees >= 3 && mdpPersonnalise) {
                 document.getElementById('proposReinitMdp').style.display = 'block';
             }
         }
 
         function reinitialiserMdpProfDepuisConnexion() {
-            if (!confirm('Réinitialiser le mot de passe personnalisé et revenir à ADMINPROF ?')) return;
+            if (!confirm('Réinitialiser le mot de passe personnalisé et revenir au mot de passe par défaut ?')) return;
             try { localStorage.removeItem('mdpProfPersonnalise'); } catch (e) {}
             tentativesMdpEchouees = 0;
             document.getElementById('erreurMdp').style.display = 'none';
             document.getElementById('proposReinitMdp').style.display = 'none';
             document.getElementById('motDePasse').value = '';
-            alert('Mot de passe personnalisé supprimé. Vous pouvez maintenant vous connecter avec ADMINPROF.');
+            alert('Mot de passe personnalisé supprimé. Vous pouvez maintenant vous connecter avec le mot de passe par défaut (voir le guide professeur).');
         }
 
-        function definirMotDePasseProf() {
+        async function definirMotDePasseProf() {
             const nouveau = document.getElementById('nouveauMdpProf').value.trim();
             const message = document.getElementById('messageMdpProf');
             if (!nouveau) {
                 alert('Saisissez un nouveau mot de passe, ou utilisez "Revenir au mot de passe par défaut" pour le supprimer.');
                 return;
             }
-            if (nouveau === 'ADMINPROF') {
+            const empreinteNouveau = await sha256Hex(nouveau);
+            if (empreinteNouveau === HASH_MDP_PROF_DEFAUT) {
                 alert('Ce mot de passe est déjà celui par défaut. Choisissez-en un autre pour renforcer la protection.');
                 return;
             }
-            const ok = sauvegarderLocalStorage('mdpProfPersonnalise', nouveau);
+            // Seule l'empreinte SHA-256 est stockée : jamais le mot de passe en clair.
+            const ok = sauvegarderLocalStorage('mdpProfPersonnalise', empreinteNouveau);
             document.getElementById('nouveauMdpProf').value = '';
             message.textContent = ok
-                ? '✅ Mot de passe personnalisé enregistré. ADMINPROF ne fonctionnera plus tant que ce mot de passe est actif.'
+                ? '✅ Mot de passe personnalisé enregistré. Le mot de passe par défaut ne fonctionnera plus tant que ce mot de passe est actif.'
                 : '⚠️ Mot de passe actif pour cette séance mais non sauvegardé durablement (stockage plein ?).';
             message.classList.remove('cache');
             setTimeout(() => message.classList.add('cache'), 3500);
@@ -3409,11 +3437,11 @@ function qrPenalty(mod){
                 alert('Aucun mot de passe personnalisé n\'est actuellement défini.');
                 return;
             }
-            if (!confirm('Revenir au mot de passe par défaut (ADMINPROF) et supprimer le mot de passe personnalisé ?')) return;
+            if (!confirm('Revenir au mot de passe par défaut et supprimer le mot de passe personnalisé ?')) return;
             try { localStorage.removeItem('mdpProfPersonnalise'); } catch (e) {}
             document.getElementById('nouveauMdpProf').value = '';
             const message = document.getElementById('messageMdpProf');
-            message.textContent = '✅ Mot de passe personnalisé supprimé - ADMINPROF est de nouveau le seul mot de passe.';
+            message.textContent = '✅ Mot de passe personnalisé supprimé - le mot de passe par défaut est de nouveau actif.';
             message.classList.remove('cache');
             setTimeout(() => message.classList.add('cache'), 3500);
         }
@@ -5564,8 +5592,14 @@ function genererCSV(donnees, separateur) {
     // est entouré de guillemets (les guillemets internes sont doublés). Nécessaire
     // à la fois pour les scores de tir ("3;5;7") et pour tout texte libre
     // (prénom, classe) qui contiendrait accidentellement un ';'.
+    // Neutralise aussi l'injection de formule CSV (corrigé suite à un audit de sécurité
+    // le 2026-10-24) : un prénom/classe commençant par =, +, - ou @ serait sinon
+    // interprété comme une formule par Excel/LibreOffice/Sheets à l'ouverture du CSV.
     const safe = (v) => {
         let s = String(v).split('\n').join(' ').split('\r').join(' ');
+        if (/^[=+\-@]/.test(s)) {
+            s = "'" + s;
+        }
         if (s.includes(SEP) || s.includes('"')) {
             s = '"' + s.split('"').join('""') + '"';
         }
