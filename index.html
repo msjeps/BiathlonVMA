@@ -5803,7 +5803,7 @@ function genererQRCode(csvData, idQrCode, idBloc) {
 function ajouterBoutonTelechargement(conteneur, csvData, donnees, options) {
             options = options || {};
             const classe = (donnees && donnees.classe || 'classe').replace(/[^a-zA-Z0-9_-]/g, '_');
-            const dateStr = (donnees && donnees.dateSeance || '').replace(/[/:]/g, '-').replace(/ /g, '_') || new Date().toISOString().slice(0,10);
+            const dateStr = (donnees && donnees.dateSeance || '').replace(/[/:]/g, '-').replace(/ /g, '_') || new Date().toISOString().slice(0,16).replace('T','_').replace(':','h');
             const fileName = options.fileName || ('BiathlonVMA_' + classe + '_' + dateStr + '.csv');
             const libelle = options.libelle || '⬇️ TÉLÉCHARGER LE CSV';
 
@@ -5913,7 +5913,7 @@ function afficherBlocSeanceCumulee() {
 
     const derniere = seanceObservations[seanceObservations.length - 1];
     const classe = (derniere.classe || 'classe').replace(/[^a-zA-Z0-9_-]/g, '_');
-    const dateStr = (derniere.dateSeance || '').replace(/[/:]/g, '-').replace(/ /g, '_') || new Date().toISOString().slice(0,10);
+    const dateStr = (derniere.dateSeance || '').replace(/[/:]/g, '-').replace(/ /g, '_') || new Date().toISOString().slice(0,16).replace('T','_').replace(':','h');
 
     ajouterBoutonTelechargement(blocSeance, genererCSVSeance(seanceObservations), derniere, {
         fileName: 'BiathlonVMA_' + classe + '_Groupe' + seanceObservations.length + '_' + dateStr + '.csv',
